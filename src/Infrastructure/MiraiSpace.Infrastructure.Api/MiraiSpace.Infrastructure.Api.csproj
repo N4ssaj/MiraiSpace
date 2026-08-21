@@ -1,6 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../../../build/Directory.Build.props" />
+
+  <PropertyGroup>
+    <TargetFramework>$(DotNetVersion)</TargetFramework>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\..\Application\MiraiSpace.Application\MiraiSpace.Application.csproj" />
   </ItemGroup>
+  
 </Project>

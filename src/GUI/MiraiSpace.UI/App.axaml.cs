@@ -2,18 +2,16 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using MiraiSpace.Presentation.ViewModels;
-using MiraiSpace.Views;
+using MiraiSpace.UI.Views;
 
-namespace MiraiSpace;
+namespace MiraiSpace.UI;
 
 public partial class App : Application
 {
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-#if DEBUG
-        this.AttachDeveloperTools();
-#endif
+
     }
 
     public override void OnFrameworkInitializationCompleted()

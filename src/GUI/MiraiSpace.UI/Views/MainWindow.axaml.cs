@@ -1,11 +1,11 @@
 using Avalonia.Controls;
 
-namespace MiraiSpace.Views;
+namespace MiraiSpace.UI.Views;
 
 public partial class MainWindow : Window
 {
     public MainWindow()
     {
-        InitializeComponent();
+        
     }
 }
