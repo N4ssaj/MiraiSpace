@@ -21,11 +21,11 @@
   <Folder Name="/Presentation/">
     <Project Path="src/Presentation/MiraiSpace.Presentation/MiraiSpace.Presentation.csproj" />
   </Folder>
-  <Folder Name="/UI/">
-    <Project Path="src/UI/MiraiSpace.UI/MiraiSpace.UI.csproj" />
-    <Project Path="src/UI/MiraiSpace.UI.Controls/MiraiSpace.UI.Controls.csproj" />
-    <Project Path="src/UI/MiraiSpace.UI.Themes/MiraiSpace.UI.Themes.csproj" />
-    <Project Path="src/UI/MiraiSpace.UI.Icons/MiraiSpace.UI.Icons.csproj" />
+  <Folder Name="/User Interface/">
+    <Project Path="src/UserInterface/MiraiSpace.UI/MiraiSpace.UI.csproj" />
+    <Project Path="src/UserInterface/MiraiSpace.UI.Controls/MiraiSpace.UI.Controls.csproj" />
+    <Project Path="src/UserInterface/MiraiSpace.UI.Themes/MiraiSpace.UI.Themes.csproj" />
+    <Project Path="src/UserInterface/MiraiSpace.UI.Icons/MiraiSpace.UI.Icons.csproj" />
   </Folder>
   <Folder Name="/Extensibility/">
     <Project Path="src/Extensibility/MiraiSpace.Extensibility.Abstractions/MiraiSpace.Extensibility.Abstractions.csproj" />

@@ -2,8 +2,6 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" />
@@ -14,6 +12,6 @@
     <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Storage\MiraiSpace.Infrastructure.Storage.csproj" />
     <ProjectReference Include="..\..\Platform\MiraiSpace.Platform.Desktop\MiraiSpace.Platform.Desktop.csproj" />
     <ProjectReference Include="..\..\Extensibility\MiraiSpace.Extensibility.Abstractions\MiraiSpace.Extensibility.Abstractions.csproj" />
-    <ProjectReference Include="..\..\UI\MiraiSpace.UI\MiraiSpace.UI.csproj" />
+    <ProjectReference Include="..\..\UserInterface\MiraiSpace.UI\MiraiSpace.UI.csproj" />
   </ItemGroup>
 </Project>

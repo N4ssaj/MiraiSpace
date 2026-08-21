@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'MiraiSpace.Platform.Browser' Or '$(MSBuildProjectName)' == 'MiraiSpace.Browser'">
+    <TargetFramework>net10.0-browser</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'MiraiSpace.Browser'">
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+</Project>
