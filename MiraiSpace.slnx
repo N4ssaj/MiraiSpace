@@ -12,11 +12,13 @@
   </Folder>
   <Folder Name="/Platform/">
     <Project Path="src/Platform/MiraiSpace.Platform.Avalonia/MiraiSpace.Platform.Avalonia.csproj" />
-    <Project Path="src/Platform/MiraiSpace.Platform.Desktop/MiraiSpace.Platform.Desktop.csproj" />
     <Project Path="src/Platform/MiraiSpace.Platform.Browser/MiraiSpace.Platform.Browser.csproj" />
-    <Project Path="src/Platform/MiraiSpace.Platform.Windows/MiraiSpace.Platform.Windows.csproj" />
-    <Project Path="src/Platform/MiraiSpace.Platform.Linux/MiraiSpace.Platform.Linux.csproj" />
-    <Project Path="src/Platform/MiraiSpace.Platform.MacOS/MiraiSpace.Platform.MacOS.csproj" />
+  </Folder>
+  <Folder Name="/Platform/Desktop/">
+    <Project Path="src/Platform/Desktop/MiraiSpace.Platform.Desktop/MiraiSpace.Platform.Desktop.csproj" />
+    <Project Path="src/Platform/Desktop/MiraiSpace.Platform.Windows/MiraiSpace.Platform.Windows.csproj" />
+    <Project Path="src/Platform/Desktop/MiraiSpace.Platform.Linux/MiraiSpace.Platform.Linux.csproj" />
+    <Project Path="src/Platform/Desktop/MiraiSpace.Platform.MacOS/MiraiSpace.Platform.MacOS.csproj" />
   </Folder>
   <Folder Name="/Presentation/">
     <Project Path="src/Presentation/MiraiSpace.Presentation/MiraiSpace.Presentation.csproj" />

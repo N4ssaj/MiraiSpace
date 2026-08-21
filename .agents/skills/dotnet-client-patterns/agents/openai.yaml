@@ -1,0 +1,4 @@
+interface:
+  display_name: ".NET Client Patterns"
+  short_description: "Design maintainable cross-platform .NET clients"
+  default_prompt: "Design this cross-platform .NET client using appropriate, testable patterns."

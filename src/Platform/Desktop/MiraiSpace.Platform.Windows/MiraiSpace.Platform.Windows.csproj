@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../../../build/Directory.Build.props" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\MiraiSpace.Platform.Avalonia\MiraiSpace.Platform.Avalonia.csproj" />
+  </ItemGroup>
+</Project>
