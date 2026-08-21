@@ -1,7 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
   <PropertyGroup Condition="$([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('win')) Or ('$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOSPlatform('Windows')))">
     <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
   </PropertyGroup>

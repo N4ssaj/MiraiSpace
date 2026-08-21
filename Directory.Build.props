@@ -1,4 +1,18 @@
 <Project>
-  <Import Project="build/ProjectDefaults.props" />
-  <Import Project="build/Browser.props" />
+  <Import Project="build/Directory.Packages.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'MiraiSpace.Platform.Browser' Or '$(MSBuildProjectName)' == 'MiraiSpace.Browser'">
+    <TargetFramework>net10.0-browser</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'MiraiSpace.Browser'">
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
 </Project>
