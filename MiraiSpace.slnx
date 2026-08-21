@@ -1,11 +1,37 @@
-﻿<Solution>
-  <Project Path="MiraiSpace.Android/MiraiSpace.Android.csproj">
-    <Deploy />
-  </Project>
-  <Project Path="MiraiSpace.Browser/MiraiSpace.Browser.csproj" />
-  <Project Path="MiraiSpace.Desktop/MiraiSpace.Desktop.csproj" />
-  <Project Path="MiraiSpace.iOS/MiraiSpace.iOS.csproj">
-    <Deploy />
-  </Project>
-  <Project Path="MiraiSpace/MiraiSpace.csproj" />
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="src/Core/MiraiSpace.Core/MiraiSpace.Core.csproj" />
+  </Folder>
+  <Folder Name="/Application/">
+    <Project Path="src/Application/MiraiSpace.Application/MiraiSpace.Application.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="src/Infrastructure/MiraiSpace.Infrastructure.Api/MiraiSpace.Infrastructure.Api.csproj" />
+    <Project Path="src/Infrastructure/MiraiSpace.Infrastructure.Realtime/MiraiSpace.Infrastructure.Realtime.csproj" />
+    <Project Path="src/Infrastructure/MiraiSpace.Infrastructure.Storage/MiraiSpace.Infrastructure.Storage.csproj" />
+  </Folder>
+  <Folder Name="/Platform/">
+    <Project Path="src/Platform/MiraiSpace.Platform.Avalonia/MiraiSpace.Platform.Avalonia.csproj" />
+    <Project Path="src/Platform/MiraiSpace.Platform.Desktop/MiraiSpace.Platform.Desktop.csproj" />
+    <Project Path="src/Platform/MiraiSpace.Platform.Browser/MiraiSpace.Platform.Browser.csproj" />
+    <Project Path="src/Platform/MiraiSpace.Platform.Windows/MiraiSpace.Platform.Windows.csproj" />
+    <Project Path="src/Platform/MiraiSpace.Platform.Linux/MiraiSpace.Platform.Linux.csproj" />
+    <Project Path="src/Platform/MiraiSpace.Platform.MacOS/MiraiSpace.Platform.MacOS.csproj" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="src/Presentation/MiraiSpace.Presentation/MiraiSpace.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/GUI/">
+    <Project Path="src/GUI/MiraiSpace.UI/MiraiSpace.UI.csproj" />
+    <Project Path="src/GUI/MiraiSpace.UI.Controls/MiraiSpace.UI.Controls.csproj" />
+    <Project Path="src/GUI/MiraiSpace.UI.Themes/MiraiSpace.UI.Themes.csproj" />
+    <Project Path="src/GUI/MiraiSpace.UI.Icons/MiraiSpace.UI.Icons.csproj" />
+  </Folder>
+  <Folder Name="/Extensibility/">
+    <Project Path="src/Extensibility/MiraiSpace.Extensibility.Abstractions/MiraiSpace.Extensibility.Abstractions.csproj" />
+  </Folder>
+  <Folder Name="/Hosts/">
+    <Project Path="src/Hosts/MiraiSpace.Desktop/MiraiSpace.Desktop.csproj" />
+    <Project Path="src/Hosts/MiraiSpace.Browser/MiraiSpace.Browser.csproj" />
+  </Folder>
 </Solution>
