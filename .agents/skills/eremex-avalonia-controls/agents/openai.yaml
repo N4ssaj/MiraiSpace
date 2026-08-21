@@ -1,0 +1,4 @@
+interface:
+  display_name: "Eremex Avalonia Controls"
+  short_description: "Integrate Eremex controls into Avalonia clients"
+  default_prompt: "Use Eremex Avalonia controls safely and verify APIs against official documentation."
