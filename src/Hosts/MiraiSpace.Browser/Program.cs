@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Browser;
 using ReactiveUI.Avalonia;
 using MiraiSpace;
+using MiraiSpace.UI;
 
 internal sealed partial class Program
 {

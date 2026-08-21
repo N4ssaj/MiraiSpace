@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../../../build/Directory.Build.props" />
+
+  <PropertyGroup>
+    <TargetFramework>$(DotNetVersion)</TargetFramework>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Avalonia.Browser" />
   </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\MiraiSpace.Platform.Avalonia\MiraiSpace.Platform.Avalonia.csproj" />
   </ItemGroup>

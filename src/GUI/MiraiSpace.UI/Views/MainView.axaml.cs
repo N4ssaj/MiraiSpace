@@ -1,12 +1,11 @@
-using Avalonia;
 using Avalonia.Controls;
 
-namespace MiraiSpace.Views;
+namespace MiraiSpace.UI.Views;
 
 public partial class MainView : UserControl
 {
     public MainView()
     {
-        InitializeComponent();
+        
     }
 }
