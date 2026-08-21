@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiraiSpace", "MiraiSpace\MiraiSpace.csproj", "{AD37794C-4B75-4F9A-9BB1-2E20A7F5DF2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiraiSpace.Desktop", "MiraiSpace.Desktop\MiraiSpace.Desktop.csproj", "{1F22154D-9BDC-489B-AF5A-29D7595445FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiraiSpace.Browser", "MiraiSpace.Browser\MiraiSpace.Browser.csproj", "{BC9DC3DB-0EE4-4E65-BAAB-CB16CFEAAE6A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD37794C-4B75-4F9A-9BB1-2E20A7F5DF2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD37794C-4B75-4F9A-9BB1-2E20A7F5DF2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD37794C-4B75-4F9A-9BB1-2E20A7F5DF2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD37794C-4B75-4F9A-9BB1-2E20A7F5DF2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F22154D-9BDC-489B-AF5A-29D7595445FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F22154D-9BDC-489B-AF5A-29D7595445FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F22154D-9BDC-489B-AF5A-29D7595445FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F22154D-9BDC-489B-AF5A-29D7595445FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC9DC3DB-0EE4-4E65-BAAB-CB16CFEAAE6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC9DC3DB-0EE4-4E65-BAAB-CB16CFEAAE6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC9DC3DB-0EE4-4E65-BAAB-CB16CFEAAE6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC9DC3DB-0EE4-4E65-BAAB-CB16CFEAAE6A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

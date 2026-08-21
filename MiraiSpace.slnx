@@ -1,0 +1,11 @@
+﻿<Solution>
+  <Project Path="MiraiSpace.Android/MiraiSpace.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="MiraiSpace.Browser/MiraiSpace.Browser.csproj" />
+  <Project Path="MiraiSpace.Desktop/MiraiSpace.Desktop.csproj" />
+  <Project Path="MiraiSpace.iOS/MiraiSpace.iOS.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="MiraiSpace/MiraiSpace.csproj" />
+</Solution>
