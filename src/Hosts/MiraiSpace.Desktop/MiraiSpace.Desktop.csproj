@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Api\MiraiSpace.Infrastructure.Api.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Realtime\MiraiSpace.Infrastructure.Realtime.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Storage\MiraiSpace.Infrastructure.Storage.csproj" />
+    <ProjectReference Include="..\..\Platform\MiraiSpace.Platform.Desktop\MiraiSpace.Platform.Desktop.csproj" />
+    <ProjectReference Include="..\..\Extensibility\MiraiSpace.Extensibility.Abstractions\MiraiSpace.Extensibility.Abstractions.csproj" />
+    <ProjectReference Include="..\..\UserInterface\MiraiSpace.UI\MiraiSpace.UI.csproj" />
+  </ItemGroup>
+</Project>

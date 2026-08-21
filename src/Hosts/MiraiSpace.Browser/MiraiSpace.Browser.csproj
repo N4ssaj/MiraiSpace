@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Api\MiraiSpace.Infrastructure.Api.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Realtime\MiraiSpace.Infrastructure.Realtime.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Storage\MiraiSpace.Infrastructure.Storage.csproj" />
+    <ProjectReference Include="..\..\Platform\MiraiSpace.Platform.Browser\MiraiSpace.Platform.Browser.csproj" />
+    <ProjectReference Include="..\..\Extensibility\MiraiSpace.Extensibility.Abstractions\MiraiSpace.Extensibility.Abstractions.csproj" />
+    <ProjectReference Include="..\..\UserInterface\MiraiSpace.UI\MiraiSpace.UI.csproj" />
+  </ItemGroup>
+</Project>
