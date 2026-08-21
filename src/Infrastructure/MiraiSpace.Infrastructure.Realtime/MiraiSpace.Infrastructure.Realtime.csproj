@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../../build/Directory.Build.props" />
   <ItemGroup>
     <ProjectReference Include="..\..\Application\MiraiSpace.Application\MiraiSpace.Application.csproj" />
   </ItemGroup>
