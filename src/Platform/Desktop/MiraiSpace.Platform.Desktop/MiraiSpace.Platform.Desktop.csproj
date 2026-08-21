@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+  <Import Project="../../../../build/Directory.Build.props" />
   <PropertyGroup Condition="$([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('win')) Or ('$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOSPlatform('Windows')))">
     <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
   </PropertyGroup>
@@ -15,7 +13,7 @@
     <PackageReference Include="Avalonia.Desktop" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MiraiSpace.Platform.Avalonia\MiraiSpace.Platform.Avalonia.csproj" />
+    <ProjectReference Include="..\..\MiraiSpace.Platform.Avalonia\MiraiSpace.Platform.Avalonia.csproj" />
     <ProjectReference Include="..\MiraiSpace.Platform.Windows\MiraiSpace.Platform.Windows.csproj" Condition="$([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('win')) Or ('$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOSPlatform('Windows')))" />
     <ProjectReference Include="..\MiraiSpace.Platform.Linux\MiraiSpace.Platform.Linux.csproj" Condition="$([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('linux')) Or ('$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOSPlatform('Linux')))" />
     <ProjectReference Include="..\MiraiSpace.Platform.MacOS\MiraiSpace.Platform.MacOS.csproj" Condition="$([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('osx')) Or ('$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOSPlatform('OSX')))" />

@@ -1,4 +1,0 @@
-<Project>
-  <Import Project="build/ProjectDefaults.props" />
-  <Import Project="build/Browser.props" />
-</Project>

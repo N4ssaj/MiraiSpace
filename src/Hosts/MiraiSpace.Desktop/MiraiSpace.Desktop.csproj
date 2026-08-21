@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../../build/Directory.Build.props" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -10,8 +11,8 @@
     <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Api\MiraiSpace.Infrastructure.Api.csproj" />
     <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Realtime\MiraiSpace.Infrastructure.Realtime.csproj" />
     <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Storage\MiraiSpace.Infrastructure.Storage.csproj" />
-    <ProjectReference Include="..\..\Platform\MiraiSpace.Platform.Desktop\MiraiSpace.Platform.Desktop.csproj" />
+    <ProjectReference Include="..\..\Platform\Desktop\MiraiSpace.Platform.Desktop\MiraiSpace.Platform.Desktop.csproj" />
     <ProjectReference Include="..\..\Extensibility\MiraiSpace.Extensibility.Abstractions\MiraiSpace.Extensibility.Abstractions.csproj" />
-    <ProjectReference Include="..\..\UserInterface\MiraiSpace.UI\MiraiSpace.UI.csproj" />
+    <ProjectReference Include="..\..\GUI\MiraiSpace.UI\MiraiSpace.UI.csproj" />
   </ItemGroup>
 </Project>
