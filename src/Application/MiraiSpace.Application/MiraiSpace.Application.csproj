@@ -5,6 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MiraiSpace.Application\MiraiSpace.Application.csproj" />
+    <ProjectReference Include="..\..\Core\MiraiSpace.Core\MiraiSpace.Core.csproj" />
   </ItemGroup>
 </Project>

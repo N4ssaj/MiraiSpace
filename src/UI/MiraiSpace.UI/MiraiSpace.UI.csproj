@@ -17,8 +17,8 @@
     <PackageReference Include="ReactiveUI.Avalonia" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MiraiSpace.Platform.Avalonia\MiraiSpace.Platform.Avalonia.csproj" />
-    <ProjectReference Include="..\MiraiSpace.Presentation\MiraiSpace.Presentation.csproj" />
+    <ProjectReference Include="..\..\Platform\MiraiSpace.Platform.Avalonia\MiraiSpace.Platform.Avalonia.csproj" />
+    <ProjectReference Include="..\..\Presentation\MiraiSpace.Presentation\MiraiSpace.Presentation.csproj" />
     <ProjectReference Include="..\MiraiSpace.UI.Controls\MiraiSpace.UI.Controls.csproj" />
     <ProjectReference Include="..\MiraiSpace.UI.Icons\MiraiSpace.UI.Icons.csproj" />
     <ProjectReference Include="..\MiraiSpace.UI.Themes\MiraiSpace.UI.Themes.csproj" />

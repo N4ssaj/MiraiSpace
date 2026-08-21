@@ -5,9 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MiraiSpace.Application\MiraiSpace.Application.csproj" />
+    <ProjectReference Include="..\..\Application\MiraiSpace.Application\MiraiSpace.Application.csproj" />
   </ItemGroup>
 </Project>
