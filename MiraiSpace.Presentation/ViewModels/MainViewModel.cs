@@ -1,6 +1,6 @@
 using ReactiveUI;
 
-namespace MiraiSpace.ViewModels;
+namespace MiraiSpace.Presentation.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
