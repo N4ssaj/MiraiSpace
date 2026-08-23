@@ -1,14 +1,22 @@
-using ReactiveUI;
+using System.Collections.ObjectModel;
+using MiraiSpace.Extensibility.Abstractions.Menu;
+using MiraiSpace.Presentation.Menu;
+using MiraiSpace.Presentation.Menu.Demo;
 
 namespace MiraiSpace.Presentation.ViewModels;
 
-public class MainViewModel : ViewModelBase
+public sealed class MainViewModel(
+    IAppMenuViewModel menu,
+    AppNavigationState navigation) : ViewModelBase
 {
-    private string _greeting = "Welcome to Avalonia!";
+    public IAppMenuViewModel Menu { get; } = menu;
 
-    public string Greeting
-    {
-        get => _greeting;
-        set => this.RaiseAndSetIfChanged(ref _greeting, value);
-    }
+    public ReadOnlyObservableCollection<IAppMenuItem> MenuItems => Menu.Items;
+
+    public WorkspaceMenuItemContainer Workspace =>
+        MenuItems.OfType<WorkspaceMenuItemContainer>().Single();
+
+    public AppNavigationState Navigation { get; } = navigation;
+
+    public ValueTask ExecuteAsync(IAppMenuItem item) => Menu.ExecuteAsync(item);
 }
