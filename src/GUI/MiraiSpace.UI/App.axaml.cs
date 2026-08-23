@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using System.Reactive.Concurrency;
 using Microsoft.Extensions.DependencyInjection;
 using MiraiSpace.Presentation.Menu.Demo;
 using MiraiSpace.Presentation.ViewModels;
@@ -21,11 +20,8 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        SynchronizationContext synchronizationContext = SynchronizationContext.Current
-            ?? throw new InvalidOperationException("Avalonia synchronization context is not available.");
-
         _services = new ServiceCollection()
-            .AddDemoAppMenu(new SynchronizationContextScheduler(synchronizationContext))
+            .AddDemoAppMenu()
             .BuildServiceProvider(new ServiceProviderOptions
             {
                 ValidateOnBuild = true,

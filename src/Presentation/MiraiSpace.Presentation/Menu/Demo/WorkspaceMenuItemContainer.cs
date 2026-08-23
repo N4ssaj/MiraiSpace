@@ -11,11 +11,10 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
     public WorkspaceMenuItemContainer(
         AppNavigationState navigation,
         [FromKeyedServices(AppMenuKeys.WorkspaceValue)] IEnumerable<IAppMenuItem> registeredItems,
-        IAppMenuItemAccessChecker accessChecker,
-        IAppMenuScheduler scheduler)
+        IAppMenuItemAccessChecker accessChecker)
         : base(navigation, "core.workspace", 300)
     {
-        _itemCollection = new AppMenuItemCollection(registeredItems, accessChecker, scheduler);
+        _itemCollection = new AppMenuItemCollection(registeredItems, accessChecker);
         _itemCollection.AddOwned(CreateDelegateItems(navigation));
     }
 

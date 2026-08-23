@@ -4,6 +4,7 @@ using DynamicData;
 using DynamicData.Binding;
 using DynamicData.Kernel;
 using MiraiSpace.Extensibility.Abstractions.Menu;
+using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu;
 
@@ -18,12 +19,10 @@ public sealed class AppMenuItemCollection : IDisposable
     public AppMenuItemCollection(
         IEnumerable<IAppMenuItem> items,
         IAppMenuItemAccessChecker accessChecker,
-        IAppMenuScheduler scheduler,
         IComparer<IAppMenuItem>? comparer = null)
     {
         ArgumentNullException.ThrowIfNull(items);
         ArgumentNullException.ThrowIfNull(accessChecker);
-        ArgumentNullException.ThrowIfNull(scheduler);
 
         IAppMenuItem[] initialItems = items.ToArray();
         ThrowIfDuplicateIds(initialItems, checkExistingItems: false);
@@ -34,7 +33,7 @@ public sealed class AppMenuItemCollection : IDisposable
                 accessChecker.AccessChanged
                     .Select(_ => new Func<IAppMenuItem, bool>(accessChecker.CheckAccess))
                     .StartWith(accessChecker.CheckAccess))
-            .ObserveOn(scheduler.Scheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
             .SortAndBind(
                 out _items,
                 comparer ?? AppMenuItemComparers.Default,

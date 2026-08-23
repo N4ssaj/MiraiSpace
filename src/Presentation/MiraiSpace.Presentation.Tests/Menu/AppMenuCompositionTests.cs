@@ -1,4 +1,3 @@
-using System.Reactive.Concurrency;
 using Microsoft.Extensions.DependencyInjection;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 using MiraiSpace.Presentation.Menu;
@@ -12,7 +11,7 @@ public sealed class AppMenuCompositionTests
     public void KeyedRegistrationsComposeRootAndContainerItems()
     {
         using ServiceProvider provider = new ServiceCollection()
-            .AddDemoAppMenu(ImmediateScheduler.Instance)
+            .AddDemoAppMenu()
             .BuildServiceProvider(new ServiceProviderOptions
             {
                 ValidateOnBuild = true,
@@ -36,7 +35,7 @@ public sealed class AppMenuCompositionTests
     public void RoleChangeRevealsRestrictedRootItem()
     {
         using ServiceProvider provider = new ServiceCollection()
-            .AddDemoAppMenu(ImmediateScheduler.Instance)
+            .AddDemoAppMenu()
             .BuildServiceProvider();
         IAppMenuViewModel menu = provider.GetRequiredService<IAppMenuViewModel>();
 

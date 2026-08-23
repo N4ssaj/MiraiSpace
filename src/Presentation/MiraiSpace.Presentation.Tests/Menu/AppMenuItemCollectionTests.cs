@@ -1,5 +1,4 @@
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 using MiraiSpace.Presentation.Menu;
@@ -35,8 +34,7 @@ public sealed class AppMenuItemCollectionTests
         var checker = new AppMenuItemAccessChecker([policy]);
         using var collection = new AppMenuItemCollection(
             [new RestrictedTestMenuItem("restricted", 100)],
-            checker,
-            ImmediateMenuScheduler);
+            checker);
 
         Assert.Empty(collection.Items);
 
@@ -71,11 +69,7 @@ public sealed class AppMenuItemCollectionTests
     private static AppMenuItemCollection CreateCollection(params IAppMenuItem[] items) =>
         new(
             items,
-            new AppMenuItemAccessChecker([]),
-            ImmediateMenuScheduler);
-
-    private static IAppMenuScheduler ImmediateMenuScheduler { get; } =
-        new AppMenuScheduler(ImmediateScheduler.Instance);
+            new AppMenuItemAccessChecker([]));
 
     private sealed class ToggleAccessPolicy(bool allowed) : IAppMenuItemAccessPolicy, IDisposable
     {

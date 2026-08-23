@@ -15,11 +15,10 @@ public sealed class AppMenuViewModel : IAppMenuViewModel, IDisposable
         [Microsoft.Extensions.DependencyInjection.FromKeyedServices(AppMenuKeys.RootValue)]
         IEnumerable<IAppMenuItem> items,
         IAppMenuItemAccessChecker accessChecker,
-        IAppMenuItemExecutor executor,
-        IAppMenuScheduler scheduler)
+        IAppMenuItemExecutor executor)
     {
         _executor = executor;
-        _itemCollection = new AppMenuItemCollection(items, accessChecker, scheduler);
+        _itemCollection = new AppMenuItemCollection(items, accessChecker);
         _readOnlyContainers = new ReadOnlyObservableCollection<IAppMenuItemContainer>(_containers);
         ((INotifyCollectionChanged)_itemCollection.Items).CollectionChanged += OnItemsChanged;
         RefreshContainers();
