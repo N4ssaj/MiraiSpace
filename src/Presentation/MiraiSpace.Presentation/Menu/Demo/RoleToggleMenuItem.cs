@@ -11,7 +11,7 @@ public sealed class RoleToggleMenuItem : MenuItemViewModel, IDisposable
         : base(navigation, "demo.role-toggle", 900)
     {
         _currentUser = currentUser;
-        _subscription = _currentUser.WhenAnyValue(x => x.IsAdministrator)
+        _subscription = _currentUser.RolesChanged
             .Subscribe(_ =>
             {
                 this.RaisePropertyChanged(nameof(Title));

@@ -13,7 +13,7 @@ public sealed class AppMenuItemAccessChecker : IAppMenuItemAccessChecker
         _policies = policies.ToArray();
         AccessChanged = _policies.Count == 0
             ? Observable.Never<Unit>()
-            : _policies.Select(x => x.AccessChanged).Merge();
+            : _policies.Select(x => x.AccessChanged).Merge().Publish().RefCount();
     }
 
     public IObservable<Unit> AccessChanged { get; }

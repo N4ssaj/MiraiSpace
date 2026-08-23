@@ -36,126 +36,9 @@
         </Style>
     </UserControl.Styles>
 
-    <UserControl.DataTemplates>
-        <DataTemplate DataType="menu:DashboardMenuItem">
-            <Button Classes="menu-item" Click="OnMenuItemClick">
-                <Grid ColumnDefinitions="42,*,Auto">
-                    <Border Width="38" Height="38" CornerRadius="11" Background="#7165E8">
-                        <TextBlock Text="⌂" FontSize="21" Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <StackPanel Grid.Column="1" Margin="11,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Foreground="#20212A" />
-                        <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#8B8E9B" />
-                    </StackPanel>
-                    <Border Grid.Column="2" Width="7" Height="7" CornerRadius="4" Background="#7165E8"
-                            VerticalAlignment="Center" />
-                </Grid>
-            </Button>
-        </DataTemplate>
-
-        <DataTemplate DataType="menu:InboxMenuItem">
-            <Button Classes="menu-item" Click="OnMenuItemClick">
-                <Grid ColumnDefinitions="42,*,Auto">
-                    <Border Width="38" Height="38" CornerRadius="11" Background="#FFF0ED">
-                        <TextBlock Text="✉" FontSize="17" Foreground="#D95D4F"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <TextBlock Grid.Column="1" Margin="11,0,0,0" Text="{Binding Title}"
-                               FontWeight="SemiBold" Foreground="#343640" VerticalAlignment="Center" />
-                    <Border Grid.Column="2" Background="#ED6A5A" CornerRadius="10" Padding="7,2"
-                            VerticalAlignment="Center">
-                        <TextBlock Text="{Binding UnreadCount}" FontSize="11" FontWeight="Bold" Foreground="White" />
-                    </Border>
-                </Grid>
-            </Button>
-        </DataTemplate>
-
-        <DataTemplate DataType="menu:WorkspaceMenuItemContainer">
-            <Button Classes="menu-item" Click="OnMenuItemClick">
-                <Grid ColumnDefinitions="42,*,Auto">
-                    <Border Width="38" Height="38" CornerRadius="11" Background="#E8F7F2">
-                        <TextBlock Text="◇" FontSize="20" Foreground="#25977D"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <StackPanel Grid.Column="1" Margin="11,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Foreground="#343640" />
-                        <TextBlock Text="{Binding Caption}" FontSize="9" FontWeight="Bold" Foreground="#34A58B" />
-                    </StackPanel>
-                    <TextBlock Grid.Column="2" Text="›" FontSize="20" Foreground="#A5A8B3" VerticalAlignment="Center" />
-                </Grid>
-            </Button>
-        </DataTemplate>
-
-        <DataTemplate DataType="menu:AdministrationMenuItem">
-            <Button Classes="menu-item" Click="OnMenuItemClick">
-                <Grid ColumnDefinitions="42,*">
-                    <Border Width="38" Height="38" CornerRadius="19" Background="#F5EAFB">
-                        <TextBlock Text="⚙" FontSize="17" Foreground="#A24EC9"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <StackPanel Grid.Column="1" Margin="11,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Foreground="#343640" />
-                        <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#8B8E9B" />
-                    </StackPanel>
-                </Grid>
-            </Button>
-        </DataTemplate>
-
-        <DataTemplate DataType="menu:RoleToggleMenuItem">
-            <Button Margin="8,4" Padding="12,8" CornerRadius="10" BorderThickness="1"
-                    BorderBrush="#D8DAE5" Background="#FFFFFF" Click="OnMenuItemClick">
-                <Grid ColumnDefinitions="Auto,*">
-                    <TextBlock Text="✦" Foreground="#7165E8" FontSize="15" VerticalAlignment="Center" />
-                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                        <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" Foreground="#4D5060" />
-                        <TextBlock Text="{Binding Caption}" FontSize="9" Foreground="#A0A3AF" />
-                    </StackPanel>
-                </Grid>
-            </Button>
-        </DataTemplate>
-
-        <DataTemplate DataType="menu:WorkspacePageMenuItem">
-            <Button Classes="child-item" Click="OnMenuItemClick">
-                <Grid ColumnDefinitions="28,*,Auto">
-                    <TextBlock Text="▤" Foreground="#34A58B" FontSize="15" VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="1" Text="{Binding Title}" FontSize="12" FontWeight="SemiBold"
-                               Foreground="#464955" VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="2" Text="{Binding Hint}" FontSize="10" Foreground="#9A9DA8"
-                               VerticalAlignment="Center" />
-                </Grid>
-            </Button>
-        </DataTemplate>
-
-        <DataTemplate DataType="menu:WorkspaceCalendarMenuItem">
-            <Button Classes="child-item" Click="OnMenuItemClick">
-                <Grid ColumnDefinitions="28,*">
-                    <TextBlock Text="□" Foreground="#E0A13D" FontSize="17" VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="1" Text="{Binding Title}" FontSize="12" FontWeight="SemiBold"
-                               Foreground="#464955" VerticalAlignment="Center" />
-                </Grid>
-            </Button>
-        </DataTemplate>
-
-        <DataTemplate DataType="menu:DelegateMenuItem">
-            <Button Classes="child-item" Click="OnMenuItemClick">
-                <Grid ColumnDefinitions="28,*">
-                    <Border Width="24" Height="24" CornerRadius="12" Background="{Binding Color}">
-                        <TextBlock Text="{Binding Initials}" FontSize="8" FontWeight="Bold" Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding DisplayName}" FontSize="11" FontWeight="SemiBold" Foreground="#555865" />
-                        <TextBlock Text="Delegated pages" FontSize="9" Foreground="#A2A5AF" />
-                    </StackPanel>
-                </Grid>
-            </Button>
-        </DataTemplate>
-    </UserControl.DataTemplates>
-
     <Grid ColumnDefinitions="292,*">
         <Border Grid.Column="0" Background="White" BorderBrush="#E8E9EF" BorderThickness="0,0,1,0">
-            <Grid RowDefinitions="88,Auto,270,Auto,*">
+            <Grid RowDefinitions="88,Auto,270,*">
                 <Grid Margin="22,18,18,14" ColumnDefinitions="46,*">
                     <Border Width="42" Height="42" CornerRadius="13" Background="#22232C">
                         <TextBlock Text="M" FontSize="20" FontWeight="Bold" Foreground="White"
@@ -197,37 +80,48 @@
                     </mxlv:ListViewControl.ItemTemplate>
                 </mxlv:ListViewControl>
 
-                <Grid Grid.Row="3" Margin="24,12,16,7" ColumnDefinitions="*,Auto">
-                    <TextBlock Text="WORKSPACE" FontSize="9" FontWeight="Bold" Foreground="#A5A7B2"
-                               LetterSpacing="1.4" VerticalAlignment="Center" />
-                    <Border Grid.Column="1" Background="#EBF7F3" CornerRadius="8" Padding="7,2">
-                        <TextBlock Text="{Binding Workspace.Items.Count}" FontSize="9" FontWeight="Bold" Foreground="#32927D" />
-                    </Border>
-                </Grid>
+                <ScrollViewer Grid.Row="3">
+                    <ItemsControl ItemsSource="{Binding MenuContainers}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:CompileBindings="False">
+                                <Grid RowDefinitions="Auto,220" Margin="0,0,0,8">
+                                    <Grid Margin="24,12,16,7" ColumnDefinitions="*,Auto">
+                                        <TextBlock Text="{Binding DisplayTitle}" FontSize="9" FontWeight="Bold"
+                                                   Foreground="#A5A7B2" LetterSpacing="1.4" VerticalAlignment="Center" />
+                                        <Border Grid.Column="1" Background="#EBF7F3" CornerRadius="8" Padding="7,2">
+                                            <TextBlock Text="{Binding Items.Count}" FontSize="9" FontWeight="Bold" Foreground="#32927D" />
+                                        </Border>
+                                    </Grid>
 
-                <mxlv:ListViewControl Grid.Row="4"
-                                      Margin="12,0,8,12"
-                                      ItemLayoutMode="Stack"
-                                      ItemHeight="45"
-                                      ItemsSource="{Binding Workspace.Items}">
-                    <mxlv:ListViewControl.ItemTemplate>
-                        <DataTemplate x:DataType="menu:MenuItemViewModel">
-                            <Button Classes="child-item" Click="OnMenuItemClick">
-                                <Grid ColumnDefinitions="30,*,Auto">
-                                    <Border Width="25" Height="25" CornerRadius="8" Background="{Binding Accent}">
-                                        <TextBlock Text="{Binding Glyph}" FontSize="9" FontWeight="Bold" Foreground="White"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    </Border>
-                                    <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding DisplayTitle}" FontSize="11" FontWeight="SemiBold" Foreground="#555865" />
-                                        <TextBlock Text="{Binding Caption}" FontSize="8" Foreground="#A2A5AF" />
-                                    </StackPanel>
-                                    <TextBlock Grid.Column="2" Text="›" FontSize="16" Foreground="#B1B3BD" VerticalAlignment="Center" />
+                                    <mxlv:ListViewControl Grid.Row="1"
+                                                          Margin="12,0,8,12"
+                                                          ItemLayoutMode="Stack"
+                                                          ItemHeight="45"
+                                                          ItemsSource="{Binding Items}">
+                                        <mxlv:ListViewControl.ItemTemplate>
+                                            <DataTemplate x:DataType="menu:MenuItemViewModel">
+                                                <Button Classes="child-item"
+                                                        Click="OnMenuItemClick">
+                                                    <Grid ColumnDefinitions="30,*,Auto">
+                                                        <Border Width="25" Height="25" CornerRadius="8" Background="{Binding Accent}">
+                                                            <TextBlock Text="{Binding Glyph}" FontSize="9" FontWeight="Bold" Foreground="White"
+                                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        </Border>
+                                                        <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding DisplayTitle}" FontSize="11" FontWeight="SemiBold" Foreground="#555865" />
+                                                            <TextBlock Text="{Binding Caption}" FontSize="8" Foreground="#A2A5AF" />
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="2" Text="›" FontSize="16" Foreground="#B1B3BD" VerticalAlignment="Center" />
+                                                    </Grid>
+                                                </Button>
+                                            </DataTemplate>
+                                        </mxlv:ListViewControl.ItemTemplate>
+                                    </mxlv:ListViewControl>
                                 </Grid>
-                            </Button>
-                        </DataTemplate>
-                    </mxlv:ListViewControl.ItemTemplate>
-                </mxlv:ListViewControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
             </Grid>
         </Border>
 

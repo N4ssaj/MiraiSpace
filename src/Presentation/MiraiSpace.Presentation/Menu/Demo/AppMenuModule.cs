@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using System.Reactive.Concurrency;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 using MiraiSpace.Presentation.ViewModels;
 
@@ -6,13 +7,17 @@ namespace MiraiSpace.Presentation.Menu.Demo;
 
 public static class AppMenuModule
 {
-    public static IServiceCollection AddDemoAppMenu(this IServiceCollection services)
+    public static IServiceCollection AddDemoAppMenu(
+        this IServiceCollection services,
+        IScheduler scheduler)
     {
         services.AddSingleton<AppNavigationState>();
         services.AddSingleton<CurrentUserContext>();
 
         services.AddSingleton<IAppMenuItemAccessPolicy, RoleRestrictedAccessPolicy>();
         services.AddSingleton<IAppMenuItemAccessChecker, AppMenuItemAccessChecker>();
+        services.AddSingleton<IAppMenuItemExecutor, AppMenuItemExecutor>();
+        services.AddSingleton<IAppMenuScheduler>(new AppMenuScheduler(scheduler));
 
         services
             .AddAppMenuItem<DashboardMenuItem>(AppMenuKeys.Root)

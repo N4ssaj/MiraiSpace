@@ -12,12 +12,12 @@ public partial class MainView : UserControl
         InitializeComponent();
     }
 
-    private async void OnMenuItemClick(object? sender, RoutedEventArgs e)
+    private void OnMenuItemClick(object? sender, RoutedEventArgs e)
     {
         if (sender is Button { DataContext: IAppMenuItem item }
             && DataContext is MainViewModel viewModel)
         {
-            await viewModel.ExecuteAsync(item);
+            viewModel.ExecuteMenuItemCommand.Execute(item).Subscribe();
         }
     }
 }

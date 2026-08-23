@@ -1,72 +1,54 @@
 using System.Collections.ObjectModel;
-using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Binding;
+using System.Collections.Specialized;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 
 namespace MiraiSpace.Presentation.Menu;
 
 public sealed class AppMenuViewModel : IAppMenuViewModel, IDisposable
 {
-    private readonly SourceCache<IAppMenuItem, string> _itemCache = new(x => x.Id);
-    private readonly IAppMenuItemAccessChecker _accessChecker;
-    private readonly IDisposable _subscription;
-    private readonly ReadOnlyObservableCollection<IAppMenuItem> _items;
+    private readonly AppMenuItemCollection _itemCollection;
+    private readonly IAppMenuItemExecutor _executor;
+    private readonly ObservableCollection<IAppMenuItemContainer> _containers = [];
+    private readonly ReadOnlyObservableCollection<IAppMenuItemContainer> _readOnlyContainers;
 
     public AppMenuViewModel(
         [Microsoft.Extensions.DependencyInjection.FromKeyedServices(AppMenuKeys.RootValue)]
         IEnumerable<IAppMenuItem> items,
-        IAppMenuItemAccessChecker accessChecker)
+        IAppMenuItemAccessChecker accessChecker,
+        IAppMenuItemExecutor executor,
+        IAppMenuScheduler scheduler)
     {
-        _accessChecker = accessChecker;
-        _subscription = _itemCache
-            .Connect()
-            .Filter(
-                accessChecker.AccessChanged
-                    .Select(_ => new Func<IAppMenuItem, bool>(accessChecker.CheckAccess))
-                    .StartWith(accessChecker.CheckAccess))
-            .SortAndBind(
-                out _items,
-                AppMenuItemComparers.Default,
-                new SortAndBindOptions
-                {
-                    UseReplaceForUpdates = true
-                })
-            .Subscribe();
-
-        AddUnique(items);
+        _executor = executor;
+        _itemCollection = new AppMenuItemCollection(items, accessChecker, scheduler);
+        _readOnlyContainers = new ReadOnlyObservableCollection<IAppMenuItemContainer>(_containers);
+        ((INotifyCollectionChanged)_itemCollection.Items).CollectionChanged += OnItemsChanged;
+        RefreshContainers();
     }
 
-    public ReadOnlyObservableCollection<IAppMenuItem> Items => _items;
+    public ReadOnlyObservableCollection<IAppMenuItem> Items => _itemCollection.Items;
+
+    public ReadOnlyObservableCollection<IAppMenuItemContainer> Containers => _readOnlyContainers;
 
     public ValueTask ExecuteAsync(
         IAppMenuItem item,
         CancellationToken cancellationToken = default) =>
-        _accessChecker.CheckAccess(item)
-            ? item.ExecuteAsync(cancellationToken)
-            : ValueTask.CompletedTask;
+        _executor.ExecuteAsync(item, cancellationToken);
 
     public void Dispose()
     {
-        _subscription.Dispose();
-        _itemCache.Dispose();
+        ((INotifyCollectionChanged)_itemCollection.Items).CollectionChanged -= OnItemsChanged;
+        _itemCollection.Dispose();
     }
 
-    private void AddUnique(IEnumerable<IAppMenuItem> items)
+    private void OnItemsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) =>
+        RefreshContainers();
+
+    private void RefreshContainers()
     {
-        IAppMenuItem[] materializedItems = items.ToArray();
-        string[] duplicateIds = materializedItems
-            .GroupBy(x => x.Id)
-            .Where(x => x.Count() > 1)
-            .Select(x => x.Key)
-            .ToArray();
-
-        if (duplicateIds.Length > 0)
+        _containers.Clear();
+        foreach (IAppMenuItemContainer container in Items.OfType<IAppMenuItemContainer>())
         {
-            throw new InvalidOperationException(
-                $"Duplicate application menu item IDs: {string.Join(", ", duplicateIds)}.");
+            _containers.Add(container);
         }
-
-        _itemCache.AddOrUpdate(materializedItems);
     }
 }

@@ -1,7 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 
@@ -9,34 +6,17 @@ namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItemContainer, IDisposable
 {
-    private readonly SourceCache<IAppMenuItem, string> _itemCache = new(x => x.Id);
-    private readonly IDisposable _subscription;
-    private readonly ReadOnlyObservableCollection<IAppMenuItem> _items;
+    private readonly AppMenuItemCollection _itemCollection;
 
     public WorkspaceMenuItemContainer(
         AppNavigationState navigation,
         [FromKeyedServices(AppMenuKeys.WorkspaceValue)] IEnumerable<IAppMenuItem> registeredItems,
-        IAppMenuItemAccessChecker accessChecker)
+        IAppMenuItemAccessChecker accessChecker,
+        IAppMenuScheduler scheduler)
         : base(navigation, "core.workspace", 300)
     {
-        _subscription = _itemCache
-            .Connect()
-            .Filter(
-                accessChecker.AccessChanged
-                    .Select(_ => new Func<IAppMenuItem, bool>(accessChecker.CheckAccess))
-                    .StartWith(accessChecker.CheckAccess))
-            .SortAndBind(
-                out _items,
-                AppMenuItemComparers.Default,
-                new SortAndBindOptions
-                {
-                    UseReplaceForUpdates = true
-                })
-            .Subscribe();
-
-        List<IAppMenuItem> allItems = [.. registeredItems, .. CreateDelegateItems(navigation)];
-        EnsureUniqueIds(allItems);
-        _itemCache.AddOrUpdate(allItems);
+        _itemCollection = new AppMenuItemCollection(registeredItems, accessChecker, scheduler);
+        _itemCollection.AddOwned(CreateDelegateItems(navigation));
     }
 
     public string Title => "Workspace";
@@ -49,7 +29,7 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
 
     public override string Accent => "#34A58B";
 
-    public ReadOnlyObservableCollection<IAppMenuItem> Items => _items;
+    public ReadOnlyObservableCollection<IAppMenuItem> Items => _itemCollection.Items;
 
     public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
     {
@@ -61,11 +41,7 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
         return ValueTask.CompletedTask;
     }
 
-    public void Dispose()
-    {
-        _subscription.Dispose();
-        _itemCache.Dispose();
-    }
+    public void Dispose() => _itemCollection.Dispose();
 
     private static IEnumerable<IAppMenuItem> CreateDelegateItems(AppNavigationState navigation)
     {
@@ -83,20 +59,5 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
             "NW",
             "#557BC9",
             600);
-    }
-
-    private static void EnsureUniqueIds(IEnumerable<IAppMenuItem> items)
-    {
-        string[] duplicates = items
-            .GroupBy(x => x.Id)
-            .Where(x => x.Count() > 1)
-            .Select(x => x.Key)
-            .ToArray();
-
-        if (duplicates.Length > 0)
-        {
-            throw new InvalidOperationException(
-                $"Duplicate workspace menu item IDs: {string.Join(", ", duplicates)}.");
-        }
     }
 }
