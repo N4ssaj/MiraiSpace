@@ -1,7 +1,7 @@
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class InboxMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, "core.inbox", 200)
+    : MenuItemViewModel(navigation, 200)
 {
     public string Title => "Inbox";
 

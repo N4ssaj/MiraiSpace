@@ -1,32 +1,44 @@
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Binding;
 using MiraiSpace.Extensibility.Abstractions.Menu;
+using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu;
 
 public sealed class AppMenuViewModel : IAppMenuViewModel, IDisposable
 {
-    private readonly AppMenuItemCollection _itemCollection;
+    private readonly SourceList<IAppMenuItem> _itemSource = new();
+    private readonly IDisposable _itemsSubscription;
     private readonly IAppMenuItemExecutor _executor;
-    private readonly ObservableCollection<IAppMenuItemContainer> _containers = [];
-    private readonly ReadOnlyObservableCollection<IAppMenuItemContainer> _readOnlyContainers;
+    private readonly ReadOnlyObservableCollection<IAppMenuItem> _items;
 
     public AppMenuViewModel(
-        [Microsoft.Extensions.DependencyInjection.FromKeyedServices(AppMenuKeys.RootValue)]
+        [Microsoft.Extensions.DependencyInjection.FromKeyedServices(AppMenuKeys.Root)]
         IEnumerable<IAppMenuItem> items,
         IAppMenuItemAccessChecker accessChecker,
         IAppMenuItemExecutor executor)
     {
         _executor = executor;
-        _itemCollection = new AppMenuItemCollection(items, accessChecker);
-        _readOnlyContainers = new ReadOnlyObservableCollection<IAppMenuItemContainer>(_containers);
-        ((INotifyCollectionChanged)_itemCollection.Items).CollectionChanged += OnItemsChanged;
-        RefreshContainers();
+        IComparer<IAppMenuItem> comparer = SortExpressionComparer<IAppMenuItem>
+            .Ascending(item => item.Order);
+
+        _itemsSubscription = _itemSource
+            .Connect()
+            .Filter(
+                accessChecker.AccessChanged
+                    .Select(_ => new Func<IAppMenuItem, bool>(accessChecker.CheckAccess))
+                    .StartWith(accessChecker.CheckAccess))
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .Sort(comparer)
+            .Bind(out _items)
+            .Subscribe();
+
+        _itemSource.AddRange(items);
     }
 
-    public ReadOnlyObservableCollection<IAppMenuItem> Items => _itemCollection.Items;
-
-    public ReadOnlyObservableCollection<IAppMenuItemContainer> Containers => _readOnlyContainers;
+    public IReadOnlyList<IAppMenuItem> Items => _items;
 
     public ValueTask ExecuteAsync(
         IAppMenuItem item,
@@ -35,19 +47,7 @@ public sealed class AppMenuViewModel : IAppMenuViewModel, IDisposable
 
     public void Dispose()
     {
-        ((INotifyCollectionChanged)_itemCollection.Items).CollectionChanged -= OnItemsChanged;
-        _itemCollection.Dispose();
-    }
-
-    private void OnItemsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) =>
-        RefreshContainers();
-
-    private void RefreshContainers()
-    {
-        _containers.Clear();
-        foreach (IAppMenuItemContainer container in Items.OfType<IAppMenuItemContainer>())
-        {
-            _containers.Add(container);
-        }
+        _itemsSubscription.Dispose();
+        _itemSource.Dispose();
     }
 }

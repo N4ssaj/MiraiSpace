@@ -1,4 +1,5 @@
 using System.Reactive;
+using System.Reactive.Linq;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 using MiraiSpace.Presentation.Menu;
 
@@ -30,15 +31,13 @@ public sealed class AppMenuItemExecutorTests
 
     private sealed class StubAccessChecker(bool allowed) : IAppMenuItemAccessChecker
     {
-        public IObservable<Unit> AccessChanged => System.Reactive.Linq.Observable.Never<Unit>();
+        public IObservable<Unit> AccessChanged => Observable.Never<Unit>();
 
         public bool CheckAccess(IAppMenuItem item) => allowed;
     }
 
     private sealed class RecordingMenuItem : IAppMenuItem
     {
-        public string Id => "recording";
-
         public int Order => 100;
 
         public int ExecutionCount { get; private set; }

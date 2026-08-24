@@ -1,7 +1,6 @@
 using System.Reactive;
-using MiraiSpace.Extensibility.Abstractions.Menu;
 
-namespace MiraiSpace.Presentation.Menu;
+namespace MiraiSpace.Extensibility.Abstractions.Menu;
 
 public interface IAppMenuItemAccessChecker
 {

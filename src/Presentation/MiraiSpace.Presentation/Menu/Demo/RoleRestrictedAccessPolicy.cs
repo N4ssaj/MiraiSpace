@@ -1,13 +1,15 @@
 using System.Reactive;
+using MiraiSpace.Extensibility.Abstractions.Common;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class RoleRestrictedAccessPolicy(CurrentUserContext currentUser)
-    : AppMenuItemAccessPolicy<IRoleRestricted>
+    : IAppMenuItemAccessPolicy
 {
-    protected override bool CheckAccess(IRoleRestricted capability) =>
-        capability.RequiredRoleIds.All(currentUser.HasRole);
+    public bool CheckAccess(IAppMenuItem item) =>
+        item is not IRoleRestricted restricted
+        || restricted.RequiredRoleIds.All(currentUser.HasRole);
 
-    public override IObservable<Unit> AccessChanged => currentUser.RolesChanged;
+    public IObservable<Unit> AccessChanged => currentUser.RolesChanged;
 }

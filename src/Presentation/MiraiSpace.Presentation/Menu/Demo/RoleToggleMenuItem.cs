@@ -8,15 +8,14 @@ public sealed class RoleToggleMenuItem : MenuItemViewModel, IDisposable
     private readonly IDisposable _subscription;
 
     public RoleToggleMenuItem(AppNavigationState navigation, CurrentUserContext currentUser)
-        : base(navigation, "demo.role-toggle", 900)
+        : base(navigation, 900)
     {
         _currentUser = currentUser;
-        _subscription = _currentUser.RolesChanged
-            .Subscribe(_ =>
-            {
-                this.RaisePropertyChanged(nameof(Title));
-                this.RaisePropertyChanged(nameof(DisplayTitle));
-            });
+        _subscription = _currentUser.RolesChanged.Subscribe(_ =>
+        {
+            this.RaisePropertyChanged(nameof(Title));
+            this.RaisePropertyChanged(nameof(DisplayTitle));
+        });
     }
 
     public string Title => _currentUser.IsAdministrator

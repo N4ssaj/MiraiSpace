@@ -6,21 +6,27 @@ namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItemContainer, IDisposable
 {
-    private readonly AppMenuItemCollection _itemCollection;
+    private readonly IAppMenuItem[] _availableItems;
+    private readonly IAppMenuItemAccessChecker _accessChecker;
+    private readonly IDisposable _accessChangedSubscription;
 
     public WorkspaceMenuItemContainer(
         AppNavigationState navigation,
-        [FromKeyedServices(AppMenuKeys.WorkspaceValue)] IEnumerable<IAppMenuItem> registeredItems,
+        [FromKeyedServices(AppMenuKeys.Workspace)] IEnumerable<IAppMenuItem> registeredItems,
         IAppMenuItemAccessChecker accessChecker)
-        : base(navigation, "core.workspace", 300)
+        : base(navigation, 300)
     {
-        _itemCollection = new AppMenuItemCollection(registeredItems, accessChecker);
-        _itemCollection.AddOwned(CreateDelegateItems(navigation));
+        _accessChecker = accessChecker;
+        _availableItems = registeredItems
+            .Concat(CreateDelegateItems(navigation))
+            .OrderBy(item => item.Order)
+            .ToArray();
+        Items = new ObservableCollection<IAppMenuItem>();
+        RefreshItems();
+        _accessChangedSubscription = accessChecker.AccessChanged.Subscribe(_ => RefreshItems());
     }
 
-    public string Title => "Workspace";
-
-    public override string DisplayTitle => Title;
+    public override string DisplayTitle => "Workspace";
 
     public override string Caption => "TEAM SPACE";
 
@@ -28,7 +34,7 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
 
     public override string Accent => "#34A58B";
 
-    public ReadOnlyObservableCollection<IAppMenuItem> Items => _itemCollection.Items;
+    public IList<IAppMenuItem> Items { get; }
 
     public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
     {
@@ -40,20 +46,27 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
         return ValueTask.CompletedTask;
     }
 
-    public void Dispose() => _itemCollection.Dispose();
+    public void Dispose() => _accessChangedSubscription.Dispose();
+
+    private void RefreshItems()
+    {
+        Items.Clear();
+        foreach (IAppMenuItem item in _availableItems.Where(_accessChecker.CheckAccess))
+        {
+            Items.Add(item);
+        }
+    }
 
     private static IEnumerable<IAppMenuItem> CreateDelegateItems(AppNavigationState navigation)
     {
         yield return new DelegateMenuItem(
             navigation,
-            Guid.Parse("9d5a33c5-bd05-4ead-a2fc-fdb6d483e978"),
             "Maya Chen",
             "MC",
             "#D87A5D",
             500);
         yield return new DelegateMenuItem(
             navigation,
-            Guid.Parse("611b88fb-c25e-42be-a8a5-d6fe9f2d630f"),
             "Noah Wilson",
             "NW",
             "#557BC9",

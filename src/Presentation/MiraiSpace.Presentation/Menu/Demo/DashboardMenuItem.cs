@@ -1,7 +1,7 @@
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class DashboardMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, "core.dashboard", 100)
+    : MenuItemViewModel(navigation, 100)
 {
     public string Title => "Overview";
 

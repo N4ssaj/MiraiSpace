@@ -19,7 +19,7 @@ public sealed class AppMenuCompositionTests
             });
 
         IAppMenuViewModel menu = provider.GetRequiredService<IAppMenuViewModel>();
-        IAppMenuItemContainer container = Assert.Single(menu.Containers);
+        IAppMenuItemContainer container = Assert.Single(menu.Items.OfType<IAppMenuItemContainer>());
 
         Assert.Contains(menu.Items, x => x is DashboardMenuItem);
         Assert.DoesNotContain(menu.Items, x => x is AdministrationMenuItem);

@@ -1,7 +1,7 @@
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class WorkspacePageMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, "workspace.pages", 100)
+    : MenuItemViewModel(navigation, 100)
 {
     public string Title => "Pages";
 

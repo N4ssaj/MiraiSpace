@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 using MiraiSpace.Presentation.Menu;
 using MiraiSpace.Presentation.Menu.Demo;
@@ -24,9 +23,7 @@ public sealed class MainViewModel : ViewModelBase, IDisposable
 
     public IAppMenuViewModel Menu { get; }
 
-    public ReadOnlyObservableCollection<IAppMenuItem> MenuItems => Menu.Items;
-
-    public ReadOnlyObservableCollection<IAppMenuItemContainer> MenuContainers => Menu.Containers;
+    public IReadOnlyList<IAppMenuItem> Items => Menu.Items;
 
     public AppNavigationState Navigation { get; }
 
