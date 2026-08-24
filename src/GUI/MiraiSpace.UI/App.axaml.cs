@@ -4,7 +4,9 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using MiraiSpace.Presentation.Menu.Demo;
 using MiraiSpace.Presentation.ViewModels;
+using MiraiSpace.UI.Views.Menu;
 using MiraiSpace.UI.Views;
+using ReactiveUI;
 
 namespace MiraiSpace.UI;
 
@@ -26,7 +28,7 @@ public partial class App : Application
     {
         _services = new ServiceCollection()
             .AddDemoAppMenu()
-            .AddMenuItemViews()
+            .AddTransient<IViewFor<MenuItemViewModel>, MenuItemView>()
             .BuildServiceProvider(new ServiceProviderOptions
             {
                 ValidateOnBuild = true,
