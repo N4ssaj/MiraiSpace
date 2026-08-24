@@ -1,0 +1,45 @@
+<rxui:ReactiveUserControl xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:rxui="using:ReactiveUI.Avalonia"
+                          xmlns:menu="using:MiraiSpace.Presentation.Menu.Demo"
+                          x:Class="MiraiSpace.UI.Views.Menu.MenuItemView"
+                          x:TypeArguments="menu:MenuItemViewModel"
+                          x:DataType="menu:MenuItemViewModel"
+                          HorizontalContentAlignment="Stretch">
+    <Grid ColumnDefinitions="42,*,Auto">
+        <Border Width="38"
+                Height="38"
+                CornerRadius="11"
+                Background="{Binding Accent}">
+            <TextBlock Text="{Binding Glyph}"
+                       FontSize="17"
+                       FontWeight="SemiBold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+        </Border>
+
+        <StackPanel Grid.Column="1"
+                    Margin="11,0,0,0"
+                    VerticalAlignment="Center">
+            <TextBlock Text="{Binding DisplayTitle}"
+                       FontWeight="SemiBold"
+                       Foreground="#343640" />
+            <TextBlock Text="{Binding Caption}"
+                       FontSize="9"
+                       Foreground="#9295A1" />
+        </StackPanel>
+
+        <Border Grid.Column="2"
+                IsVisible="{Binding HasBadge}"
+                Background="{Binding Accent}"
+                CornerRadius="10"
+                Padding="7,2"
+                VerticalAlignment="Center">
+            <TextBlock Text="{Binding Badge}"
+                       FontSize="10"
+                       FontWeight="Bold"
+                       Foreground="White" />
+        </Border>
+    </Grid>
+</rxui:ReactiveUserControl>

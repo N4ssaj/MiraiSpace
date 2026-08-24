@@ -2,7 +2,7 @@ using System.Collections;
 using Eremex.AvaloniaUI.Controls.TreeList;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 
-namespace MiraiSpace.UI.Views;
+namespace MiraiSpace.UI.Views.Menu;
 
 public sealed class AppMenuItemChildrenSelector : ITreeListChildrenSelector
 {

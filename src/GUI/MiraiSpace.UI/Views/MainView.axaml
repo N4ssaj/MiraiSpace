@@ -5,12 +5,16 @@
              xmlns:vm="using:MiraiSpace.Presentation.ViewModels"
              xmlns:menu="using:MiraiSpace.Presentation.Menu.Demo"
              xmlns:mxtl="https://schemas.eremexcontrols.net/avalonia/treelist"
-             xmlns:views="using:MiraiSpace.UI.Views"
+             xmlns:menuViews="using:MiraiSpace.UI.Views.Menu"
              mc:Ignorable="d"
              d:DesignWidth="1280"
              d:DesignHeight="820"
              x:Class="MiraiSpace.UI.Views.MainView"
              x:DataType="vm:MainViewModel">
+
+    <UserControl.Resources>
+        <menuViews:AppMenuItemChildrenSelector x:Key="AppMenuItemChildrenSelector" />
+    </UserControl.Resources>
 
     <UserControl.Styles>
         <Style Selector="Button.menu-item">
@@ -25,10 +29,6 @@
             <Setter Property="Background" Value="#EEF0F7" />
         </Style>
     </UserControl.Styles>
-
-    <UserControl.Resources>
-        <views:AppMenuItemChildrenSelector x:Key="AppMenuItemChildrenSelector" />
-    </UserControl.Resources>
 
     <Grid ColumnDefinitions="292,*">
         <Border Grid.Column="0" Background="White" BorderBrush="#E8E9EF" BorderThickness="0,0,1,0">
@@ -60,20 +60,7 @@
                             <mxtl:TreeListColumn.CellTemplate>
                                 <DataTemplate x:DataType="menu:MenuItemViewModel">
                                     <Button Classes="menu-item" Click="OnMenuItemClick">
-                                        <Grid ColumnDefinitions="42,*,Auto">
-                                            <Border Width="38" Height="38" CornerRadius="11" Background="{Binding Accent}">
-                                                <TextBlock Text="{Binding Glyph}" FontSize="17" FontWeight="SemiBold" Foreground="White"
-                                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Border>
-                                            <StackPanel Grid.Column="1" Margin="11,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding DisplayTitle}" FontWeight="SemiBold" Foreground="#343640" />
-                                                <TextBlock Text="{Binding Caption}" FontSize="9" Foreground="#9295A1" />
-                                            </StackPanel>
-                                            <Border Grid.Column="2" IsVisible="{Binding HasBadge}" Background="{Binding Accent}"
-                                                    CornerRadius="10" Padding="7,2" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Badge}" FontSize="10" FontWeight="Bold" Foreground="White" />
-                                            </Border>
-                                        </Grid>
+                                        <ContentControl Content="{Binding}" />
                                     </Button>
                                 </DataTemplate>
                             </mxtl:TreeListColumn.CellTemplate>

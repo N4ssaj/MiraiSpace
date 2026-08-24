@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using MiraiSpace.Presentation.Menu.Demo;
 using MiraiSpace.Presentation.ViewModels;
+using MiraiSpace.UI.DependencyInjection;
 using MiraiSpace.UI.Views;
 
 namespace MiraiSpace.UI;
@@ -11,6 +12,10 @@ namespace MiraiSpace.UI;
 public partial class App : Application
 {
     private ServiceProvider? _services;
+
+    internal static IServiceProvider Services =>
+        ((App)Current!)._services
+        ?? throw new InvalidOperationException("Application services have not been initialized.");
 
     public override void Initialize()
     {
@@ -20,9 +25,11 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        _services = new ServiceCollection()
-            .AddDemoAppMenu()
-            .BuildServiceProvider(new ServiceProviderOptions
+        var services = new ServiceCollection();
+        services.AddDemoAppMenu();
+        services.AddViews();
+
+        _services = services.BuildServiceProvider(new ServiceProviderOptions
             {
                 ValidateOnBuild = true,
                 ValidateScopes = true
@@ -53,4 +60,5 @@ public partial class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
+
 }
