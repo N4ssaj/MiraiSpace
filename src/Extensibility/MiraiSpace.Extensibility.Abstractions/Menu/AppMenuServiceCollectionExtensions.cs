@@ -6,10 +6,10 @@ public static class AppMenuServiceCollectionExtensions
 {
     public static IServiceCollection AddAppMenuItem<TItem>(
         this IServiceCollection services,
-        AppMenuKey key)
+        string key)
         where TItem : class, IAppMenuItem
     {
-        services.AddKeyedSingleton<IAppMenuItem, TItem>(key.Value);
+        services.AddKeyedSingleton<IAppMenuItem, TItem>(key);
         return services;
     }
 }

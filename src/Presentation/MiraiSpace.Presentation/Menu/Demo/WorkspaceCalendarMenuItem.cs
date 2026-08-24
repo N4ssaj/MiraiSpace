@@ -1,7 +1,7 @@
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class WorkspaceCalendarMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, "workspace.calendar", 200)
+    : MenuItemViewModel(navigation, 200)
 {
     public string Title => "Calendar";
 

@@ -7,8 +7,6 @@ public interface IAppMenuViewModel
 {
     ReadOnlyObservableCollection<IAppMenuItem> Items { get; }
 
-    ReadOnlyObservableCollection<IAppMenuItemContainer> Containers { get; }
-
     ValueTask ExecuteAsync(
         IAppMenuItem item,
         CancellationToken cancellationToken = default);

@@ -1,4 +1,4 @@
-namespace MiraiSpace.Extensibility.Abstractions.Menu;
+namespace MiraiSpace.Extensibility.Abstractions;
 
 public interface IRoleRestricted
 {

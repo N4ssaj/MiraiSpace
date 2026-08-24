@@ -1,23 +1,33 @@
-using System.Reactive;
-using System.Reactive.Linq;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 
 namespace MiraiSpace.Presentation.Menu;
 
-public sealed class AppMenuItemAccessChecker : IAppMenuItemAccessChecker
+public sealed class AppMenuItemAccessChecker : IAppMenuItemAccessChecker, IDisposable
 {
     private readonly IReadOnlyList<IAppMenuItemAccessPolicy> _policies;
 
     public AppMenuItemAccessChecker(IEnumerable<IAppMenuItemAccessPolicy> policies)
     {
         _policies = policies.ToArray();
-        AccessChanged = _policies.Count == 0
-            ? Observable.Never<Unit>()
-            : _policies.Select(x => x.AccessChanged).Merge().Publish().RefCount();
+        foreach (IAppMenuItemAccessPolicy policy in _policies)
+        {
+            policy.AccessChanged += OnPolicyAccessChanged;
+        }
     }
 
-    public IObservable<Unit> AccessChanged { get; }
+    public event EventHandler? AccessChanged;
 
     public bool CheckAccess(IAppMenuItem item) =>
-        _policies.Where(x => x.AppliesTo(item)).All(x => x.CheckAccess(item));
+        _policies.All(policy => policy.CheckAccess(item));
+
+    public void Dispose()
+    {
+        foreach (IAppMenuItemAccessPolicy policy in _policies)
+        {
+            policy.AccessChanged -= OnPolicyAccessChanged;
+        }
+    }
+
+    private void OnPolicyAccessChanged(object? sender, EventArgs e) =>
+        AccessChanged?.Invoke(this, EventArgs.Empty);
 }

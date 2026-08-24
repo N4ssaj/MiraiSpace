@@ -5,16 +5,13 @@ namespace MiraiSpace.Presentation.Menu.Demo;
 
 public abstract class MenuItemViewModel(
     AppNavigationState navigation,
-    string id,
     int order) : ViewModelBase, IAppMenuItem
 {
     protected AppNavigationState Navigation { get; } = navigation;
 
-    public string Id { get; } = id;
-
     public int Order { get; } = order;
 
-    public virtual string DisplayTitle => Id;
+    public abstract string DisplayTitle { get; }
 
     public virtual string Caption => string.Empty;
 

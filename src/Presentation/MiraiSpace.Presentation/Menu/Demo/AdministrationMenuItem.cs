@@ -1,9 +1,10 @@
+using MiraiSpace.Extensibility.Abstractions;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class AdministrationMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, "core.administration", 400), IRoleRestricted
+    : MenuItemViewModel(navigation, 400), IRoleRestricted
 {
     public string Title => "Administration";
 

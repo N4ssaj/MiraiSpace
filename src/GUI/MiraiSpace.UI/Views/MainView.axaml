@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MiraiSpace.Presentation.ViewModels"
              xmlns:menu="using:MiraiSpace.Presentation.Menu.Demo"
-             xmlns:mxlv="https://schemas.eremexcontrols.net/avalonia/listview"
+             xmlns:mxtl="https://schemas.eremexcontrols.net/avalonia/treelist"
+             xmlns:views="using:MiraiSpace.UI.Views"
              mc:Ignorable="d"
              d:DesignWidth="1280"
              d:DesignHeight="820"
@@ -23,22 +24,15 @@
         <Style Selector="Button.menu-item:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="#EEF0F7" />
         </Style>
-        <Style Selector="Button.child-item">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="10,7" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-        </Style>
-        <Style Selector="Button.child-item:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#F1F4F8" />
-        </Style>
     </UserControl.Styles>
+
+    <UserControl.Resources>
+        <views:AppMenuItemChildrenSelector x:Key="AppMenuItemChildrenSelector" />
+    </UserControl.Resources>
 
     <Grid ColumnDefinitions="292,*">
         <Border Grid.Column="0" Background="White" BorderBrush="#E8E9EF" BorderThickness="0,0,1,0">
-            <Grid RowDefinitions="88,Auto,270,*">
+            <Grid RowDefinitions="88,Auto,*">
                 <Grid Margin="22,18,18,14" ColumnDefinitions="46,*">
                     <Border Width="42" Height="42" CornerRadius="13" Background="#22232C">
                         <TextBlock Text="M" FontSize="20" FontWeight="Bold" Foreground="White"
@@ -53,75 +47,39 @@
                 <TextBlock Grid.Row="1" Margin="24,5,0,8" Text="MENU" FontSize="9" FontWeight="Bold"
                            Foreground="#A5A7B2" LetterSpacing="1.4" />
 
-                <mxlv:ListViewControl Grid.Row="2"
-                                      Margin="8,0"
-                                      ItemLayoutMode="Stack"
-                                      ItemHeight="62"
-                                      ItemsSource="{Binding MenuItems}">
-                    <mxlv:ListViewControl.ItemTemplate>
-                        <DataTemplate x:DataType="menu:MenuItemViewModel">
-                            <Button Classes="menu-item" Click="OnMenuItemClick">
-                                <Grid ColumnDefinitions="42,*,Auto">
-                                    <Border Width="38" Height="38" CornerRadius="11" Background="{Binding Accent}">
-                                        <TextBlock Text="{Binding Glyph}" FontSize="17" FontWeight="SemiBold" Foreground="White"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    </Border>
-                                    <StackPanel Grid.Column="1" Margin="11,0,0,0" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding DisplayTitle}" FontWeight="SemiBold" Foreground="#343640" />
-                                        <TextBlock Text="{Binding Caption}" FontSize="9" Foreground="#9295A1" />
-                                    </StackPanel>
-                                    <Border Grid.Column="2" IsVisible="{Binding HasBadge}" Background="{Binding Accent}"
-                                            CornerRadius="10" Padding="7,2" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Badge}" FontSize="10" FontWeight="Bold" Foreground="White" />
-                                    </Border>
-                                </Grid>
-                            </Button>
-                        </DataTemplate>
-                    </mxlv:ListViewControl.ItemTemplate>
-                </mxlv:ListViewControl>
-
-                <ScrollViewer Grid.Row="3">
-                    <ItemsControl ItemsSource="{Binding MenuContainers}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:CompileBindings="False">
-                                <Grid RowDefinitions="Auto,220" Margin="0,0,0,8">
-                                    <Grid Margin="24,12,16,7" ColumnDefinitions="*,Auto">
-                                        <TextBlock Text="{Binding DisplayTitle}" FontSize="9" FontWeight="Bold"
-                                                   Foreground="#A5A7B2" LetterSpacing="1.4" VerticalAlignment="Center" />
-                                        <Border Grid.Column="1" Background="#EBF7F3" CornerRadius="8" Padding="7,2">
-                                            <TextBlock Text="{Binding Items.Count}" FontSize="9" FontWeight="Bold" Foreground="#32927D" />
-                                        </Border>
-                                    </Grid>
-
-                                    <mxlv:ListViewControl Grid.Row="1"
-                                                          Margin="12,0,8,12"
-                                                          ItemLayoutMode="Stack"
-                                                          ItemHeight="45"
-                                                          ItemsSource="{Binding Items}">
-                                        <mxlv:ListViewControl.ItemTemplate>
-                                            <DataTemplate x:DataType="menu:MenuItemViewModel">
-                                                <Button Classes="child-item"
-                                                        Click="OnMenuItemClick">
-                                                    <Grid ColumnDefinitions="30,*,Auto">
-                                                        <Border Width="25" Height="25" CornerRadius="8" Background="{Binding Accent}">
-                                                            <TextBlock Text="{Binding Glyph}" FontSize="9" FontWeight="Bold" Foreground="White"
-                                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                        </Border>
-                                                        <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Text="{Binding DisplayTitle}" FontSize="11" FontWeight="SemiBold" Foreground="#555865" />
-                                                            <TextBlock Text="{Binding Caption}" FontSize="8" Foreground="#A2A5AF" />
-                                                        </StackPanel>
-                                                        <TextBlock Grid.Column="2" Text="›" FontSize="16" Foreground="#B1B3BD" VerticalAlignment="Center" />
-                                                    </Grid>
-                                                </Button>
-                                            </DataTemplate>
-                                        </mxlv:ListViewControl.ItemTemplate>
-                                    </mxlv:ListViewControl>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                <mxtl:TreeListControl Grid.Row="2"
+                                        Margin="8,0,8,12"
+                                        ItemsSource="{Binding MenuItems}"
+                                        ChildrenSelector="{StaticResource AppMenuItemChildrenSelector}"
+                                        AutoGenerateColumns="False"
+                                        ShowColumnHeaders="False"
+                                        ShowHorizontalLines="False"
+                                        ShowVerticalLines="False">
+                    <mxtl:TreeListControl.Columns>
+                        <mxtl:TreeListColumn FieldName="DisplayTitle" Width="*">
+                            <mxtl:TreeListColumn.CellTemplate>
+                                <DataTemplate x:DataType="menu:MenuItemViewModel">
+                                    <Button Classes="menu-item" Click="OnMenuItemClick">
+                                        <Grid ColumnDefinitions="42,*,Auto">
+                                            <Border Width="38" Height="38" CornerRadius="11" Background="{Binding Accent}">
+                                                <TextBlock Text="{Binding Glyph}" FontSize="17" FontWeight="SemiBold" Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <StackPanel Grid.Column="1" Margin="11,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding DisplayTitle}" FontWeight="SemiBold" Foreground="#343640" />
+                                                <TextBlock Text="{Binding Caption}" FontSize="9" Foreground="#9295A1" />
+                                            </StackPanel>
+                                            <Border Grid.Column="2" IsVisible="{Binding HasBadge}" Background="{Binding Accent}"
+                                                    CornerRadius="10" Padding="7,2" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Badge}" FontSize="10" FontWeight="Bold" Foreground="White" />
+                                            </Border>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </mxtl:TreeListColumn.CellTemplate>
+                        </mxtl:TreeListColumn>
+                    </mxtl:TreeListControl.Columns>
+                </mxtl:TreeListControl>
             </Grid>
         </Border>
 
