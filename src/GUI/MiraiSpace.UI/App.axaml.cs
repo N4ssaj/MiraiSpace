@@ -27,7 +27,7 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
         services.AddDemoAppMenu();
-        ViewRegistration.Register(services);
+        services.AddViews();
 
         _services = services.BuildServiceProvider(new ServiceProviderOptions
             {

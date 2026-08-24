@@ -15,20 +15,8 @@ public sealed class ViewLocator : IDataTemplate
             return null;
         }
 
-        Type viewModelType = data.GetType();
-        while (viewModelType != typeof(ViewModelBase))
-        {
-            Type viewType = typeof(IViewFor<>).MakeGenericType(viewModelType);
-            object? view = App.Services.GetService(viewType);
-            if (view is not null)
-            {
-                return (Control)view;
-            }
-
-            viewModelType = viewModelType.BaseType!;
-        }
-
-        return (Control)App.Services.GetRequiredService<IViewFor<ViewModelBase>>();
+        Type viewType = typeof(IViewFor<>).MakeGenericType(data.GetType());
+        return (Control)App.Services.GetRequiredService(viewType);
     }
 
     public bool Match(object? data) => data is ViewModelBase;
