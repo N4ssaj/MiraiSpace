@@ -49,7 +49,7 @@
 
                 <mxtl:TreeListControl Grid.Row="2"
                                         Margin="8,0,8,12"
-                                        ItemsSource="{Binding MenuItems}"
+                                        ItemsSource="{Binding Items}"
                                         ChildrenSelector="{StaticResource AppMenuItemChildrenSelector}"
                                         AutoGenerateColumns="False"
                                         ShowColumnHeaders="False"

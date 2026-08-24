@@ -1,4 +1,4 @@
-using MiraiSpace.Extensibility.Abstractions;
+using MiraiSpace.Extensibility.Abstractions.Common;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 
 namespace MiraiSpace.Presentation.Menu.Demo;

@@ -1,3 +1,5 @@
+using System.Reactive;
+using System.Reactive.Subjects;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 using MiraiSpace.Presentation.Menu;
 
@@ -37,20 +39,22 @@ public sealed class AppMenuViewModelTests
         return new AppMenuViewModel(items, checker, new AppMenuItemExecutor(checker));
     }
 
-    private sealed class ToggleAccessPolicy(bool allowed) : IAppMenuItemAccessPolicy
+    private sealed class ToggleAccessPolicy(bool allowed) : IAppMenuItemAccessPolicy, IDisposable
     {
+        private readonly Subject<Unit> _accessChanged = new();
         private bool _allowed = allowed;
 
-        public event EventHandler? AccessChanged;
+        public IObservable<Unit> AccessChanged => _accessChanged;
 
         public bool CheckAccess(IAppMenuItem item) => _allowed;
 
         public void SetAllowed(bool allowed)
         {
             _allowed = allowed;
-            AccessChanged?.Invoke(this, EventArgs.Empty);
+            _accessChanged.OnNext(Unit.Default);
         }
 
+        public void Dispose() => _accessChanged.Dispose();
     }
 
     private sealed class TestMenuItem(string name, int order) : IAppMenuItem

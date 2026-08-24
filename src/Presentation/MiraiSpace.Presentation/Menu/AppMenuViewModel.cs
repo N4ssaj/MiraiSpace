@@ -27,9 +27,7 @@ public sealed class AppMenuViewModel : IAppMenuViewModel, IDisposable
         _itemsSubscription = _itemSource
             .Connect()
             .Filter(
-                Observable.FromEventPattern(
-                        handler => accessChecker.AccessChanged += handler,
-                        handler => accessChecker.AccessChanged -= handler)
+                accessChecker.AccessChanged
                     .Select(_ => new Func<IAppMenuItem, bool>(accessChecker.CheckAccess))
                     .StartWith(accessChecker.CheckAccess))
             .ObserveOn(RxSchedulers.MainThreadScheduler)
@@ -40,7 +38,7 @@ public sealed class AppMenuViewModel : IAppMenuViewModel, IDisposable
         _itemSource.AddRange(items);
     }
 
-    public ReadOnlyObservableCollection<IAppMenuItem> Items => _items;
+    public IReadOnlyList<IAppMenuItem> Items => _items;
 
     public ValueTask ExecuteAsync(
         IAppMenuItem item,

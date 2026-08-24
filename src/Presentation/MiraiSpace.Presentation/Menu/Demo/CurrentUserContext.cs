@@ -1,14 +1,17 @@
+using System.Reactive;
+using System.Reactive.Subjects;
 using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class CurrentUserContext : ReactiveObject
+public sealed class CurrentUserContext : ReactiveObject, IDisposable
 {
     private readonly HashSet<Guid> _roles = [];
+    private readonly Subject<Unit> _rolesChanged = new();
 
     public bool IsAdministrator => _roles.Contains(RoleIds.Administrator);
 
-    public event EventHandler? RolesChanged;
+    public IObservable<Unit> RolesChanged => _rolesChanged;
 
     public bool HasRole(Guid roleId) => _roles.Contains(roleId);
 
@@ -20,6 +23,8 @@ public sealed class CurrentUserContext : ReactiveObject
         }
 
         this.RaisePropertyChanged(nameof(IsAdministrator));
-        RolesChanged?.Invoke(this, EventArgs.Empty);
+        _rolesChanged.OnNext(Unit.Default);
     }
+
+    public void Dispose() => _rolesChanged.Dispose();
 }

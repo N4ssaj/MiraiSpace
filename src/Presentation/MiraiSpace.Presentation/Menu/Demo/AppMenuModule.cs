@@ -15,14 +15,13 @@ public static class AppMenuModule
         services.AddSingleton<IAppMenuItemAccessChecker, AppMenuItemAccessChecker>();
         services.AddSingleton<IAppMenuItemExecutor, AppMenuItemExecutor>();
 
-        services
-            .AddAppMenuItem<DashboardMenuItem>(AppMenuKeys.Root)
-            .AddAppMenuItem<InboxMenuItem>(AppMenuKeys.Root)
-            .AddAppMenuItem<WorkspaceMenuItemContainer>(AppMenuKeys.Root)
-            .AddAppMenuItem<AdministrationMenuItem>(AppMenuKeys.Root)
-            .AddAppMenuItem<RoleToggleMenuItem>(AppMenuKeys.Root)
-            .AddAppMenuItem<WorkspacePageMenuItem>(AppMenuKeys.Workspace)
-            .AddAppMenuItem<WorkspaceCalendarMenuItem>(AppMenuKeys.Workspace);
+        services.AddKeyedSingleton<IAppMenuItem, DashboardMenuItem>(AppMenuKeys.Root);
+        services.AddKeyedSingleton<IAppMenuItem, InboxMenuItem>(AppMenuKeys.Root);
+        services.AddKeyedSingleton<IAppMenuItem, WorkspaceMenuItemContainer>(AppMenuKeys.Root);
+        services.AddKeyedSingleton<IAppMenuItem, AdministrationMenuItem>(AppMenuKeys.Root);
+        services.AddKeyedSingleton<IAppMenuItem, RoleToggleMenuItem>(AppMenuKeys.Root);
+        services.AddKeyedSingleton<IAppMenuItem, WorkspacePageMenuItem>(AppMenuKeys.Workspace);
+        services.AddKeyedSingleton<IAppMenuItem, WorkspaceCalendarMenuItem>(AppMenuKeys.Workspace);
 
         services.AddSingleton<IAppMenuViewModel, AppMenuViewModel>();
         services.AddSingleton<MainViewModel>();

@@ -23,7 +23,7 @@ public sealed class MainViewModel : ViewModelBase, IDisposable
 
     public IAppMenuViewModel Menu { get; }
 
-    public IEnumerable<IAppMenuItem> MenuItems => Menu.Items;
+    public IReadOnlyList<IAppMenuItem> Items => Menu.Items;
 
     public AppNavigationState Navigation { get; }
 

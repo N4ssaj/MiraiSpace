@@ -8,6 +8,7 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
 {
     private readonly IAppMenuItem[] _availableItems;
     private readonly IAppMenuItemAccessChecker _accessChecker;
+    private readonly IDisposable _accessChangedSubscription;
 
     public WorkspaceMenuItemContainer(
         AppNavigationState navigation,
@@ -22,7 +23,7 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
             .ToArray();
         Items = new ObservableCollection<IAppMenuItem>();
         RefreshItems();
-        accessChecker.AccessChanged += OnAccessChanged;
+        _accessChangedSubscription = accessChecker.AccessChanged.Subscribe(_ => RefreshItems());
     }
 
     public override string DisplayTitle => "Workspace";
@@ -45,9 +46,7 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
         return ValueTask.CompletedTask;
     }
 
-    public void Dispose() => _accessChecker.AccessChanged -= OnAccessChanged;
-
-    private void OnAccessChanged(object? sender, EventArgs e) => RefreshItems();
+    public void Dispose() => _accessChangedSubscription.Dispose();
 
     private void RefreshItems()
     {

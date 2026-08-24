@@ -1,26 +1,15 @@
-using MiraiSpace.Extensibility.Abstractions;
+using System.Reactive;
+using MiraiSpace.Extensibility.Abstractions.Common;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class RoleRestrictedAccessPolicy : IAppMenuItemAccessPolicy, IDisposable
+public sealed class RoleRestrictedAccessPolicy(CurrentUserContext currentUser)
+    : IAppMenuItemAccessPolicy
 {
-    private readonly CurrentUserContext _currentUser;
-
-    public RoleRestrictedAccessPolicy(CurrentUserContext currentUser)
-    {
-        _currentUser = currentUser;
-        _currentUser.RolesChanged += OnRolesChanged;
-    }
-
-    public event EventHandler? AccessChanged;
-
     public bool CheckAccess(IAppMenuItem item) =>
         item is not IRoleRestricted restricted
-        || restricted.RequiredRoleIds.All(_currentUser.HasRole);
+        || restricted.RequiredRoleIds.All(currentUser.HasRole);
 
-    public void Dispose() => _currentUser.RolesChanged -= OnRolesChanged;
-
-    private void OnRolesChanged(object? sender, EventArgs e) =>
-        AccessChanged?.Invoke(this, EventArgs.Empty);
+    public IObservable<Unit> AccessChanged => currentUser.RolesChanged;
 }

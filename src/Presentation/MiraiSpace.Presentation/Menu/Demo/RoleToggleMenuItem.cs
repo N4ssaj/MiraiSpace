@@ -5,12 +5,17 @@ namespace MiraiSpace.Presentation.Menu.Demo;
 public sealed class RoleToggleMenuItem : MenuItemViewModel, IDisposable
 {
     private readonly CurrentUserContext _currentUser;
+    private readonly IDisposable _subscription;
 
     public RoleToggleMenuItem(AppNavigationState navigation, CurrentUserContext currentUser)
         : base(navigation, 900)
     {
         _currentUser = currentUser;
-        _currentUser.RolesChanged += OnRolesChanged;
+        _subscription = _currentUser.RolesChanged.Subscribe(_ =>
+        {
+            this.RaisePropertyChanged(nameof(Title));
+            this.RaisePropertyChanged(nameof(DisplayTitle));
+        });
     }
 
     public string Title => _currentUser.IsAdministrator
@@ -29,11 +34,5 @@ public sealed class RoleToggleMenuItem : MenuItemViewModel, IDisposable
         return ValueTask.CompletedTask;
     }
 
-    public void Dispose() => _currentUser.RolesChanged -= OnRolesChanged;
-
-    private void OnRolesChanged(object? sender, EventArgs e)
-    {
-        this.RaisePropertyChanged(nameof(Title));
-        this.RaisePropertyChanged(nameof(DisplayTitle));
-    }
+    public void Dispose() => _subscription.Dispose();
 }

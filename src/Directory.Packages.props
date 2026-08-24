@@ -13,6 +13,7 @@
     <PackageVersion Include="Avalonia.Browser" Version="12.1.1" />
     <PackageVersion Include="Avalonia.Android" Version="12.1.1" />
     <PackageVersion Include="ReactiveUI.Avalonia" Version="12.0.3" />
+    <PackageVersion Include="System.Reactive" Version="6.1.0" />
     <PackageVersion Include="DynamicData" Version="9.4.31" />
     <PackageVersion Include="Eremex.Avalonia.Controls" Version="1.4.38" />
     <PackageVersion Include="Eremex.Avalonia.Themes.DeltaDesign" Version="1.4.38" />
