@@ -4,9 +4,8 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using MiraiSpace.Presentation.Menu.Demo;
 using MiraiSpace.Presentation.ViewModels;
-using MiraiSpace.UI.Views.Menu;
+using MiraiSpace.UI.DependencyInjection;
 using MiraiSpace.UI.Views;
-using ReactiveUI;
 
 namespace MiraiSpace.UI;
 
@@ -26,10 +25,11 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        _services = new ServiceCollection()
-            .AddDemoAppMenu()
-            .AddTransient<IViewFor<MenuItemViewModel>, MenuItemView>()
-            .BuildServiceProvider(new ServiceProviderOptions
+        var services = new ServiceCollection();
+        services.AddDemoAppMenu();
+        ViewRegistration.Register(services);
+
+        _services = services.BuildServiceProvider(new ServiceProviderOptions
             {
                 ValidateOnBuild = true,
                 ValidateScopes = true

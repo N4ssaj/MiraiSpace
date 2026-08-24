@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Microsoft.Extensions.DependencyInjection;
-using MiraiSpace.Presentation.Menu.Demo;
 using MiraiSpace.Presentation.ViewModels;
 using ReactiveUI;
 
@@ -16,11 +15,20 @@ public sealed class ViewLocator : IDataTemplate
             return null;
         }
 
-        Type viewModelType = data is MenuItemViewModel
-            ? typeof(MenuItemViewModel)
-            : data.GetType();
-        Type viewType = typeof(IViewFor<>).MakeGenericType(viewModelType);
-        return (Control)App.Services.GetRequiredService(viewType);
+        Type viewModelType = data.GetType();
+        while (viewModelType != typeof(ViewModelBase))
+        {
+            Type viewType = typeof(IViewFor<>).MakeGenericType(viewModelType);
+            object? view = App.Services.GetService(viewType);
+            if (view is not null)
+            {
+                return (Control)view;
+            }
+
+            viewModelType = viewModelType.BaseType!;
+        }
+
+        return (Control)App.Services.GetRequiredService<IViewFor<ViewModelBase>>();
     }
 
     public bool Match(object? data) => data is ViewModelBase;
