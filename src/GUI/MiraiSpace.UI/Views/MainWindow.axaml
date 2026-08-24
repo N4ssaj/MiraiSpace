@@ -12,6 +12,4 @@
         MinWidth="980"
         MinHeight="680"
         Background="#F7F7FA"
-        Title="MiraiSpace">
-        <views1:MainView />
-</Window>
+        Title="MiraiSpace" />

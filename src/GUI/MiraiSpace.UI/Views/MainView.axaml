@@ -26,10 +26,6 @@
         </Style>
     </UserControl.Styles>
 
-    <UserControl.Resources>
-        <views:AppMenuItemChildrenSelector x:Key="AppMenuItemChildrenSelector" />
-    </UserControl.Resources>
-
     <Grid ColumnDefinitions="292,*">
         <Border Grid.Column="0" Background="White" BorderBrush="#E8E9EF" BorderThickness="0,0,1,0">
             <Grid RowDefinitions="88,Auto,*">
@@ -60,20 +56,8 @@
                             <mxtl:TreeListColumn.CellTemplate>
                                 <DataTemplate x:DataType="menu:MenuItemViewModel">
                                     <Button Classes="menu-item" Click="OnMenuItemClick">
-                                        <Grid ColumnDefinitions="42,*,Auto">
-                                            <Border Width="38" Height="38" CornerRadius="11" Background="{Binding Accent}">
-                                                <TextBlock Text="{Binding Glyph}" FontSize="17" FontWeight="SemiBold" Foreground="White"
-                                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Border>
-                                            <StackPanel Grid.Column="1" Margin="11,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding DisplayTitle}" FontWeight="SemiBold" Foreground="#343640" />
-                                                <TextBlock Text="{Binding Caption}" FontSize="9" Foreground="#9295A1" />
-                                            </StackPanel>
-                                            <Border Grid.Column="2" IsVisible="{Binding HasBadge}" Background="{Binding Accent}"
-                                                    CornerRadius="10" Padding="7,2" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Badge}" FontSize="10" FontWeight="Bold" Foreground="White" />
-                                            </Border>
-                                        </Grid>
+                                        <ContentControl Content="{Binding}"
+                                                        ContentTemplate="{StaticResource MenuItemViewLocator}" />
                                     </Button>
                                 </DataTemplate>
                             </mxtl:TreeListColumn.CellTemplate>

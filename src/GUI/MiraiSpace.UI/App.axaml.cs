@@ -22,6 +22,7 @@ public partial class App : Application
     {
         _services = new ServiceCollection()
             .AddDemoAppMenu()
+            .AddMenuItemViews()
             .BuildServiceProvider(new ServiceProviderOptions
             {
                 ValidateOnBuild = true,
@@ -32,25 +33,27 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = mainViewModel
-            };
+            desktop.MainWindow = _services.GetRequiredService<MainWindow>();
+            desktop.MainWindow.DataContext = mainViewModel;
             desktop.Exit += (_, _) => _services.Dispose();
         }
         else if (ApplicationLifetime is IActivityApplicationLifetime singleViewFactoryApplicationLifetime)
         {
             singleViewFactoryApplicationLifetime.MainViewFactory =
-                () => new MainView { DataContext = mainViewModel };
+                () => CreateMainView(mainViewModel);
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = mainViewModel
-            };
+            singleViewPlatform.MainView = CreateMainView(mainViewModel);
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private MainView CreateMainView(MainViewModel viewModel)
+    {
+        MainView view = _services!.GetRequiredService<MainView>();
+        view.DataContext = viewModel;
+        return view;
     }
 }
