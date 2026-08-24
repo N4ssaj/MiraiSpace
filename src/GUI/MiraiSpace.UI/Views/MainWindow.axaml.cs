@@ -4,9 +4,8 @@ namespace MiraiSpace.UI.Views;
 
 public partial class MainWindow : Window
 {
-    public MainWindow(MainView mainView)
+    public MainWindow()
     {
         InitializeComponent();
-        Content = mainView;
     }
 }

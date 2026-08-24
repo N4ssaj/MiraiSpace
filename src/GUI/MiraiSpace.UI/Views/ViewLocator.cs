@@ -1,11 +1,12 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Microsoft.Extensions.DependencyInjection;
+using MiraiSpace.Presentation.Menu.Demo;
 using ReactiveUI;
 
 namespace MiraiSpace.UI.Views;
 
-public sealed class ViewLocator(IServiceProvider services) : IDataTemplate
+public sealed class ViewLocator : IDataTemplate
 {
     public Control? Build(object? data)
     {
@@ -14,8 +15,7 @@ public sealed class ViewLocator(IServiceProvider services) : IDataTemplate
             return null;
         }
 
-        Type viewContract = typeof(IViewFor<>).MakeGenericType(data.GetType());
-        object resolvedView = services.GetRequiredService(viewContract);
+        object resolvedView = App.Services.GetRequiredService<IViewFor<MenuItemViewModel>>();
         if (resolvedView is not IViewFor view || resolvedView is not Control control)
         {
             throw new InvalidOperationException($"The view for {data.GetType().Name} is not an Avalonia ReactiveUI control.");
@@ -25,5 +25,5 @@ public sealed class ViewLocator(IServiceProvider services) : IDataTemplate
         return control;
     }
 
-    public bool Match(object? data) => data is not null;
+    public bool Match(object? data) => data is MenuItemViewModel;
 }

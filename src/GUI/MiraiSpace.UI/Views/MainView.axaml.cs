@@ -7,10 +7,8 @@ namespace MiraiSpace.UI.Views;
 
 public partial class MainView : UserControl
 {
-    public MainView(ViewLocator viewLocator, AppMenuItemChildrenSelector childrenSelector)
+    public MainView()
     {
-        Resources.Add("MenuItemViewLocator", viewLocator);
-        Resources.Add("AppMenuItemChildrenSelector", childrenSelector);
         InitializeComponent();
     }
 

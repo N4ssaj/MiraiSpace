@@ -12,6 +12,10 @@ public partial class App : Application
 {
     private ServiceProvider? _services;
 
+    internal static IServiceProvider Services =>
+        ((App)Current!)._services
+        ?? throw new InvalidOperationException("Application services have not been initialized.");
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -33,27 +37,26 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = _services.GetRequiredService<MainWindow>();
-            desktop.MainWindow.DataContext = mainViewModel;
+            desktop.MainWindow = new MainWindow
+            {
+                DataContext = mainViewModel
+            };
             desktop.Exit += (_, _) => _services.Dispose();
         }
         else if (ApplicationLifetime is IActivityApplicationLifetime singleViewFactoryApplicationLifetime)
         {
             singleViewFactoryApplicationLifetime.MainViewFactory =
-                () => CreateMainView(mainViewModel);
+                () => new MainView { DataContext = mainViewModel };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = CreateMainView(mainViewModel);
+            singleViewPlatform.MainView = new MainView
+            {
+                DataContext = mainViewModel
+            };
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private MainView CreateMainView(MainViewModel viewModel)
-    {
-        MainView view = _services!.GetRequiredService<MainView>();
-        view.DataContext = viewModel;
-        return view;
-    }
 }

@@ -12,6 +12,10 @@
              x:Class="MiraiSpace.UI.Views.MainView"
              x:DataType="vm:MainViewModel">
 
+    <UserControl.Resources>
+        <views:AppMenuItemChildrenSelector x:Key="AppMenuItemChildrenSelector" />
+    </UserControl.Resources>
+
     <UserControl.Styles>
         <Style Selector="Button.menu-item">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -57,7 +61,7 @@
                                 <DataTemplate x:DataType="menu:MenuItemViewModel">
                                     <Button Classes="menu-item" Click="OnMenuItemClick">
                                         <ContentControl Content="{Binding}"
-                                                        ContentTemplate="{StaticResource MenuItemViewLocator}" />
+                                                        ContentTemplate="{StaticResource ViewLocator}" />
                                     </Button>
                                 </DataTemplate>
                             </mxtl:TreeListColumn.CellTemplate>
