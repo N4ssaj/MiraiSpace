@@ -1,27 +1,17 @@
+using MiraiSpace.Presentation.Menu.Standard;
+
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class WorkspacePageMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, 100)
+public sealed class WorkspacePageMenuItem(AppNavigationState navigation) : StandardAppMenuItem(100), IWorkspaceMenuItem
 {
-    public string Title => "Pages";
-
-    public string Hint => "12 active";
-
-    public override string DisplayTitle => Title;
-
-    public override string Caption => Hint;
-
+    public override string Title => "Pages";
+    public override string Caption => "12 active";
     public override string Glyph => "▤";
-
     public override string Accent => "#34A58B";
 
-    public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
+    protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        Navigation.Navigate(
-            "WORKSPACE",
-            "Pages",
-            "Create, organize, and share knowledge with your team.",
-            "#34A58B");
-        return ValueTask.CompletedTask;
+        navigation.Navigate("WORKSPACE", "Pages", "Create, organize, and share knowledge with your team.", Accent);
+        return Task.CompletedTask;
     }
 }

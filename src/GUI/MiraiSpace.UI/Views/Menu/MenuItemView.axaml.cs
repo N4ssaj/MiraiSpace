@@ -1,20 +1,26 @@
-using Avalonia.Markup.Xaml;
-using MiraiSpace.Presentation.Menu.Demo;
+using Avalonia;
+using MiraiSpace.Presentation.Menu.Standard;
 using ReactiveUI;
 using ReactiveUI.Avalonia;
 
 namespace MiraiSpace.UI.Views.Menu;
 
-public partial class MenuItemView : ReactiveUserControl<MenuItemViewModel>
+public partial class MenuItemView : ReactiveUserControl<StandardAppMenuItem>
 {
-    public MenuItemView()
+    public MenuItemView() => InitializeComponent();
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
-        AvaloniaXamlLoader.Load(this);
+        base.OnPropertyChanged(change);
+        if (change.Property == MenuDisplay.IsCompactProperty)
+        {
+            Details.IsVisible = !change.GetNewValue<bool>();
+        }
     }
 }
 
 public sealed class MenuItemView<TViewModel> : MenuItemView, IViewFor<TViewModel>
-    where TViewModel : MenuItemViewModel
+    where TViewModel : StandardAppMenuItem
 {
     TViewModel? IViewFor<TViewModel>.ViewModel
     {

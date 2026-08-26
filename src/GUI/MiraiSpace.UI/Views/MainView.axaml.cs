@@ -1,23 +1,21 @@
-using Avalonia.Controls;
-using Avalonia.Interactivity;
-using MiraiSpace.Extensibility.Abstractions.Menu;
+using System.Reactive.Linq;
 using MiraiSpace.Presentation.ViewModels;
+using ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace MiraiSpace.UI.Views;
 
-public partial class MainView : UserControl
+public partial class MainView : ReactiveUserControl<MainViewModel>
 {
     public MainView()
     {
         InitializeComponent();
-    }
-
-    private void OnMenuItemClick(object? sender, RoutedEventArgs e)
-    {
-        if (sender is Button { DataContext: IAppMenuItem item }
-            && DataContext is MainViewModel viewModel)
+        this.WhenActivated(disposables =>
         {
-            viewModel.ExecuteMenuItemCommand.Execute(item).Subscribe();
-        }
+            if (ViewModel is null) return;
+            disposables.Add(ViewModel.WhenAnyValue(model => model.IsMenuOpen)
+                .Where(isOpen => !isOpen)
+                .Subscribe(_ => MenuTree.CollapseAllNodes()));
+        });
     }
 }

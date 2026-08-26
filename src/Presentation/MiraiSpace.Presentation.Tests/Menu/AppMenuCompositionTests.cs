@@ -1,46 +1,64 @@
 using Microsoft.Extensions.DependencyInjection;
-using MiraiSpace.Extensibility.Abstractions.Menu;
-using MiraiSpace.Presentation.Menu;
+using MiraiSpace.Extensibility.Abstractions.Modules;
+using MiraiSpace.Presentation.Abstractions.Menu;
 using MiraiSpace.Presentation.Menu.Demo;
+using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Tests.Menu;
 
 public sealed class AppMenuCompositionTests
 {
     [Fact]
-    public void KeyedRegistrationsComposeRootAndContainerItems()
+    public void ModuleComposesRootsAndContainerOwnedChildren()
     {
         using ServiceProvider provider = new ServiceCollection()
-            .AddDemoAppMenu()
-            .BuildServiceProvider(new ServiceProviderOptions
-            {
-                ValidateOnBuild = true,
-                ValidateScopes = true
-            });
+            .AddModule<AppMenuModule>()
+            .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
+        IAppMenu menu = provider.GetRequiredService<IAppMenu>();
+        using IDisposable activation = ((IActivatableViewModel)menu).Activator.Activate();
 
-        IAppMenuViewModel menu = provider.GetRequiredService<IAppMenuViewModel>();
         IAppMenuItemContainer container = Assert.Single(menu.Items.OfType<IAppMenuItemContainer>());
 
-        Assert.Contains(menu.Items, x => x is DashboardMenuItem);
-        Assert.DoesNotContain(menu.Items, x => x is AdministrationMenuItem);
+        Assert.Collection(
+            menu.Items,
+            item => Assert.IsType<DashboardMenuItem>(item),
+            item => Assert.IsType<InboxMenuItem>(item),
+            item => Assert.IsType<WorkspaceMenuItemContainer>(item),
+            item => Assert.IsType<RoleToggleMenuItem>(item));
         Assert.Collection(
             container.Items,
-            x => Assert.IsType<WorkspacePageMenuItem>(x),
-            x => Assert.IsType<WorkspaceCalendarMenuItem>(x),
-            x => Assert.IsType<DelegateMenuItem>(x),
-            x => Assert.IsType<DelegateMenuItem>(x));
+            item => Assert.IsType<WorkspacePageMenuItem>(item),
+            item => Assert.IsType<WorkspaceCalendarMenuItem>(item),
+            item => Assert.IsType<DelegateMenuItem>(item),
+            item => Assert.IsType<DelegateMenuItem>(item));
     }
 
     [Fact]
-    public void RoleChangeRevealsRestrictedRootItem()
+    public void ActiveMenuReactsToRoleChanges()
     {
-        using ServiceProvider provider = new ServiceCollection()
-            .AddDemoAppMenu()
-            .BuildServiceProvider();
-        IAppMenuViewModel menu = provider.GetRequiredService<IAppMenuViewModel>();
+        using ServiceProvider provider = new ServiceCollection().AddModule<AppMenuModule>().BuildServiceProvider();
+        IAppMenu menu = provider.GetRequiredService<IAppMenu>();
+        using IDisposable activation = ((IActivatableViewModel)menu).Activator.Activate();
 
         provider.GetRequiredService<CurrentUserContext>().ToggleAdministrator();
 
-        Assert.Contains(menu.Items, x => x is AdministrationMenuItem);
+        Assert.Contains(menu.Items, item => item is AdministrationMenuItem);
     }
+
+    [Fact]
+    public void LazyDependencyIsNotConstructedBeforeItIsRequested()
+    {
+        var services = new ServiceCollection();
+        services.AddLazyResolution();
+        services.AddTransient<LazyTarget>();
+        using ServiceProvider provider = services.BuildServiceProvider();
+
+        Lazy<LazyTarget> lazy = provider.GetRequiredService<Lazy<LazyTarget>>();
+
+        Assert.False(lazy.IsValueCreated);
+        Assert.IsType<LazyTarget>(lazy.Value);
+        Assert.True(lazy.IsValueCreated);
+    }
+
+    private sealed class LazyTarget;
 }

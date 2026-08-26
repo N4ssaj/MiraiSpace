@@ -1,75 +1,61 @@
 using System.Collections.ObjectModel;
-using Microsoft.Extensions.DependencyInjection;
-using MiraiSpace.Extensibility.Abstractions.Menu;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Binding;
+using MiraiSpace.Presentation.Abstractions.Menu;
+using MiraiSpace.Presentation.Menu.Access;
+using MiraiSpace.Presentation.Menu.Standard;
+using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItemContainer, IDisposable
+public sealed class WorkspaceMenuItemContainer : StandardAppMenuItem, IAppMenuItemContainer
 {
-    private readonly IAppMenuItem[] _availableItems;
-    private readonly IAppMenuItemAccessChecker _accessChecker;
-    private readonly IDisposable _accessChangedSubscription;
+    private readonly SourceList<IAppMenuItem> _source = new();
+    private readonly IObservable<IChangeSet<IAppMenuItem>> _pipeline;
+    private readonly IDisposable _subscription;
+    private readonly ReadOnlyObservableCollection<IAppMenuItem> _items;
+    private readonly AppNavigationState _navigation;
 
     public WorkspaceMenuItemContainer(
         AppNavigationState navigation,
-        [FromKeyedServices(AppMenuKeys.Workspace)] IEnumerable<IAppMenuItem> registeredItems,
-        IAppMenuItemAccessChecker accessChecker)
-        : base(navigation, 300)
+        IEnumerable<IWorkspaceMenuItem> items,
+        AppMenuAccessEvaluator access,
+        IAppMenuItemComparer comparer) : base(300)
     {
-        _accessChecker = accessChecker;
-        _availableItems = registeredItems
-            .Concat(CreateDelegateItems(navigation))
-            .OrderBy(item => item.Order)
-            .ToArray();
-        Items = new ObservableCollection<IAppMenuItem>();
-        RefreshItems();
-        _accessChangedSubscription = accessChecker.AccessChanged.Subscribe(_ => RefreshItems());
+        _navigation = navigation;
+        _pipeline = _source
+            .Connect()
+            .Filter(access.AccessChanged
+                .Select(_ => new Func<IAppMenuItem, bool>(access.CheckAccess))
+                .StartWith(access.CheckAccess))
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .Sort(comparer)
+            .Bind(out _items);
+        _source.AddRange(items.Cast<IAppMenuItem>());
+        _subscription = _pipeline.Subscribe();
     }
 
-    public override string DisplayTitle => "Workspace";
-
-    public override string Caption => "TEAM SPACE";
-
+    public override string Title => "Workspace";
+    public override string Caption => "Team space";
     public override string Glyph => "◇";
-
     public override string Accent => "#34A58B";
+    public IReadOnlyList<IAppMenuItem> Items => _items;
 
-    public IList<IAppMenuItem> Items { get; }
-
-    public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
+    protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        Navigation.Navigate(
-            "WORKSPACE",
-            "Your workspace",
-            "Everything your team is building, planning, and sharing.",
-            "#34A58B");
-        return ValueTask.CompletedTask;
+        _navigation.Navigate("WORKSPACE", "Your workspace", "Everything your team is building, planning, and sharing.", Accent);
+        return Task.CompletedTask;
     }
 
-    public void Dispose() => _accessChangedSubscription.Dispose();
-
-    private void RefreshItems()
+    protected override void Dispose(bool disposing)
     {
-        Items.Clear();
-        foreach (IAppMenuItem item in _availableItems.Where(_accessChecker.CheckAccess))
+        if (disposing)
         {
-            Items.Add(item);
+            _subscription.Dispose();
+            _source.Dispose();
         }
-    }
-
-    private static IEnumerable<IAppMenuItem> CreateDelegateItems(AppNavigationState navigation)
-    {
-        yield return new DelegateMenuItem(
-            navigation,
-            "Maya Chen",
-            "MC",
-            "#D87A5D",
-            500);
-        yield return new DelegateMenuItem(
-            navigation,
-            "Noah Wilson",
-            "NW",
-            "#557BC9",
-            600);
+        base.Dispose(disposing);
     }
 }

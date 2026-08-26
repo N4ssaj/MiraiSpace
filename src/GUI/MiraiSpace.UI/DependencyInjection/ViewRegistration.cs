@@ -9,14 +9,18 @@ public static class ViewRegistration
 {
     public static IServiceCollection AddViews(this IServiceCollection services)
     {
-        services.AddTransient<IViewFor<DashboardMenuItem>, MenuItemView<DashboardMenuItem>>();
-        services.AddTransient<IViewFor<InboxMenuItem>, MenuItemView<InboxMenuItem>>();
-        services.AddTransient<IViewFor<WorkspaceMenuItemContainer>, MenuItemView<WorkspaceMenuItemContainer>>();
-        services.AddTransient<IViewFor<AdministrationMenuItem>, MenuItemView<AdministrationMenuItem>>();
-        services.AddTransient<IViewFor<RoleToggleMenuItem>, MenuItemView<RoleToggleMenuItem>>();
-        services.AddTransient<IViewFor<WorkspacePageMenuItem>, MenuItemView<WorkspacePageMenuItem>>();
-        services.AddTransient<IViewFor<WorkspaceCalendarMenuItem>, MenuItemView<WorkspaceCalendarMenuItem>>();
-        services.AddTransient<IViewFor<DelegateMenuItem>, MenuItemView<DelegateMenuItem>>();
+        services.AddStandardMenuView<DashboardMenuItem>();
+        services.AddStandardMenuView<InboxMenuItem>();
+        services.AddStandardMenuView<WorkspaceMenuItemContainer>();
+        services.AddStandardMenuView<AdministrationMenuItem>();
+        services.AddStandardMenuView<RoleToggleMenuItem>();
+        services.AddStandardMenuView<WorkspacePageMenuItem>();
+        services.AddStandardMenuView<WorkspaceCalendarMenuItem>();
+        services.AddStandardMenuView<DelegateMenuItem>();
         return services;
     }
+
+    private static IServiceCollection AddStandardMenuView<TViewModel>(this IServiceCollection services)
+        where TViewModel : Presentation.Menu.Standard.StandardAppMenuItem =>
+        services.AddTransient<IViewFor<TViewModel>, MenuItemView<TViewModel>>();
 }

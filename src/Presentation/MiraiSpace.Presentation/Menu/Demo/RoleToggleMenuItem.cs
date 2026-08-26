@@ -1,38 +1,25 @@
+using System.Reactive.Disposables;
+using MiraiSpace.Presentation.Menu.Standard;
 using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class RoleToggleMenuItem : MenuItemViewModel, IDisposable
+public sealed class RoleToggleMenuItem(CurrentUserContext currentUser) : StandardAppMenuItem(900)
 {
-    private readonly CurrentUserContext _currentUser;
-    private readonly IDisposable _subscription;
-
-    public RoleToggleMenuItem(AppNavigationState navigation, CurrentUserContext currentUser)
-        : base(navigation, 900)
-    {
-        _currentUser = currentUser;
-        _subscription = _currentUser.RolesChanged.Subscribe(_ =>
-        {
-            this.RaisePropertyChanged(nameof(Title));
-            this.RaisePropertyChanged(nameof(DisplayTitle));
-        });
-    }
-
-    public string Title => _currentUser.IsAdministrator
-        ? "Leave admin mode"
-        : "Try admin mode";
-
-    public override string DisplayTitle => Title;
-
+    public override string Title => currentUser.IsAdministrator ? "Leave admin mode" : "Try admin mode";
     public override string Caption => "Live role refresh";
-
     public override string Glyph => "✦";
 
-    public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
+    protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        _currentUser.ToggleAdministrator();
-        return ValueTask.CompletedTask;
+        currentUser.ToggleAdministrator();
+        this.RaisePropertyChanged(nameof(Title));
+        return Task.CompletedTask;
     }
 
-    public void Dispose() => _subscription.Dispose();
+    protected override void OnActivated(CompositeDisposable disposables)
+    {
+        base.OnActivated(disposables);
+        disposables.Add(currentUser.RolesChanged.Subscribe(_ => this.RaisePropertyChanged(nameof(Title))));
+    }
 }

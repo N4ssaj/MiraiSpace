@@ -1,31 +1,42 @@
 using Microsoft.Extensions.DependencyInjection;
-using MiraiSpace.Extensibility.Abstractions.Menu;
+using MiraiSpace.Extensibility.Abstractions.Modules;
+using MiraiSpace.Presentation.Abstractions.Menu;
+using MiraiSpace.Presentation.Menu.Access;
+using MiraiSpace.Presentation.Menu.Composition;
 using MiraiSpace.Presentation.ViewModels;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public static class AppMenuModule
+public sealed class AppMenuModule : IAppModule
 {
-    public static IServiceCollection AddDemoAppMenu(this IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
+        services.AddLazyResolution();
         services.AddSingleton<AppNavigationState>();
         services.AddSingleton<CurrentUserContext>();
+        services.AddSingleton<IAppMenuAccessPolicy, RoleRestrictedAccessPolicy>();
+        services.AddSingleton<AppMenuAccessEvaluator>();
+        services.AddSingleton<IAppMenuItemComparer, AppMenuItemComparer>();
 
-        services.AddSingleton<IAppMenuItemAccessPolicy, RoleRestrictedAccessPolicy>();
-        services.AddSingleton<IAppMenuItemAccessChecker, AppMenuItemAccessChecker>();
-        services.AddSingleton<IAppMenuItemExecutor, AppMenuItemExecutor>();
+        services.AddSingleton<IWorkspaceMenuItem, WorkspacePageMenuItem>();
+        services.AddSingleton<IWorkspaceMenuItem, WorkspaceCalendarMenuItem>();
+        services.AddSingleton<IWorkspaceMenuItem>(provider => new DelegateMenuItem(
+            provider.GetRequiredService<AppNavigationState>(), "Maya Chen", "MC", "#D87A5D", 500));
+        services.AddSingleton<IWorkspaceMenuItem>(provider => new DelegateMenuItem(
+            provider.GetRequiredService<AppNavigationState>(), "Noah Wilson", "NW", "#557BC9", 600));
 
-        services.AddKeyedSingleton<IAppMenuItem, DashboardMenuItem>(AppMenuKeys.Root);
-        services.AddKeyedSingleton<IAppMenuItem, InboxMenuItem>(AppMenuKeys.Root);
-        services.AddKeyedSingleton<IAppMenuItem, WorkspaceMenuItemContainer>(AppMenuKeys.Root);
-        services.AddKeyedSingleton<IAppMenuItem, AdministrationMenuItem>(AppMenuKeys.Root);
-        services.AddKeyedSingleton<IAppMenuItem, RoleToggleMenuItem>(AppMenuKeys.Root);
-        services.AddKeyedSingleton<IAppMenuItem, WorkspacePageMenuItem>(AppMenuKeys.Workspace);
-        services.AddKeyedSingleton<IAppMenuItem, WorkspaceCalendarMenuItem>(AppMenuKeys.Workspace);
+        services.AddSingleton<IAppMenuItem, DashboardMenuItem>();
+        services.AddSingleton<IAppMenuItem, InboxMenuItem>();
+        services.AddSingleton<IAppMenuItem, WorkspaceMenuItemContainer>();
+        services.AddSingleton<IAppMenuItem, AdministrationMenuItem>();
+        services.AddSingleton<IAppMenuItem, RoleToggleMenuItem>();
 
-        services.AddSingleton<IAppMenuViewModel, AppMenuViewModel>();
+        services.AddSingleton<IAppMenu, AppMenuViewModel>();
         services.AddSingleton<MainViewModel>();
-
-        return services;
     }
+}
+
+public static class AppMenuModuleRegistration
+{
+    public static IServiceCollection AddDemoAppMenu(this IServiceCollection services) => services.AddModule<AppMenuModule>();
 }
