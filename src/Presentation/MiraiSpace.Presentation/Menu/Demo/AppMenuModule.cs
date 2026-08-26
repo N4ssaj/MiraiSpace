@@ -10,6 +10,8 @@ public sealed class AppMenuModule : IAppModule
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<AppNavigationState>();
+        services.AddSingleton<IAppMenuSelectionSource>(provider =>
+            provider.GetRequiredService<AppNavigationState>());
         services.AddSingleton<CurrentUserContext>();
 
         services.AddSingleton<IAppMenuAccessPolicy, RoleRestrictedAccessPolicy>();

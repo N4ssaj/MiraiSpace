@@ -19,7 +19,7 @@ The interface intentionally does not expose child collections, access decisions,
 | Hierarchy validation and projection | `AppMenuViewModel` |
 | Access policy aggregation | `AppMenuAccessEvaluator` |
 | Last-moment authorization and execution | `AppMenuContributionExecutor` |
-| Current route | Navigation state owner |
+| Current destination | `IAppMenuSelectionSource` adapter over the navigation owner |
 | Selection projection | `AppMenuViewModel` |
 | Rendering and interaction adaptation | Avalonia UI |
 
@@ -33,4 +33,4 @@ The interface intentionally does not expose child collections, access decisions,
 - Contribution constructors remain cheap; unavailable contributions are still registered.
 - A presentation change announces a fact through `Changed`; consumers then read the current descriptor.
 
-The current demo action still updates the demo navigation owner directly. The navigation experiment will replace that call with the published navigation interface and explicit navigation outcomes.
+The current demo action still updates the demo navigation owner directly. The menu only observes it through `IAppMenuSelectionSource`; the navigation experiment will replace the action-side call with the published navigation interface and explicit navigation outcomes.

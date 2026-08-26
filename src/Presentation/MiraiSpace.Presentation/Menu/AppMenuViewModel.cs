@@ -1,8 +1,6 @@
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Reactive.Disposables;
 using MiraiSpace.Extensibility.Abstractions.Menu;
-using MiraiSpace.Presentation.Menu.Demo;
 using MiraiSpace.Presentation.ViewModels;
 using ReactiveUI;
 
@@ -13,7 +11,7 @@ public sealed class AppMenuViewModel : ComponentViewModelBase, IAppMenuViewModel
     private readonly IAppMenuContribution[] _contributions;
     private readonly IAppMenuAccessEvaluator _accessEvaluator;
     private readonly IAppMenuContributionExecutor _executor;
-    private readonly AppNavigationState _navigation;
+    private readonly IAppMenuSelectionSource _selectionSource;
     private readonly ObservableCollection<AppMenuItemModel> _items = [];
     private readonly ReadOnlyObservableCollection<AppMenuItemModel> _readOnlyItems;
     private AppMenuItemModel? _selectedItem;
@@ -22,13 +20,13 @@ public sealed class AppMenuViewModel : ComponentViewModelBase, IAppMenuViewModel
         IEnumerable<IAppMenuContribution> contributions,
         IAppMenuAccessEvaluator accessEvaluator,
         IAppMenuContributionExecutor executor,
-        AppNavigationState navigation)
+        IAppMenuSelectionSource selectionSource)
         : base("application-menu")
     {
         _contributions = contributions.ToArray();
         _accessEvaluator = accessEvaluator;
         _executor = executor;
-        _navigation = navigation;
+        _selectionSource = selectionSource;
         _readOnlyItems = new ReadOnlyObservableCollection<AppMenuItemModel>(_items);
         Recompose();
     }
@@ -61,16 +59,8 @@ public sealed class AppMenuViewModel : ComponentViewModelBase, IAppMenuViewModel
                 .Subscribe(_ => Recompose()));
         }
 
-        PropertyChangedEventHandler navigationChanged = (_, args) =>
-        {
-            if (args.PropertyName == nameof(AppNavigationState.Route))
-            {
-                UpdateSelection();
-            }
-        };
-        _navigation.PropertyChanged += navigationChanged;
-        disposables.Add(Disposable.Create(
-            () => _navigation.PropertyChanged -= navigationChanged));
+        disposables.Add(_selectionSource.SelectionChanged
+            .Subscribe(_ => UpdateSelection()));
 
         Recompose();
     }
@@ -164,11 +154,11 @@ public sealed class AppMenuViewModel : ComponentViewModelBase, IAppMenuViewModel
     {
         foreach (AppMenuItemModel item in _items)
         {
-            item.IsSelected = item.Id == _navigation.Route
-                || _navigation.Route.StartsWith($"{item.Id}.", StringComparison.Ordinal);
+            item.IsSelected = item.Id == _selectionSource.CurrentItemId
+                || _selectionSource.CurrentItemId.StartsWith($"{item.Id}.", StringComparison.Ordinal);
         }
 
-        _selectedItem = _items.FirstOrDefault(item => item.Id == _navigation.Route);
+        _selectedItem = _items.FirstOrDefault(item => item.Id == _selectionSource.CurrentItemId);
         this.RaisePropertyChanged(nameof(SelectedItem));
     }
 }
