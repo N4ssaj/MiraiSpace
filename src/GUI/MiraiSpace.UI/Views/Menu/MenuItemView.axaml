@@ -2,7 +2,7 @@
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:rxui="using:ReactiveUI.Avalonia"
                           xmlns:menu="using:MiraiSpace.Presentation.Menu.Standard"
-                                                    x:Class="MiraiSpace.UI.Views.Menu.MenuItemView"
+                          x:Class="MiraiSpace.UI.Views.Menu.MenuItemView"
                           x:TypeArguments="menu:StandardAppMenuItem"
                           x:DataType="menu:StandardAppMenuItem"
                           HorizontalContentAlignment="Stretch">
