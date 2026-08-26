@@ -4,11 +4,11 @@ using MiraiSpace.Extensibility.Abstractions.Menu;
 
 namespace MiraiSpace.Presentation.Menu;
 
-public sealed class AppMenuItemAccessChecker : IAppMenuItemAccessChecker
+public sealed class AppMenuAccessEvaluator : IAppMenuAccessEvaluator
 {
-    private readonly IReadOnlyList<IAppMenuItemAccessPolicy> _policies;
+    private readonly IReadOnlyList<IAppMenuAccessPolicy> _policies;
 
-    public AppMenuItemAccessChecker(IEnumerable<IAppMenuItemAccessPolicy> policies)
+    public AppMenuAccessEvaluator(IEnumerable<IAppMenuAccessPolicy> policies)
     {
         _policies = policies.ToArray();
         AccessChanged = _policies.Count == 0
@@ -18,6 +18,6 @@ public sealed class AppMenuItemAccessChecker : IAppMenuItemAccessChecker
 
     public IObservable<Unit> AccessChanged { get; }
 
-    public bool CheckAccess(IAppMenuItem item) =>
-        _policies.All(policy => policy.CheckAccess(item));
+    public bool CheckAccess(IAppMenuContribution contribution) =>
+        _policies.All(policy => policy.CheckAccess(contribution));
 }
