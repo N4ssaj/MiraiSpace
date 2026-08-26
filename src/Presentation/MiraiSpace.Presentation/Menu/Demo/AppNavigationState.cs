@@ -2,12 +2,19 @@ using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class AppNavigationState : ReactiveObject
+public sealed class AppNavigationState : ViewModels.ViewModelBase
 {
+    private string _routeKey = "overview";
     private string _eyebrow = "OVERVIEW";
     private string _title = "Good morning, Alex";
     private string _description = "Here is what is happening across your workspace today.";
     private string _accent = "#7165E8";
+
+    public string RouteKey
+    {
+        get => _routeKey;
+        private set => this.RaiseAndSetIfChanged(ref _routeKey, value);
+    }
 
     public string Eyebrow
     {
@@ -33,8 +40,9 @@ public sealed class AppNavigationState : ReactiveObject
         private set => this.RaiseAndSetIfChanged(ref _accent, value);
     }
 
-    public void Navigate(string eyebrow, string title, string description, string accent)
+    public void Navigate(string routeKey, string eyebrow, string title, string description, string accent)
     {
+        RouteKey = routeKey;
         Eyebrow = eyebrow;
         Title = title;
         Description = description;

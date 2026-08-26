@@ -1,7 +1,7 @@
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class WorkspaceCalendarMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, 200)
+    : MenuItemViewModel(navigation, "workspace.calendar", 200)
 {
     public string Title => "Calendar";
 
@@ -14,6 +14,7 @@ public sealed class WorkspaceCalendarMenuItem(AppNavigationState navigation)
     public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
     {
         Navigation.Navigate(
+            RouteKey,
             "WORKSPACE",
             "Team calendar",
             "Plan milestones and keep everyone aligned.",

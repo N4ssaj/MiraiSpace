@@ -1,15 +1,32 @@
+using System.ComponentModel;
+using System.Reactive.Disposables;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 using MiraiSpace.Presentation.ViewModels;
+using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public abstract class MenuItemViewModel(
-    AppNavigationState navigation,
-    int order) : ViewModelBase, IAppMenuItem
+public abstract class MenuItemViewModel : ViewModelBase, IAppMenuItem
 {
-    protected AppNavigationState Navigation { get; } = navigation;
+    protected MenuItemViewModel(AppNavigationState navigation, string routeKey, int order)
+    {
+        Navigation = navigation;
+        RouteKey = routeKey;
+        Order = order;
+        Navigation.PropertyChanged += OnNavigationPropertyChanged;
+        Own(Disposable.Create(() => Navigation.PropertyChanged -= OnNavigationPropertyChanged));
+    }
 
-    public int Order { get; } = order;
+    protected AppNavigationState Navigation { get; }
+
+    public string RouteKey { get; }
+
+    public bool IsSelected => Navigation.RouteKey == RouteKey
+        || Navigation.RouteKey.StartsWith($"{RouteKey}.", StringComparison.Ordinal);
+
+    public int Order { get; }
+
+    public virtual IEnumerable<MenuItemViewModel> Children => [];
 
     public abstract string DisplayTitle { get; }
 
@@ -24,4 +41,12 @@ public abstract class MenuItemViewModel(
     public bool HasBadge => !string.IsNullOrWhiteSpace(Badge);
 
     public abstract ValueTask ExecuteAsync(CancellationToken cancellationToken = default);
+
+    private void OnNavigationPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(AppNavigationState.RouteKey))
+        {
+            this.RaisePropertyChanged(nameof(IsSelected));
+        }
+    }
 }

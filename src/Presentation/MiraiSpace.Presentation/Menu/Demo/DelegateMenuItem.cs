@@ -6,7 +6,7 @@ public sealed class DelegateMenuItem(
     string initials,
     string color,
     int order)
-    : MenuItemViewModel(navigation, order)
+    : MenuItemViewModel(navigation, $"workspace.delegate.{initials.ToLowerInvariant()}", order)
 {
     public string DisplayName { get; } = displayName;
 
@@ -25,6 +25,7 @@ public sealed class DelegateMenuItem(
     public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
     {
         Navigation.Navigate(
+            RouteKey,
             "DELEGATED SPACE",
             DisplayName,
             $"You are viewing the pages delegated by {DisplayName}.",

@@ -6,21 +6,27 @@
                           x:TypeArguments="menu:MenuItemViewModel"
                           x:DataType="menu:MenuItemViewModel"
                           HorizontalContentAlignment="Stretch">
-    <Grid ColumnDefinitions="42,*,Auto">
-        <Border Width="38"
-                Height="38"
-                CornerRadius="11"
+    <Grid ColumnDefinitions="4,40,*,Auto">
+        <Border Width="3"
+                Height="24"
+                CornerRadius="2"
+                Background="{Binding Accent}"
+                IsVisible="{Binding IsSelected}" />
+        <Border Grid.Column="1"
+                Width="34"
+                Height="34"
+                CornerRadius="10"
                 Background="{Binding Accent}">
             <TextBlock Text="{Binding Glyph}"
-                       FontSize="17"
+                       FontSize="15"
                        FontWeight="SemiBold"
                        Foreground="White"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
         </Border>
 
-        <StackPanel Grid.Column="1"
-                    Margin="11,0,0,0"
+        <StackPanel Grid.Column="2"
+                    Margin="10,0,0,0"
                     VerticalAlignment="Center">
             <TextBlock Text="{Binding DisplayTitle}"
                        FontWeight="SemiBold"
@@ -30,7 +36,7 @@
                        Foreground="#9295A1" />
         </StackPanel>
 
-        <Border Grid.Column="2"
+        <Border Grid.Column="3"
                 IsVisible="{Binding HasBadge}"
                 Background="{Binding Accent}"
                 CornerRadius="10"

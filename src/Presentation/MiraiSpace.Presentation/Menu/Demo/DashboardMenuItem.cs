@@ -1,7 +1,7 @@
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class DashboardMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, 100)
+    : MenuItemViewModel(navigation, "overview", 100)
 {
     public string Title => "Overview";
 
@@ -16,6 +16,7 @@ public sealed class DashboardMenuItem(AppNavigationState navigation)
     public ValueTask ExecuteAsyncCore()
     {
         Navigation.Navigate(
+            RouteKey,
             "OVERVIEW",
             "Good morning, Alex",
             "Here is what is happening across your workspace today.",

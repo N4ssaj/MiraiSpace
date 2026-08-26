@@ -4,17 +4,16 @@ using MiraiSpace.Extensibility.Abstractions.Menu;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItemContainer, IDisposable
+public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItemContainer
 {
     private readonly IAppMenuItem[] _availableItems;
     private readonly IAppMenuItemAccessChecker _accessChecker;
-    private readonly IDisposable _accessChangedSubscription;
 
     public WorkspaceMenuItemContainer(
         AppNavigationState navigation,
         [FromKeyedServices(AppMenuKeys.Workspace)] IEnumerable<IAppMenuItem> registeredItems,
         IAppMenuItemAccessChecker accessChecker)
-        : base(navigation, 300)
+        : base(navigation, "workspace", 300)
     {
         _accessChecker = accessChecker;
         _availableItems = registeredItems
@@ -23,7 +22,7 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
             .ToArray();
         Items = new ObservableCollection<IAppMenuItem>();
         RefreshItems();
-        _accessChangedSubscription = accessChecker.AccessChanged.Subscribe(_ => RefreshItems());
+        Own(accessChecker.AccessChanged.Subscribe(_ => RefreshItems()));
     }
 
     public override string DisplayTitle => "Workspace";
@@ -36,17 +35,18 @@ public sealed class WorkspaceMenuItemContainer : MenuItemViewModel, IAppMenuItem
 
     public IList<IAppMenuItem> Items { get; }
 
+    public override IEnumerable<MenuItemViewModel> Children => Items.OfType<MenuItemViewModel>();
+
     public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
     {
         Navigation.Navigate(
+            RouteKey,
             "WORKSPACE",
             "Your workspace",
             "Everything your team is building, planning, and sharing.",
             "#34A58B");
         return ValueTask.CompletedTask;
     }
-
-    public void Dispose() => _accessChangedSubscription.Dispose();
 
     private void RefreshItems()
     {

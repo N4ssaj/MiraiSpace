@@ -4,7 +4,7 @@ using MiraiSpace.Extensibility.Abstractions.Menu;
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class AdministrationMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, 400), IRoleRestricted
+    : MenuItemViewModel(navigation, "administration", 400), IRoleRestricted
 {
     public string Title => "Administration";
 
@@ -24,6 +24,7 @@ public sealed class AdministrationMenuItem(AppNavigationState navigation)
     public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
     {
         Navigation.Navigate(
+            RouteKey,
             "ADMINISTRATION",
             "Access management",
             "Manage roles, permissions, and workspace policies.",

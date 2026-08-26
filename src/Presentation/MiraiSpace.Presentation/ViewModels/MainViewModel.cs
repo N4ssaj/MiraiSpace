@@ -1,14 +1,13 @@
 using MiraiSpace.Extensibility.Abstractions.Menu;
 using MiraiSpace.Presentation.Menu;
 using MiraiSpace.Presentation.Menu.Demo;
-using ReactiveUI;
 using System.Reactive;
+using ReactiveUI;
 
 namespace MiraiSpace.Presentation.ViewModels;
 
-public sealed class MainViewModel : ViewModelBase, IDisposable
+public sealed class MainViewModel : ViewModelBase
 {
-    private readonly IDisposable _executionErrorSubscription;
     private string? _lastExecutionError;
 
     public MainViewModel(IAppMenuViewModel menu, AppNavigationState navigation)
@@ -17,8 +16,9 @@ public sealed class MainViewModel : ViewModelBase, IDisposable
         Navigation = navigation;
         ExecuteMenuItemCommand = ReactiveCommand.CreateFromTask<IAppMenuItem>(
             async item => await Menu.ExecuteAsync(item));
-        _executionErrorSubscription = ExecuteMenuItemCommand.ThrownExceptions
-            .Subscribe(exception => LastExecutionError = exception.Message);
+        Own(ExecuteMenuItemCommand);
+        Own(ExecuteMenuItemCommand.ThrownExceptions
+            .Subscribe(exception => LastExecutionError = exception.Message));
     }
 
     public IAppMenuViewModel Menu { get; }
@@ -33,11 +33,5 @@ public sealed class MainViewModel : ViewModelBase, IDisposable
     {
         get => _lastExecutionError;
         private set => this.RaiseAndSetIfChanged(ref _lastExecutionError, value);
-    }
-
-    public void Dispose()
-    {
-        _executionErrorSubscription.Dispose();
-        ExecuteMenuItemCommand.Dispose();
     }
 }
