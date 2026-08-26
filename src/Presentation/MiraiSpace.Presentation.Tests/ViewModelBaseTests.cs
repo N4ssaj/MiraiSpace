@@ -7,7 +7,7 @@ namespace MiraiSpace.Presentation.Tests;
 public sealed class ViewModelBaseTests
 {
     [Fact]
-    public void DeactivationHookRunsAfterActivationScopeIsDisposed()
+    public void ActivationAndDeactivationHooksFollowTheActivator()
     {
         using var viewModel = new RecordingViewModel();
 
