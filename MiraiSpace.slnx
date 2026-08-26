@@ -42,6 +42,7 @@
   </Folder>
   <Folder Name="/src/Presentation/">
     <Project Path="src/Presentation/MiraiSpace.Presentation/MiraiSpace.Presentation.csproj" />
+    <Project Path="src/Presentation/MiraiSpace.Presentation.Abstractions/MiraiSpace.Presentation.Abstractions.csproj" />
     <Project Path="src/Presentation/MiraiSpace.Presentation.Tests/MiraiSpace.Presentation.Tests.csproj" />
   </Folder>
 </Solution>

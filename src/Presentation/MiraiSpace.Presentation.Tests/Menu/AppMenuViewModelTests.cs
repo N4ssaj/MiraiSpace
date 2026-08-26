@@ -1,54 +1,70 @@
 using System.Reactive;
-using System.Reactive.Linq;
-using MiraiSpace.Extensibility.Abstractions.Menu;
-using MiraiSpace.Presentation.Menu;
+using System.Reactive.Subjects;
+using MiraiSpace.Presentation.Abstractions.Menu;
+using MiraiSpace.Presentation.Menu.Access;
+using MiraiSpace.Presentation.Menu.Composition;
 using MiraiSpace.Presentation.Menu.Demo;
 
 namespace MiraiSpace.Presentation.Tests.Menu;
 
-public sealed class AppMenuViewModelTests
+public sealed class AppMenuTests
 {
     [Fact]
-    public void ContributionsAreFlattenedInParentAndOrderSequence()
+    public void OptionalOrderIsAppliedByTheOwnerComparer()
     {
-        AppMenuViewModel menu = CreateMenu(
-            new TestContribution(new("child", "parent", 10, "Child")),
-            new TestContribution(new("last", null, 20, "Last")),
-            new TestContribution(new("parent", null, 10, "Parent")));
+        using var last = new DashboardMenuItem(new AppNavigationState());
+        using var first = new TestItem(order: 10);
+        using var menu = CreateMenu(last, first);
 
-        Assert.Equal(["parent", "child", "last"], menu.Items.Select(item => item.Id));
-        Assert.Equal(1, menu.Items[1].Depth);
+        Assert.Same(first, menu.Items[0]);
+        Assert.Same(last, menu.Items[1]);
     }
 
     [Fact]
-    public void MissingParentIsRejected()
+    public void AccessChangeRefiltersWithoutReactiveContractsInAbstractions()
     {
-        Assert.Throws<InvalidOperationException>(() => CreateMenu(
-            new TestContribution(new("child", "missing", 10, "Child"))));
+        using var item = new TestItem(order: 10);
+        using var policy = new ToggleAccessPolicy(allowed: false);
+        using var menu = CreateMenu([item], policy);
+
+        Assert.Empty(menu.Items);
+
+        policy.SetAllowed(true);
+
+        Assert.Same(item, Assert.Single(menu.Items));
     }
 
-    [Fact]
-    public void ContributionCycleIsRejected()
+    private static AppMenu CreateMenu(params IAppMenuItem[] items) =>
+        CreateMenu(items, new ToggleAccessPolicy(allowed: true));
+
+    private static AppMenu CreateMenu(
+        IEnumerable<IAppMenuItem> items,
+        IAppMenuItemAccessPolicy policy)
     {
-        Assert.Throws<InvalidOperationException>(() => CreateMenu(
-            new TestContribution(new("first", "second", 10, "First")),
-            new TestContribution(new("second", "first", 20, "Second"))));
+        var access = new AppMenuItemAccess([policy]);
+        return new AppMenu(items, access, new AppMenuItemComparer());
     }
 
-    private static AppMenuViewModel CreateMenu(params IAppMenuContribution[] contributions)
+    private sealed class TestItem(int order) : MiraiSpace.Presentation.Menu.Items.AppMenuItem(order)
     {
-        var checker = new AppMenuAccessEvaluator([]);
-        return new AppMenuViewModel(
-            contributions,
-            checker,
-            new AppMenuContributionExecutor(checker),
-            new AppNavigationState());
+        protected override ValueTask ExecuteAsync(CancellationToken cancellationToken) =>
+            ValueTask.CompletedTask;
     }
 
-    private sealed class TestContribution(AppMenuItemDescriptor descriptor) : IAppMenuContribution
+    private sealed class ToggleAccessPolicy(bool allowed) : IAppMenuItemAccessPolicy, IDisposable
     {
-        public AppMenuItemDescriptor Descriptor { get; } = descriptor;
-        public IObservable<Unit> Changed => Observable.Never<Unit>();
-        public ValueTask ExecuteAsync(CancellationToken cancellationToken = default) => ValueTask.CompletedTask;
+        private readonly Subject<Unit> _changed = new();
+        private bool _allowed = allowed;
+
+        public IObservable<Unit> AccessChanged => _changed;
+        public bool CheckAccess(IAppMenuItem item) => _allowed;
+
+        public void SetAllowed(bool allowed)
+        {
+            _allowed = allowed;
+            _changed.OnNext(Unit.Default);
+        }
+
+        public void Dispose() => _changed.Dispose();
     }
 }

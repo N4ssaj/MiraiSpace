@@ -25,5 +25,6 @@
     <ProjectReference Include="..\MiraiSpace.UI.Controls\MiraiSpace.UI.Controls.csproj" />
     <ProjectReference Include="..\MiraiSpace.UI.Icons\MiraiSpace.UI.Icons.csproj" />
     <ProjectReference Include="..\MiraiSpace.UI.Themes\MiraiSpace.UI.Themes.csproj" />
+    <ProjectReference Include="..\..\Presentation\MiraiSpace.Presentation.Abstractions\MiraiSpace.Presentation.Abstractions.csproj" />
   </ItemGroup>
 </Project>

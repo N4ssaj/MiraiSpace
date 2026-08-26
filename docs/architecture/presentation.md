@@ -1,31 +1,31 @@
 # Presentation architecture
 
-## Type roles
+## Project seam
 
-Presentation uses four deliberately different base types:
+`MiraiSpace.Presentation.Abstractions` is a BCL-only project for contracts consumed by independent Modules. It does not reference ReactiveUI, ReactiveUI.Validation, DynamicData, Avalonia, Eremex, DI, or `System.Reactive`.
 
-| Type | Responsibility | ReactiveUI lifecycle |
-| --- | --- | --- |
-| `ModelBase` | Observable presentation state that is not owned by a View | No |
-| `ViewModelBase` | State and work whose lifetime follows a View | `IActivatableViewModel` and `ViewModelActivator` |
-| `ComponentViewModelBase` | An independently rendered ViewModel with a stable component identity | Inherited activation |
-| `PageViewModelBase` | Route-addressable shell content with a stable route and title | Inherited activation |
+`MiraiSpace.Presentation` implements those contracts and owns reactive composition. `MiraiSpace.UI` owns Views, Eremex adapters, and exact `IViewFor<TViewModel>` registrations.
 
-Domain entities, application DTOs, persisted records, and transport models inherit from none of these types. `ModelBase` is specifically a presentation model.
+## Base types
 
-`ViewModelBase` does not implement a second disposal framework. It registers an activation block with ReactiveUI. Derived ViewModels override the activation method for their role and add subscriptions or bindings to the supplied `CompositeDisposable`. ReactiveUI disposes that scope when the corresponding View deactivates and creates a new scope on the next activation. `PageViewModelBase` also creates and cancels a token for page-scoped asynchronous work on every activation.
+- `Model` is observable Presentation state without a View lifecycle.
+- `ViewModelBase` implements ReactiveUI `IActivatableViewModel` and exposes protected activation and deactivation hooks.
+- `Component` and `Page` are intentionally empty semantic bases. Their behavior is not guessed in advance.
+- Validation is opt-in on the concrete ViewModel through ReactiveUI.Validation; it is not imposed on every ViewModel or exposed by Presentation abstractions.
 
-Constructors only establish immutable identity, commands, and cheap initial state. I/O, timers, realtime subscriptions, and page-scoped cancellation begin during activation.
+Every ViewModel normally has its own View contract. A shared visual implementation may satisfy several exact `IViewFor<TConcreteViewModel>` registrations, but rendering still passes the concrete ViewModel to `ContentControl` and lets `ViewLocator` resolve its exact View.
 
-## Ownership
+## Initialization
 
-- A View activates its own ViewModel through ReactiveUI.
-- A shell ViewModel activates child ViewModels that it owns but that do not have an independent ReactiveUI View.
-- A `ModelBase` is owned by the module that projects it. It does not pretend to have visibility lifecycle.
-- DI owns singleton disposal and Generic Host owns application shutdown. View activation is shorter-lived and does not replace host shutdown.
+`IInitializable` and `IInitializable<TParameter>` accept runtime input after DI construction. Initialization is repeatable and may run while a ViewModel is active. A new initialization cancels the previous initialization cooperatively, allowing the existing instance to rebuild for the latest input.
 
-## Menu presentation
+Construction, initialization, activation, and disposal remain distinct:
 
-The application menu demonstrates these roles. `AppMenuViewModel` is an activatable component. `AppMenuItemModel` is a non-activatable projection created by the menu composer. Contributions are not ViewModels and do not depend on ReactiveUI, Avalonia, or Eremex.
+1. DI constructs stable dependencies.
+2. An owner supplies runtime input through `InitializeAsync`.
+3. ReactiveUI activates active-only subscriptions when the View is active.
+4. A later input may reinitialize the same active instance.
+5. ReactiveUI deactivation releases its activation scope and invokes `OnDeactivated`.
+6. DI or the owning scope performs final disposal.
 
-The Avalonia adapter renders that projection with Eremex `ListViewControl`. Eremex therefore remains replaceable UI implementation detail rather than becoming part of the extension point.
+The owner initializes what it owns. Navigation initializes a Page before publishing it. A parent may initialize a known child. `Lazy<T>` represents a single lazy child; a feature-specific factory/delegate creates repeated instances. A universal ViewModel factory is deliberately rejected because it resembles a Service Locator.

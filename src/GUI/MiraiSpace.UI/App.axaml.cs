@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using MiraiSpace.Extensibility.Abstractions.Modules;
 using MiraiSpace.Presentation.Menu.Demo;
 using MiraiSpace.Presentation.ViewModels;
+using MiraiSpace.UI.DependencyInjection;
 using MiraiSpace.UI.Views;
 
 namespace MiraiSpace.UI;
@@ -28,6 +29,7 @@ public partial class App : Application
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         builder.Services.AddModule<AppMenuModule>();
+        builder.Services.AddViews();
         _host = builder.Build();
         _host.Start();
 

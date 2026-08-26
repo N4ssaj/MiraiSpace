@@ -1,11 +1,24 @@
-using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+using MiraiSpace.Presentation.Menu.Demo;
+using ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace MiraiSpace.UI.Views.Menu;
 
-public partial class MenuItemView : UserControl
+public partial class MenuItemView : ReactiveUserControl<MenuItemViewModel>
 {
     public MenuItemView()
     {
-        InitializeComponent();
+        AvaloniaXamlLoader.Load(this);
+    }
+}
+
+public sealed class MenuItemView<TViewModel> : MenuItemView, IViewFor<TViewModel>
+    where TViewModel : MenuItemViewModel
+{
+    TViewModel? IViewFor<TViewModel>.ViewModel
+    {
+        get => DataContext as TViewModel;
+        set => DataContext = value;
     }
 }

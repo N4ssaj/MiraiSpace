@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using MiraiSpace.Extensibility.Abstractions.Menu;
 using MiraiSpace.Extensibility.Abstractions.Modules;
-using MiraiSpace.Presentation.Menu;
+using MiraiSpace.Presentation.Abstractions.Menu;
 using MiraiSpace.Presentation.Menu.Demo;
 using ReactiveUI;
 
@@ -10,33 +9,43 @@ namespace MiraiSpace.Presentation.Tests.Menu;
 public sealed class AppMenuCompositionTests
 {
     [Fact]
-    public void ModuleEntryPointComposesAFlatPresentationModel()
+    public void ModuleComposesRootsAndKeepsContainerOwnership()
     {
         using ServiceProvider provider = new ServiceCollection()
             .AddModule<AppMenuModule>()
-            .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
+            .BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
 
-        IAppMenuViewModel menu = provider.GetRequiredService<IAppMenuViewModel>();
+        IAppMenu menu = provider.GetRequiredService<IAppMenu>();
+        var workspace = Assert.Single(menu.Items.OfType<WorkspaceMenuItemContainer>());
 
-        Assert.Equal(
-            ["overview", "inbox", "workspace", "workspace.pages", "workspace.calendar",
-             "workspace.delegate.mc", "workspace.delegate.nw", "admin-mode"],
-            menu.Items.Select(item => item.Id));
-        Assert.DoesNotContain(menu.Items, item => item.Id == "administration");
+        Assert.Contains(menu.Items, item => item is DashboardMenuItem);
+        Assert.DoesNotContain(menu.Items, item => item is AdministrationMenuItem);
+        Assert.Empty(workspace.Items);
+
+        using IDisposable activation = workspace.Activator.Activate();
+
+        Assert.Collection(
+            workspace.Items,
+            item => Assert.IsType<WorkspacePageMenuItem>(item),
+            item => Assert.IsType<WorkspaceCalendarMenuItem>(item),
+            item => Assert.IsType<DelegateMenuItem>(item),
+            item => Assert.IsType<DelegateMenuItem>(item));
     }
 
     [Fact]
-    public void ActiveMenuRecomposesWhenAccessChanges()
+    public void RoleChangeRevealsRestrictedRootItem()
     {
         using ServiceProvider provider = new ServiceCollection()
             .AddModule<AppMenuModule>()
             .BuildServiceProvider();
-        var menu = (AppMenuViewModel)provider.GetRequiredService<IAppMenuViewModel>();
-        using IDisposable activation = menu.Activator.Activate();
+        IAppMenu menu = provider.GetRequiredService<IAppMenu>();
 
         provider.GetRequiredService<CurrentUserContext>().ToggleAdministrator();
 
-        Assert.Contains(menu.Items, item => item.Id == "administration");
-        Assert.Equal("Leave admin mode", menu.Items.Single(item => item.Id == "admin-mode").Title);
+        Assert.Contains(menu.Items, item => item is AdministrationMenuItem);
     }
 }

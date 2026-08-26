@@ -20,16 +20,16 @@ This is an evidence-driven execution order for issue #10, not a frozen feature r
 
 ## 3. Reactive ownership and communication
 
-- [x] Validate reactive menu access and descriptor refresh through an owning ViewModel.
+- [x] Validate reactive root access and owner-controlled container collections.
 - [ ] Introduce the application session owner and move demo roles behind it.
 - [ ] Add a small fact-message seam only when a second independent consumer demonstrates it.
 - [ ] Add shared connection state and owner-driven reconnect refresh.
 
 ## 4. Navigation and page activation
 
-- [x] Establish ReactiveUI activation bases for ViewModels, components, and pages.
+- [x] Establish ReactiveUI activation/deactivation plus repeatable initialization contracts.
 - [ ] Define route values, navigation outcomes, not-found state, and activation-error state.
-- [ ] Create page scopes and cancellation tied to activation.
+- [ ] Create navigation-owned page scopes and initialize Pages before publication.
 - [ ] Demonstrate a contributed page and a localized plugin failure.
 
 ## 5. View resolution and overrides

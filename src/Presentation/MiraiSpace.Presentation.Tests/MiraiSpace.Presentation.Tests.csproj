@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MiraiSpace.Presentation\MiraiSpace.Presentation.csproj" />
+    <ProjectReference Include="..\MiraiSpace.Presentation.Abstractions\MiraiSpace.Presentation.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

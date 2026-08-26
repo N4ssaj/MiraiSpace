@@ -1,27 +1,13 @@
-using System.Reactive.Subjects;
-using MiraiSpace.Presentation.ViewModels;
 using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class AppNavigationState : ModelBase, IAppMenuSelectionSource, IDisposable
+public sealed class AppNavigationState : ReactiveObject
 {
-    private readonly Subject<string> _routeChanged = new();
-    private string _route = "overview";
     private string _eyebrow = "OVERVIEW";
     private string _title = "Good morning, Alex";
     private string _description = "Here is what is happening across your workspace today.";
     private string _accent = "#7165E8";
-
-    public string CurrentItemId => Route;
-
-    public IObservable<string> SelectionChanged => _routeChanged;
-
-    public string Route
-    {
-        get => _route;
-        private set => this.RaiseAndSetIfChanged(ref _route, value);
-    }
 
     public string Eyebrow
     {
@@ -47,15 +33,11 @@ public sealed class AppNavigationState : ModelBase, IAppMenuSelectionSource, IDi
         private set => this.RaiseAndSetIfChanged(ref _accent, value);
     }
 
-    public void Navigate(string route, string eyebrow, string title, string description, string accent)
+    public void Navigate(string eyebrow, string title, string description, string accent)
     {
-        Route = route;
         Eyebrow = eyebrow;
         Title = title;
         Description = description;
         Accent = accent;
-        _routeChanged.OnNext(route);
     }
-
-    public void Dispose() => _routeChanged.Dispose();
 }

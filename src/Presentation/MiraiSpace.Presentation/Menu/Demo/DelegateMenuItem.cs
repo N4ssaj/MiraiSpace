@@ -1,5 +1,3 @@
-using MiraiSpace.Extensibility.Abstractions.Menu;
-
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class DelegateMenuItem(
@@ -8,18 +6,29 @@ public sealed class DelegateMenuItem(
     string initials,
     string color,
     int order)
-    : DemoMenuContribution(navigation, new(
-        $"workspace.delegate.{initials.ToLowerInvariant()}",
-        "workspace",
-        order,
-        displayName,
-        "Delegated space",
-        initials,
-        color))
+    : MenuItemViewModel(navigation, order)
 {
-    public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default) =>
-        NavigateAsync(
+    public string DisplayName { get; } = displayName;
+
+    public string Initials { get; } = initials;
+
+    public string Color { get; } = color;
+
+    public override string DisplayTitle => DisplayName;
+
+    public override string Caption => "Delegated pages";
+
+    public override string Glyph => Initials;
+
+    public override string Accent => Color;
+
+    protected override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        Navigation.Navigate(
             "DELEGATED SPACE",
-            Descriptor.Title,
-            $"You are viewing the pages delegated by {Descriptor.Title}.");
+            DisplayName,
+            $"You are viewing the pages delegated by {DisplayName}.",
+            Color);
+        return ValueTask.CompletedTask;
+    }
 }

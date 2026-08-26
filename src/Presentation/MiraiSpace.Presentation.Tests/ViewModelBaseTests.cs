@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using MiraiSpace.Presentation.Abstractions.Lifecycle;
 using MiraiSpace.Presentation.ViewModels;
 
 namespace MiraiSpace.Presentation.Tests;
@@ -6,61 +7,75 @@ namespace MiraiSpace.Presentation.Tests;
 public sealed class ViewModelBaseTests
 {
     [Fact]
-    public void ActivationOwnsResourcesUntilViewDeactivates()
+    public void DeactivationHookRunsAfterActivationScopeIsDisposed()
     {
-        var resource = new RecordingDisposable();
-        var viewModel = new TestViewModel(resource);
+        using var viewModel = new RecordingViewModel();
 
         IDisposable activation = viewModel.Activator.Activate();
-        Assert.Equal(0, resource.DisposeCount);
-
         activation.Dispose();
-        Assert.Equal(1, resource.DisposeCount);
+
+        Assert.Equal(1, viewModel.ActivationCount);
+        Assert.Equal(1, viewModel.DeactivationCount);
     }
 
     [Fact]
-    public void ModelDoesNotExposeAViewActivator()
+    public async Task NewInitializationCancelsThePreviousInput()
     {
-        Assert.False(typeof(ReactiveUI.IActivatableViewModel).IsAssignableFrom(typeof(TestModel)));
+        using var viewModel = new ParameterViewModel();
+        Task first = viewModel.InitializeAsync("first").AsTask();
+
+        await viewModel.InitializeAsync("second");
+        await first;
+
+        Assert.True(viewModel.FirstWasCancelled);
+        Assert.Equal("second", viewModel.Value);
     }
 
     [Fact]
-    public void PageActivationCancelsPageWorkWhenViewDeactivates()
+    public void ComponentAndPageRemainSemanticEmptyBases()
     {
-        var page = new TestPage();
-
-        IDisposable activation = page.Activator.Activate();
-        Assert.False(page.ActivationToken.IsCancellationRequested);
-
-        activation.Dispose();
-        Assert.True(page.ActivationToken.IsCancellationRequested);
+        Assert.Equal(typeof(ViewModelBase), typeof(Component).BaseType);
+        Assert.Equal(typeof(ViewModelBase), typeof(Page).BaseType);
     }
 
-    private sealed class TestViewModel(IDisposable resource) : ViewModelBase
+    private sealed class RecordingViewModel : ViewModelBase
     {
-        protected override void OnActivated(CompositeDisposable disposables) =>
-            disposables.Add(resource);
+        public int ActivationCount { get; private set; }
+        public int DeactivationCount { get; private set; }
+
+        protected override void OnActivated(CompositeDisposable disposables) => ActivationCount++;
+        protected override void OnDeactivated() => DeactivationCount++;
     }
 
-    private sealed class TestModel : ModelBase;
-
-    private sealed class TestPage : PageViewModelBase
+    private sealed class ParameterViewModel : ViewModelBase, IInitializable<string>
     {
-        public TestPage() : base("test", "Test")
-        {
-        }
+        private readonly TaskCompletionSource _firstStarted = new(
+            TaskCreationOptions.RunContinuationsAsynchronously);
 
-        public CancellationToken ActivationToken { get; private set; }
+        public bool FirstWasCancelled { get; private set; }
+        public string? Value { get; private set; }
 
-        protected override void OnPageActivated(
-            CompositeDisposable disposables,
-            CancellationToken cancellationToken) =>
-            ActivationToken = cancellationToken;
-    }
+        public async ValueTask InitializeAsync(
+            string parameter,
+            CancellationToken cancellationToken = default) =>
+            await ReinitializeAsync(async token =>
+            {
+                if (parameter == "first")
+                {
+                    _firstStarted.SetResult();
+                    try
+                    {
+                        await Task.Delay(Timeout.InfiniteTimeSpan, token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        FirstWasCancelled = true;
+                    }
+                    return;
+                }
 
-    private sealed class RecordingDisposable : IDisposable
-    {
-        public int DisposeCount { get; private set; }
-        public void Dispose() => DisposeCount++;
+                await _firstStarted.Task;
+                Value = parameter;
+            }, cancellationToken);
     }
 }

@@ -1,18 +1,33 @@
 using MiraiSpace.Extensibility.Abstractions.Common;
-using MiraiSpace.Extensibility.Abstractions.Menu;
+using MiraiSpace.Presentation.Abstractions.Menu;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class AdministrationMenuItem(AppNavigationState navigation)
-    : DemoMenuContribution(navigation, new(
-        "administration", null, 400, "Administration", "Roles & policies", "⚙", "#C267E7")),
-        IRoleRestricted
+    : MenuItemViewModel(navigation, 400), IRoleRestricted
 {
-    public IReadOnlyCollection<Guid> RequiredRoleIds { get; } = [RoleIds.Administrator];
+    public string Title => "Administration";
 
-    public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default) =>
-        NavigateAsync(
+    public string Subtitle => "Roles & policies";
+
+    public override string DisplayTitle => Title;
+
+    public override string Caption => Subtitle;
+
+    public override string Glyph => "⚙";
+
+    public override string Accent => "#C267E7";
+
+    public IReadOnlyCollection<Guid> RequiredRoleIds { get; } =
+        [RoleIds.Administrator];
+
+    protected override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        Navigation.Navigate(
             "ADMINISTRATION",
             "Access management",
-            "Manage roles, permissions, and workspace policies.");
+            "Manage roles, permissions, and workspace policies.",
+            "#C267E7");
+        return ValueTask.CompletedTask;
+    }
 }

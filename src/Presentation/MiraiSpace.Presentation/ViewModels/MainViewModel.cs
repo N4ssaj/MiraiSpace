@@ -1,6 +1,6 @@
-using System.Reactive;
 using System.Reactive.Disposables;
-using MiraiSpace.Presentation.Menu;
+using System.Reactive;
+using MiraiSpace.Presentation.Abstractions.Menu;
 using MiraiSpace.Presentation.Menu.Demo;
 using ReactiveUI;
 
@@ -8,35 +8,43 @@ namespace MiraiSpace.Presentation.ViewModels;
 
 public sealed class MainViewModel : ViewModelBase
 {
-    private string? _lastExecutionError;
+    private bool _isMenuOpen = true;
 
-    public MainViewModel(IAppMenuViewModel menu, AppNavigationState navigation)
+    public MainViewModel(IAppMenu menu, AppNavigationState navigation)
     {
         Menu = menu;
         Navigation = navigation;
-        ExecuteMenuItemCommand = ReactiveCommand.CreateFromTask<AppMenuItemModel>(
-            async item => await Menu.ExecuteAsync(item));
+        ToggleMenuCommand = ReactiveCommand.Create(() =>
+        {
+            IsMenuOpen = !IsMenuOpen;
+        });
     }
 
-    public IAppMenuViewModel Menu { get; }
-    public IReadOnlyList<AppMenuItemModel> Items => Menu.Items;
+    public IAppMenu Menu { get; }
+
+    public IReadOnlyList<IAppMenuItem> Items => Menu.Items;
+
     public AppNavigationState Navigation { get; }
-    public ReactiveCommand<AppMenuItemModel, Unit> ExecuteMenuItemCommand { get; }
 
-    public string? LastExecutionError
+    public bool IsMenuOpen
     {
-        get => _lastExecutionError;
-        private set => this.RaiseAndSetIfChanged(ref _lastExecutionError, value);
+        get => _isMenuOpen;
+        set => this.RaiseAndSetIfChanged(ref _isMenuOpen, value);
     }
+
+    public ReactiveCommand<Unit, Unit> ToggleMenuCommand { get; }
 
     protected override void OnActivated(CompositeDisposable disposables)
     {
-        disposables.Add(ExecuteMenuItemCommand.ThrownExceptions
-            .Subscribe(exception => LastExecutionError = exception.Message));
-
-        if (Menu is IActivatableViewModel activatableMenu)
+        if (Menu is IActivatableViewModel activatable)
         {
-            disposables.Add(activatableMenu.Activator.Activate());
+            disposables.Add(activatable.Activator.Activate());
         }
+    }
+
+    public override void Dispose()
+    {
+        ToggleMenuCommand.Dispose();
+        base.Dispose();
     }
 }
