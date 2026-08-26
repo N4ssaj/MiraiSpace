@@ -33,6 +33,16 @@ public sealed class ViewModelBaseTests
     }
 
     [Fact]
+    public async Task ParameterlessInitializationUsesTheSameProtocol()
+    {
+        var viewModel = new ParameterlessViewModel();
+
+        await viewModel.InitializeAsync();
+
+        Assert.True(viewModel.Initialized);
+    }
+
+    [Fact]
     public void ComponentAndPageAreSemanticEmptyBases()
     {
         Assert.Equal(typeof(ViewModelBase), typeof(Component).BaseType);
@@ -65,5 +75,16 @@ public sealed class ViewModelBaseTests
             disposables.Add(Disposable.Create(() => ResourceDisposed = true));
 
         protected override void OnDeactivated() => Deactivated = true;
+    }
+
+    private sealed class ParameterlessViewModel : ViewModelBase
+    {
+        public bool Initialized { get; private set; }
+
+        protected override ValueTask OnInitializeAsync(CancellationToken cancellationToken)
+        {
+            Initialized = true;
+            return ValueTask.CompletedTask;
+        }
     }
 }

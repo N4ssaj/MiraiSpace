@@ -1,12 +1,14 @@
 using System.Reactive.Disposables;
+using MiraiSpace.Presentation.Abstractions.Lifecycle;
 using ReactiveUI;
 
 namespace MiraiSpace.Presentation.ViewModels;
 
-public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel, IDisposable
+public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel, IInitializable, IDisposable
 {
     private readonly Lock _initializationGate = new();
     private CancellationTokenSource? _initialization;
+    private bool _isDisposed;
 
     protected ViewModelBase()
     {
@@ -18,6 +20,12 @@ public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel, IDi
     }
 
     public ViewModelActivator Activator { get; } = new();
+
+    public ValueTask InitializeAsync(CancellationToken cancellationToken = default) =>
+        InitializeLatestAsync(OnInitializeAsync, cancellationToken);
+
+    protected virtual ValueTask OnInitializeAsync(CancellationToken cancellationToken) =>
+        ValueTask.CompletedTask;
 
     protected virtual void OnActivated(CompositeDisposable disposables)
     {
@@ -32,6 +40,7 @@ public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel, IDi
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(initialize);
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
         var current = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         CancellationTokenSource? previous;
 
@@ -41,7 +50,14 @@ public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel, IDi
             _initialization = current;
         }
 
-        previous?.Cancel();
+        try
+        {
+            previous?.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
+            // The replaced initialization completed concurrently.
+        }
 
         try
         {
@@ -64,9 +80,19 @@ public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel, IDi
     protected virtual void Dispose(bool disposing)
     {
         if (!disposing) return;
+        if (_isDisposed) return;
+        _isDisposed = true;
         lock (_initializationGate)
         {
-            _initialization?.Cancel();
+            try
+            {
+                _initialization?.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+                // The initialization completed concurrently with final disposal.
+            }
+            _initialization = null;
         }
         Activator.Dispose();
     }
