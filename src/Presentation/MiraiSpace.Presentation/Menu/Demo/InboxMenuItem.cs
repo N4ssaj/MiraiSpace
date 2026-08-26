@@ -1,7 +1,7 @@
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class InboxMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, 200)
+    : MenuItemViewModel(navigation, "inbox", 200)
 {
     public string Title => "Inbox";
 
@@ -18,6 +18,7 @@ public sealed class InboxMenuItem(AppNavigationState navigation)
     public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
     {
         Navigation.Navigate(
+            RouteKey,
             "COMMUNICATION",
             "Inbox",
             "Eight conversations are waiting for your attention.",

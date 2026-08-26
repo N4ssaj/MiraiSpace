@@ -1,7 +1,7 @@
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class WorkspacePageMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, 100)
+    : MenuItemViewModel(navigation, "workspace.pages", 100)
 {
     public string Title => "Pages";
 
@@ -18,6 +18,7 @@ public sealed class WorkspacePageMenuItem(AppNavigationState navigation)
     public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
     {
         Navigation.Navigate(
+            RouteKey,
             "WORKSPACE",
             "Pages",
             "Create, organize, and share knowledge with your team.",

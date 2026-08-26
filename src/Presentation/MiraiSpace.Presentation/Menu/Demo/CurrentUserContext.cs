@@ -1,13 +1,19 @@
 using System.Reactive;
 using System.Reactive.Subjects;
+using MiraiSpace.Presentation.ViewModels;
 using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class CurrentUserContext : ReactiveObject, IDisposable
+public sealed class CurrentUserContext : ViewModelBase
 {
     private readonly HashSet<Guid> _roles = [];
-    private readonly Subject<Unit> _rolesChanged = new();
+    private readonly Subject<Unit> _rolesChanged;
+
+    public CurrentUserContext()
+    {
+        _rolesChanged = Own(new Subject<Unit>());
+    }
 
     public bool IsAdministrator => _roles.Contains(RoleIds.Administrator);
 
@@ -26,5 +32,4 @@ public sealed class CurrentUserContext : ReactiveObject, IDisposable
         _rolesChanged.OnNext(Unit.Default);
     }
 
-    public void Dispose() => _rolesChanged.Dispose();
 }
