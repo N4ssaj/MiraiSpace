@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using MiraiSpace.Presentation.Abstractions.Lifecycle;
 using MiraiSpace.Presentation.ViewModels;
 
 namespace MiraiSpace.Presentation.Tests;
@@ -6,61 +7,63 @@ namespace MiraiSpace.Presentation.Tests;
 public sealed class ViewModelBaseTests
 {
     [Fact]
-    public void ActivationOwnsResourcesUntilViewDeactivates()
+    public void DeactivationDisposesActivationResourcesAndCallsHook()
     {
-        var resource = new RecordingDisposable();
-        var viewModel = new TestViewModel(resource);
-
+        var viewModel = new TestViewModel();
         IDisposable activation = viewModel.Activator.Activate();
-        Assert.Equal(0, resource.DisposeCount);
 
         activation.Dispose();
-        Assert.Equal(1, resource.DisposeCount);
+
+        Assert.True(viewModel.ResourceDisposed);
+        Assert.True(viewModel.Deactivated);
     }
 
     [Fact]
-    public void ModelDoesNotExposeAViewActivator()
+    public async Task NewInitializationCancelsThePreviousRequest()
     {
-        Assert.False(typeof(ReactiveUI.IActivatableViewModel).IsAssignableFrom(typeof(TestModel)));
+        var viewModel = new TestViewModel();
+        Task first = viewModel.InitializeAsync(1).AsTask();
+        await viewModel.FirstStarted.Task;
+
+        await viewModel.InitializeAsync(2);
+        await first;
+
+        Assert.Equal(2, viewModel.Value);
+        Assert.True(viewModel.FirstCancelled);
     }
 
     [Fact]
-    public void PageActivationCancelsPageWorkWhenViewDeactivates()
+    public void ComponentAndPageAreSemanticEmptyBases()
     {
-        var page = new TestPage();
-
-        IDisposable activation = page.Activator.Activate();
-        Assert.False(page.ActivationToken.IsCancellationRequested);
-
-        activation.Dispose();
-        Assert.True(page.ActivationToken.IsCancellationRequested);
+        Assert.Equal(typeof(ViewModelBase), typeof(Component).BaseType);
+        Assert.Equal(typeof(ViewModelBase), typeof(Page).BaseType);
     }
 
-    private sealed class TestViewModel(IDisposable resource) : ViewModelBase
+    private sealed class TestViewModel : ViewModelBase, IInitializable<int>
     {
+        public TaskCompletionSource FirstStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public bool ResourceDisposed { get; private set; }
+        public bool Deactivated { get; private set; }
+        public bool FirstCancelled { get; private set; }
+        public int Value { get; private set; }
+
+        public ValueTask InitializeAsync(int parameter, CancellationToken cancellationToken = default) =>
+            InitializeLatestAsync(async token =>
+            {
+                if (parameter == 1)
+                {
+                    FirstStarted.SetResult();
+                    try { await Task.Delay(Timeout.Infinite, token); }
+                    catch (OperationCanceledException) { FirstCancelled = true; }
+                    return;
+                }
+
+                Value = parameter;
+            }, cancellationToken);
+
         protected override void OnActivated(CompositeDisposable disposables) =>
-            disposables.Add(resource);
-    }
+            disposables.Add(Disposable.Create(() => ResourceDisposed = true));
 
-    private sealed class TestModel : ModelBase;
-
-    private sealed class TestPage : PageViewModelBase
-    {
-        public TestPage() : base("test", "Test")
-        {
-        }
-
-        public CancellationToken ActivationToken { get; private set; }
-
-        protected override void OnPageActivated(
-            CompositeDisposable disposables,
-            CancellationToken cancellationToken) =>
-            ActivationToken = cancellationToken;
-    }
-
-    private sealed class RecordingDisposable : IDisposable
-    {
-        public int DisposeCount { get; private set; }
-        public void Dispose() => DisposeCount++;
+        protected override void OnDeactivated() => Deactivated = true;
     }
 }

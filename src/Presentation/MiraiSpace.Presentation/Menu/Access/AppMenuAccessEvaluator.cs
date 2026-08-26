@@ -1,10 +1,10 @@
 using System.Reactive;
 using System.Reactive.Linq;
-using MiraiSpace.Extensibility.Abstractions.Menu;
+using MiraiSpace.Presentation.Abstractions.Menu;
 
-namespace MiraiSpace.Presentation.Menu;
+namespace MiraiSpace.Presentation.Menu.Access;
 
-public sealed class AppMenuAccessEvaluator : IAppMenuAccessEvaluator
+public sealed class AppMenuAccessEvaluator
 {
     private readonly IReadOnlyList<IAppMenuAccessPolicy> _policies;
 
@@ -17,7 +17,5 @@ public sealed class AppMenuAccessEvaluator : IAppMenuAccessEvaluator
     }
 
     public IObservable<Unit> AccessChanged { get; }
-
-    public bool CheckAccess(IAppMenuContribution contribution) =>
-        _policies.All(policy => policy.CheckAccess(contribution));
+    public bool CheckAccess(IAppMenuItem item) => _policies.All(policy => policy.CheckAccess(item));
 }

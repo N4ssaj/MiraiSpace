@@ -1,51 +1,34 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:menu="using:MiraiSpace.Presentation.Menu"
-             x:Class="MiraiSpace.UI.Views.Menu.MenuItemView"
-             x:DataType="menu:AppMenuItemModel"
-             HorizontalContentAlignment="Stretch">
-    <Grid ColumnDefinitions="Auto,4,40,*,Auto">
-        <Border Width="{Binding Indent}" />
-        <Border Width="3"
-                Grid.Column="1"
-                Height="24"
-                CornerRadius="2"
-                Background="{Binding Accent}"
-                IsVisible="{Binding IsSelected}" />
-        <Border Grid.Column="2"
-                Width="34"
-                Height="34"
-                CornerRadius="10"
-                Background="{Binding Accent}">
-            <TextBlock Text="{Binding Glyph}"
-                       FontSize="15"
-                       FontWeight="SemiBold"
-                       Foreground="White"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
-        </Border>
+<rxui:ReactiveUserControl xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:rxui="using:ReactiveUI.Avalonia"
+                          xmlns:menu="using:MiraiSpace.Presentation.Menu.Standard"
+                                                    x:Class="MiraiSpace.UI.Views.Menu.MenuItemView"
+                          x:TypeArguments="menu:StandardAppMenuItem"
+                          x:DataType="menu:StandardAppMenuItem"
+                          HorizontalContentAlignment="Stretch">
+    <Button Command="{Binding Command}"
+            HorizontalContentAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            Padding="8,6"
+            CornerRadius="12"
+            Background="Transparent"
+            BorderThickness="0">
+        <Grid ColumnDefinitions="40,*,Auto">
+            <Border Width="34" Height="34" CornerRadius="10" Background="{Binding Accent}">
+                <TextBlock Text="{Binding Glyph}" FontSize="15" FontWeight="SemiBold" Foreground="White"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
 
-        <StackPanel Grid.Column="3"
-                    Margin="10,0,0,0"
-                    VerticalAlignment="Center">
-            <TextBlock Text="{Binding Title}"
-                       FontWeight="SemiBold"
-                       Foreground="#343640" />
-            <TextBlock Text="{Binding Caption}"
-                       FontSize="9"
-                       Foreground="#9295A1" />
-        </StackPanel>
+            <StackPanel x:Name="Details" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Foreground="#343640" />
+                <TextBlock Text="{Binding Caption}" FontSize="9" Foreground="#9295A1" />
+            </StackPanel>
 
-        <Border Grid.Column="4"
-                IsVisible="{Binding HasBadge}"
-                Background="{Binding Accent}"
-                CornerRadius="10"
-                Padding="7,2"
-                VerticalAlignment="Center">
-            <TextBlock Text="{Binding Badge}"
-                       FontSize="10"
-                       FontWeight="Bold"
-                       Foreground="White" />
-        </Border>
-    </Grid>
-</UserControl>
+            <Border Grid.Column="2" IsVisible="{Binding HasBadge}"
+                    Background="{Binding Accent}" CornerRadius="10" Padding="7,2"
+                    VerticalAlignment="Center" Margin="4,0,0,0">
+                <TextBlock Text="{Binding Badge}" FontSize="10" FontWeight="Bold" Foreground="White" />
+            </Border>
+        </Grid>
+    </Button>
+</rxui:ReactiveUserControl>

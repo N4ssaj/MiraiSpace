@@ -1,36 +1,25 @@
 # Application menu
 
-## Interface
+## Contracts
 
-Modules contribute `IAppMenuContribution` instances through the ordinary DI collection. Each contribution exposes:
+Menu contracts live in the BCL-only `MiraiSpace.Presentation.Abstractions` project:
 
-- an `AppMenuItemDescriptor` with stable id, optional parent id, deterministic order, and standard presentation;
-- a `Changed` fact stream when its descriptor presentation changes;
-- one cancellable execution entry point.
+- `IAppMenu` publishes root items;
+- `IAppMenuItem` publishes an `ICommand`;
+- `IAppMenuItemContainer` is an ordinary item that additionally owns child items;
+- `IOrderedAppMenuItem` is an optional ordering hint;
+- `IAppMenuItemComparer` is the owner-replaceable ordering strategy.
 
-The interface intentionally does not expose child collections, access decisions, selection, ReactiveUI types, or UI-framework types. Parent ids allow all modules to use one flat registration seam without owner-specific keyed-service knowledge.
+The contracts contain no descriptors, parent ids, ReactiveUI, DynamicData, System.Reactive, Avalonia, Eremex, DI, or access-policy types.
 
-## Owners
+## Ownership and composition
 
-| Concern | Owner |
-| --- | --- |
-| Registration | Module composition |
-| Descriptor and action | Contribution |
-| Hierarchy validation and projection | `AppMenuViewModel` |
-| Access policy aggregation | `AppMenuAccessEvaluator` |
-| Last-moment authorization and execution | `AppMenuContributionExecutor` |
-| Current destination | `IAppMenuSelectionSource` adapter over the navigation owner |
-| Selection projection | `AppMenuViewModel` |
-| Rendering and interaction adaptation | Avalonia UI |
+The root menu and each container own a DynamicData pipeline internally. They bind it to `ReadOnlyObservableCollection<IAppMenuItem>` and expose it as `IReadOnlyList<IAppMenuItem>`. Access filtering and ordering are implementation concerns. The default comparer uses optional order hints and returns equality for unordered items so registration order remains the fallback.
 
-## Invariants and failure modes
+A container decides when to create, initialize, show, hide, and release its children. Other modules extend a container through an owner-published typed item contract rather than global parent ids or implementation access.
 
-- Contribution ids are unique for one application run.
-- A parent must exist, a contribution cannot parent itself, and cycles are rejected.
-- Siblings sort by `Order` and then stable id.
-- If a parent is inaccessible, its descendants are not projected.
-- Access is checked during projection and again immediately before execution.
-- Contribution constructors remain cheap; unavailable contributions are still registered.
-- A presentation change announces a fact through `Changed`; consumers then read the current descriptor.
+## Rendering
 
-The current demo action still updates the demo navigation owner directly. The menu only observes it through `IAppMenuSelectionSource`; the navigation experiment will replace the action-side call with the published navigation interface and explicit navigation outcomes.
+Avalonia renders roots with Eremex `TreeViewControl`. `AppMenuChildrenSelector` reads `IAppMenuItemContainer.Items`; the menu owner never flattens the tree. Eremex cell templates bind `CellData.Row` into a `ContentControl`, after which `ViewLocator` resolves `IViewFor<TConcreteViewModel>`.
+
+The shell uses `SplitView` for full and compact modes. Menu display mode is inherited UI state, not ViewModel state. Concrete item Views adapt their layout: full mode shows title/caption/badge, compact mode shows the icon and badge. Closing the pane collapses tree nodes so compact mode remains a root navigation rail.

@@ -27,9 +27,10 @@ This is an evidence-driven execution order for issue #10, not a frozen feature r
 
 ## 4. Navigation and page activation
 
-- [x] Establish ReactiveUI activation bases for ViewModels, components, and pages.
+- [x] Establish ReactiveUI activation/deactivation and repeatable initialization contracts.
+- [x] Separate BCL-only Presentation contracts from ReactiveUI implementation.
 - [ ] Define route values, navigation outcomes, not-found state, and activation-error state.
-- [ ] Create page scopes and cancellation tied to activation.
+- [ ] Create navigation-owned page scopes and explicit async close semantics.
 - [ ] Demonstrate a contributed page and a localized plugin failure.
 
 ## 5. View resolution and overrides

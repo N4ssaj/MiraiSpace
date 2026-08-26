@@ -1,31 +1,21 @@
 # Presentation architecture
 
-## Type roles
+## Base types
 
-Presentation uses four deliberately different base types:
+`ViewModelBase` is the only behavioral base. It implements ReactiveUI activation and exposes protected `OnActivated` and `OnDeactivated` hooks. Resources added to the activation `CompositeDisposable` are released by ReactiveUI; deactivation is a synchronous notification and does not replace an explicit asynchronous close/navigation protocol.
 
-| Type | Responsibility | ReactiveUI lifecycle |
-| --- | --- | --- |
-| `ModelBase` | Observable presentation state that is not owned by a View | No |
-| `ViewModelBase` | State and work whose lifetime follows a View | `IActivatableViewModel` and `ViewModelActivator` |
-| `ComponentViewModelBase` | An independently rendered ViewModel with a stable component identity | Inherited activation |
-| `PageViewModelBase` | Route-addressable shell content with a stable route and title | Inherited activation |
+`Component` and `Page` are intentionally empty semantic bases. They do not add identifiers, routes, titles, duplicate activation hooks, or implicit cancellation. Behavior will be added only when a component- or page-specific invariant is demonstrated.
 
-Domain entities, application DTOs, persisted records, and transport models inherit from none of these types. `ModelBase` is specifically a presentation model.
+`ModelBase` is observable presentation state without a View lifecycle. Domain entities, application DTOs, persisted records, and transport values do not inherit from presentation bases.
 
-`ViewModelBase` does not implement a second disposal framework. It registers an activation block with ReactiveUI. Derived ViewModels override the activation method for their role and add subscriptions or bindings to the supplied `CompositeDisposable`. ReactiveUI disposes that scope when the corresponding View deactivates and creates a new scope on the next activation. `PageViewModelBase` also creates and cancels a token for page-scoped asynchronous work on every activation.
+Validation is opt-in. A concrete ViewModel uses ReactiveUI.Validation when it needs validation; the shared base and abstractions do not force validation dependencies on read-only or non-form ViewModels.
 
-Constructors only establish immutable identity, commands, and cheap initial state. I/O, timers, realtime subscriptions, and page-scoped cancellation begin during activation.
+## Initialization
 
-## Ownership
+The BCL-only abstractions expose `IInitializable` and `IInitializable<TParameter>`. Initialization supplies replaceable runtime input; it is not construction and may run again while a ViewModel is active.
 
-- A View activates its own ViewModel through ReactiveUI.
-- A shell ViewModel activates child ViewModels that it owns but that do not have an independent ReactiveUI View.
-- A `ModelBase` is owned by the module that projects it. It does not pretend to have visibility lifecycle.
-- DI owns singleton disposal and Generic Host owns application shutdown. View activation is shorter-lived and does not replace host shutdown.
+`ViewModelBase.InitializeLatestAsync` implements the common latest-request-wins mechanism: a new initialization cancels the previous request, while the concrete ViewModel decides how to prepare and atomically publish its new state. Owners call initialization explicitly. Navigation initializes a page before publishing it; a parent initializes children it owns. `Lazy<T>` supports one known lazy dependency, while repeated instances use a narrow feature-specific factory rather than a universal ViewModel factory.
 
-## Menu presentation
+## View resolution
 
-The application menu demonstrates these roles. `AppMenuViewModel` is an activatable component. `AppMenuItemModel` is a non-activatable projection created by the menu composer. Contributions are not ViewModels and do not depend on ReactiveUI, Avalonia, or Eremex.
-
-The Avalonia adapter renders that projection with Eremex `ListViewControl`. Eremex therefore remains replaceable UI implementation detail rather than becoming part of the extension point.
+Almost every concrete ViewModel has an exact `IViewFor<TViewModel>` registration. Views receive concrete ViewModels through `ContentControl`; `ViewLocator` resolves the exact View contract from DI. A standard visual may be registered for several concrete types through a registration helper, but resolution remains exact and plugins can replace a concrete registration deterministically.

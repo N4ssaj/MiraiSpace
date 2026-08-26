@@ -1,11 +1,17 @@
-using MiraiSpace.Extensibility.Abstractions.Menu;
+using MiraiSpace.Presentation.Menu.Standard;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class WorkspaceCalendarMenuItem(AppNavigationState navigation)
-    : DemoMenuContribution(navigation, new(
-        "workspace.calendar", "workspace", 200, "Calendar", "Planning", "□", "#E7A84B"))
+public sealed class WorkspaceCalendarMenuItem(AppNavigationState navigation) : StandardAppMenuItem(200), IWorkspaceMenuItem
 {
-    public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default) =>
-        NavigateAsync("WORKSPACE", "Team calendar", "Plan milestones and keep everyone aligned.");
+    public override string Title => "Calendar";
+    public override string Caption => "Planning";
+    public override string Glyph => "□";
+    public override string Accent => "#E7A84B";
+
+    protected override Task ExecuteAsync(CancellationToken cancellationToken)
+    {
+        navigation.Navigate("WORKSPACE", "Team calendar", "Plan milestones and keep everyone aligned.", Accent);
+        return Task.CompletedTask;
+    }
 }

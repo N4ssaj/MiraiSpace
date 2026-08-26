@@ -16,11 +16,7 @@ public sealed class CurrentUserContext : ModelBase, IDisposable
 
     public void ToggleAdministrator()
     {
-        if (!_roles.Add(RoleIds.Administrator))
-        {
-            _roles.Remove(RoleIds.Administrator);
-        }
-
+        if (!_roles.Add(RoleIds.Administrator)) _roles.Remove(RoleIds.Administrator);
         this.RaisePropertyChanged(nameof(IsAdministrator));
         _rolesChanged.OnNext(Unit.Default);
     }

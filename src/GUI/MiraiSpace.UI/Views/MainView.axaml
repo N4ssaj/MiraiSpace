@@ -1,159 +1,139 @@
 <rxui:ReactiveUserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:MiraiSpace.Presentation.ViewModels"
-             xmlns:menu="using:MiraiSpace.Presentation.Menu.Demo"
-             xmlns:menuModels="using:MiraiSpace.Presentation.Menu"
-             xmlns:menuViews="using:MiraiSpace.UI.Views.Menu"
-             xmlns:mxlv="https://schemas.eremexcontrols.net/avalonia/listview"
-             xmlns:rxui="using:ReactiveUI.Avalonia"
-             mc:Ignorable="d"
-             d:DesignWidth="1280"
-             d:DesignHeight="820"
-             x:Class="MiraiSpace.UI.Views.MainView"
-             x:TypeArguments="vm:MainViewModel"
-             x:DataType="vm:MainViewModel">
-    <UserControl.Styles>
-        <Style Selector="Button.menu-item">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="10,8" />
-            <Setter Property="CornerRadius" Value="14" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-        </Style>
-        <Style Selector="Button.menu-item:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#F0EFFA" />
-        </Style>
-        <Style Selector="Button.menu-item.active /template/ ContentPresenter">
-            <Setter Property="Background" Value="#EAE8FA" />
-        </Style>
-    </UserControl.Styles>
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:vm="using:MiraiSpace.Presentation.ViewModels"
+                          xmlns:mxtl="https://schemas.eremexcontrols.net/avalonia/treelist"
+                          xmlns:menuViews="using:MiraiSpace.UI.Views.Menu"
+                          xmlns:rxui="using:ReactiveUI.Avalonia"
+                          mc:Ignorable="d"
+                          d:DesignWidth="1280"
+                          d:DesignHeight="820"
+                          x:Name="Root"
+                          x:Class="MiraiSpace.UI.Views.MainView"
+                          x:TypeArguments="vm:MainViewModel"
+                          x:DataType="vm:MainViewModel">
+    <rxui:ReactiveUserControl.Resources>
+        <menuViews:AppMenuChildrenSelector x:Key="AppMenuChildrenSelector" />
+    </rxui:ReactiveUserControl.Resources>
 
-    <Grid ColumnDefinitions="304,*" Background="#F8F8FB">
-        <Border Grid.Column="0" Margin="12" Background="White" BorderBrush="#E8E7EF" BorderThickness="1"
-                CornerRadius="22" BoxShadow="0 12 34 0 #120D1028">
-            <Grid RowDefinitions="96,Auto,*,Auto">
-                <Grid Margin="20,20,18,15" ColumnDefinitions="48,*">
-                    <Border Width="44" Height="44" CornerRadius="14" Background="#6D5DD3">
-                        <TextBlock Text="M" FontSize="19" FontWeight="Bold" Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <StackPanel Grid.Column="1" Margin="11,2,0,0">
-                        <TextBlock Text="MIRAI SPACE" FontSize="13" FontWeight="Bold" Foreground="#252630" LetterSpacing="0.5" />
-                        <TextBlock Text="Architecture lab" FontSize="11" Foreground="#999CA8" />
-                    </StackPanel>
-                </Grid>
-
-                <TextBlock Grid.Row="1" Margin="22,4,0,8" Text="NAVIGATION" FontSize="9" FontWeight="Bold"
-                           Foreground="#A5A7B2" LetterSpacing="1.4" />
-
-                <mxlv:ListViewControl Grid.Row="2"
-                                      Margin="8,0,8,8"
-                                      ItemsSource="{Binding Items}"
-                                      FocusedItem="{Binding Menu.SelectedItem, Mode=TwoWay}"
-                                      SelectionMode="Single"
-                                      ItemLayoutMode="Stack"
-                                      ItemHeight="54"
-                                      StretchItemVertically="True"
-                                      ItemClick="OnMenuItemClick">
-                    <mxlv:ListViewControl.ItemTemplate>
-                        <DataTemplate x:DataType="menuModels:AppMenuItemModel">
-                            <Button Classes="menu-item" Classes.active="{Binding IsSelected}"
-                                    IsHitTestVisible="False">
-                                <menuViews:MenuItemView />
-                            </Button>
-                        </DataTemplate>
-                    </mxlv:ListViewControl.ItemTemplate>
-                </mxlv:ListViewControl>
-
-                <Border Grid.Row="3" Margin="12" Padding="12" CornerRadius="14" Background="#F5F3FC">
-                    <Grid ColumnDefinitions="34,*,Auto">
-                        <Border Width="32" Height="32" CornerRadius="10" Background="#252630">
-                            <TextBlock Text="AS" FontSize="9" FontWeight="Bold" Foreground="White"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <StackPanel Grid.Column="1" Margin="9,0,0,0" VerticalAlignment="Center">
-                            <TextBlock Text="Alex Stone" FontSize="11" FontWeight="SemiBold" Foreground="#343640" />
-                            <TextBlock Text="Local session" FontSize="9" Foreground="#9295A1" />
+    <SplitView x:Name="ShellSplitView"
+               IsPaneOpen="{Binding IsMenuOpen, Mode=TwoWay}"
+               DisplayMode="CompactInline"
+               OpenPaneLength="304"
+               CompactPaneLength="78"
+               Background="#F8F8FB">
+        <SplitView.Pane>
+            <Border Margin="12" Background="White" BorderBrush="#E8E7EF" BorderThickness="1"
+                    CornerRadius="22" BoxShadow="0 12 34 0 #120D1028">
+                <Grid RowDefinitions="96,Auto,*,Auto">
+                    <Grid Margin="12,20,12,15" ColumnDefinitions="48,*">
+                        <Button Command="{Binding ToggleMenuCommand}" Padding="0" Background="Transparent"
+                                BorderThickness="0" ToolTip.Tip="Toggle navigation">
+                            <Border Width="44" Height="44" CornerRadius="14" Background="#6D5DD3">
+                                <TextBlock Text="M" FontSize="19" FontWeight="Bold" Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </Button>
+                        <StackPanel Grid.Column="1" Margin="11,2,0,0" IsVisible="{Binding IsMenuOpen}">
+                            <TextBlock Text="MIRAI SPACE" FontSize="13" FontWeight="Bold"
+                                       Foreground="#252630" LetterSpacing="0.5" />
+                            <TextBlock Text="Architecture lab" FontSize="11" Foreground="#999CA8" />
                         </StackPanel>
-                        <TextBlock Grid.Column="2" Text="•••" Foreground="#9295A1" VerticalAlignment="Center" />
                     </Grid>
-                </Border>
-            </Grid>
-        </Border>
 
-        <Grid Grid.Column="1" RowDefinitions="74,*">
-            <Border Background="#F8F8FB" BorderBrush="#E7E8EE" BorderThickness="0,0,0,1">
-                <Grid Margin="32,0" ColumnDefinitions="*,Auto,Auto" VerticalAlignment="Center">
-                    <TextBlock Text="Team workspace" FontSize="12" FontWeight="SemiBold" Foreground="#777A86" />
-                    <Border Grid.Column="1" Background="White" BorderBrush="#E3E4EA" BorderThickness="1"
-                            CornerRadius="18" Padding="13,7" Margin="0,0,12,0">
-                        <TextBlock Text="⌕  Search" FontSize="11" Foreground="#858895" />
-                    </Border>
-                    <Border Grid.Column="2" Background="#EAE8FA" CornerRadius="18" Padding="13,7">
-                        <TextBlock Text="●  Connected" FontSize="10" FontWeight="SemiBold" Foreground="#5E54C7" />
+                    <TextBlock Grid.Row="1" Margin="22,4,0,8" Text="NAVIGATION" FontSize="9"
+                               FontWeight="Bold" Foreground="#A5A7B2" LetterSpacing="1.4"
+                               IsVisible="{Binding IsMenuOpen}" />
+
+                    <mxtl:TreeViewControl x:Name="MenuTree"
+                                          Grid.Row="2"
+                                          Margin="8,0,8,8"
+                                          ItemsSource="{Binding Items}"
+                                          ChildrenSelector="{StaticResource AppMenuChildrenSelector}"
+                                          RowLevelIndent="16"
+                                          ShowRootIndent="{Binding IsMenuOpen}"
+                                          ShowExpandButtons="{Binding IsMenuOpen}"
+                                          AllowDynamicDataLoading="False"
+                                          SelectionMode="Single"
+                                          menuViews:MenuDisplay.IsCompact="{Binding !IsMenuOpen}">
+                        <mxtl:TreeViewControl.CellTemplate>
+                            <DataTemplate x:CompileBindings="False">
+                                <ContentControl Content="{Binding Row}" />
+                            </DataTemplate>
+                        </mxtl:TreeViewControl.CellTemplate>
+                    </mxtl:TreeViewControl>
+
+                    <Border Grid.Row="3" Margin="12" Padding="10" CornerRadius="14" Background="#F5F3FC">
+                        <Grid ColumnDefinitions="34,*">
+                            <Border Width="32" Height="32" CornerRadius="10" Background="#252630">
+                                <TextBlock Text="AS" FontSize="9" FontWeight="Bold" Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" Margin="9,0,0,0" VerticalAlignment="Center"
+                                        IsVisible="{Binding IsMenuOpen}">
+                                <TextBlock Text="Alex Stone" FontSize="11" FontWeight="SemiBold" Foreground="#343640" />
+                                <TextBlock Text="Local session" FontSize="9" Foreground="#9295A1" />
+                            </StackPanel>
+                        </Grid>
                     </Border>
                 </Grid>
             </Border>
+        </SplitView.Pane>
 
-            <ScrollViewer Grid.Row="1">
-                <StackPanel Margin="52,46" MaxWidth="900" HorizontalAlignment="Stretch">
-                    <Border Width="42" Height="5" CornerRadius="3" Background="{Binding Navigation.Accent}"
-                            HorizontalAlignment="Left" Margin="0,0,0,22" />
-                    <TextBlock Text="{Binding Navigation.Eyebrow}" FontSize="10" FontWeight="Bold"
-                               Foreground="{Binding Navigation.Accent}" LetterSpacing="1.8" />
-                    <TextBlock Text="{Binding Navigation.Title}" FontSize="38" FontWeight="SemiBold"
-                               Foreground="#22232C" Margin="0,8,0,8" />
-                    <TextBlock Text="{Binding Navigation.Description}" FontSize="15" Foreground="#7A7D89"
-                               MaxWidth="620" HorizontalAlignment="Left" TextWrapping="Wrap" />
-
-                    <Grid Margin="0,42,0,0" ColumnDefinitions="2*,*,*">
-                        <Border Margin="0,0,14,0" Padding="24" CornerRadius="18" Background="White"
-                                BorderBrush="#E8E9EF" BorderThickness="1">
-                            <Grid RowDefinitions="Auto,Auto,Auto">
-                                <TextBlock Text="WEEKLY MOMENTUM" FontSize="9" FontWeight="Bold" Foreground="#9A9DA8" LetterSpacing="1.2" />
-                                <TextBlock Grid.Row="1" Text="84%" FontSize="34" FontWeight="Bold" Foreground="#272832" Margin="0,18,0,6" />
-                                <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8">
-                                    <Border Width="210" Height="8" CornerRadius="4" Background="#ECECF2">
-                                        <Border Width="176" HorizontalAlignment="Left" CornerRadius="4" Background="#7165E8" />
-                                    </Border>
-                                    <TextBlock Text="+12%" FontSize="10" Foreground="#34A58B" />
-                                </StackPanel>
-                            </Grid>
+        <SplitView.Content>
+            <Grid RowDefinitions="74,*">
+                <Border Background="#F8F8FB" BorderBrush="#E7E8EE" BorderThickness="0,0,0,1">
+                    <Grid Margin="32,0" ColumnDefinitions="*,Auto,Auto" VerticalAlignment="Center">
+                        <TextBlock Text="Team workspace" FontSize="12" FontWeight="SemiBold" Foreground="#777A86" />
+                        <Border Grid.Column="1" Background="White" BorderBrush="#E3E4EA" BorderThickness="1"
+                                CornerRadius="18" Padding="13,7" Margin="0,0,12,0">
+                            <TextBlock Text="⌕  Search" FontSize="11" Foreground="#858895" />
                         </Border>
-                        <Border Grid.Column="1" Margin="0,0,14,0" Padding="22" CornerRadius="18" Background="#22232C">
-                            <StackPanel>
-                                <TextBlock Text="ACTIVE PAGES" FontSize="9" FontWeight="Bold" Foreground="#AEB0BA" LetterSpacing="1" />
-                                <TextBlock Text="24" FontSize="34" FontWeight="Bold" Foreground="White" Margin="0,18,0,3" />
-                                <TextBlock Text="6 updated today" FontSize="10" Foreground="#A8E4D3" />
-                            </StackPanel>
-                        </Border>
-                        <Border Grid.Column="2" Padding="22" CornerRadius="18" Background="#EEEAFD">
-                            <StackPanel>
-                                <TextBlock Text="DELEGATES" FontSize="9" FontWeight="Bold" Foreground="#7770A1" LetterSpacing="1" />
-                                <TextBlock Text="2" FontSize="34" FontWeight="Bold" Foreground="#5E54C7" Margin="0,18,0,3" />
-                                <TextBlock Text="Spaces shared with you" FontSize="10" Foreground="#7770A1" />
-                            </StackPanel>
+                        <Border Grid.Column="2" Background="#EAE8FA" CornerRadius="18" Padding="13,7">
+                            <TextBlock Text="●  Connected" FontSize="10" FontWeight="SemiBold" Foreground="#5E54C7" />
                         </Border>
                     </Grid>
+                </Border>
 
-                    <Border Margin="0,18,0,0" Padding="24" CornerRadius="18" Background="White"
-                            BorderBrush="#E8E9EF" BorderThickness="1">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <StackPanel>
-                                <TextBlock Text="Extensible by design" FontSize="16" FontWeight="SemiBold" Foreground="#30313A" />
-                                <TextBlock Text="Plugin entries, role-aware pages, and dynamic delegate spaces share one small contract."
-                                           FontSize="12" Foreground="#858895" Margin="0,6,0,0" />
-                            </StackPanel>
-                            <Border Grid.Column="1" Background="#EAF7F3" CornerRadius="13" Padding="14,9" VerticalAlignment="Center">
-                                <TextBlock Text="LIVE COMPOSITION" FontSize="9" FontWeight="Bold" Foreground="#278B73" LetterSpacing="1" />
+                <ScrollViewer Grid.Row="1">
+                    <StackPanel Margin="52,46" MaxWidth="900" HorizontalAlignment="Stretch">
+                        <Border Width="42" Height="5" CornerRadius="3" Background="{Binding Navigation.Accent}"
+                                HorizontalAlignment="Left" Margin="0,0,0,22" />
+                        <TextBlock Text="{Binding Navigation.Eyebrow}" FontSize="10" FontWeight="Bold"
+                                   Foreground="{Binding Navigation.Accent}" LetterSpacing="1.8" />
+                        <TextBlock Text="{Binding Navigation.Title}" FontSize="38" FontWeight="SemiBold"
+                                   Foreground="#22232C" Margin="0,8,0,8" />
+                        <TextBlock Text="{Binding Navigation.Description}" FontSize="15" Foreground="#7A7D89"
+                                   MaxWidth="620" HorizontalAlignment="Left" TextWrapping="Wrap" />
+
+                        <Grid Margin="0,42,0,0" ColumnDefinitions="2*,*,*">
+                            <Border Margin="0,0,14,0" Padding="24" CornerRadius="18" Background="White"
+                                    BorderBrush="#E8E9EF" BorderThickness="1">
+                                <StackPanel>
+                                    <TextBlock Text="WEEKLY MOMENTUM" FontSize="9" FontWeight="Bold" Foreground="#9A9DA8" />
+                                    <TextBlock Text="84%" FontSize="34" FontWeight="Bold" Foreground="#272832" Margin="0,18,0,6" />
+                                    <TextBlock Text="Progress across the current workspace" FontSize="10" Foreground="#777A86" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Margin="0,0,14,0" Padding="22" CornerRadius="18" Background="#22232C">
+                                <StackPanel>
+                                    <TextBlock Text="ACTIVE PAGES" FontSize="9" FontWeight="Bold" Foreground="#AEB0BA" />
+                                    <TextBlock Text="24" FontSize="34" FontWeight="Bold" Foreground="White" Margin="0,18,0,3" />
+                                    <TextBlock Text="6 updated today" FontSize="10" Foreground="#A8E4D3" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Padding="22" CornerRadius="18" Background="#EEEAFD">
+                                <StackPanel>
+                                    <TextBlock Text="DELEGATES" FontSize="9" FontWeight="Bold" Foreground="#7770A1" />
+                                    <TextBlock Text="2" FontSize="34" FontWeight="Bold" Foreground="#5E54C7" Margin="0,18,0,3" />
+                                    <TextBlock Text="Spaces shared with you" FontSize="10" Foreground="#7770A1" />
+                                </StackPanel>
                             </Border>
                         </Grid>
-                    </Border>
-                </StackPanel>
-            </ScrollViewer>
-        </Grid>
-    </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </SplitView.Content>
+    </SplitView>
 </rxui:ReactiveUserControl>

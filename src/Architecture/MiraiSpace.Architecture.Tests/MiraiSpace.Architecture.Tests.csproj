@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\Presentation\MiraiSpace.Presentation\MiraiSpace.Presentation.csproj" />
     <ProjectReference Include="..\..\GUI\MiraiSpace.UI\MiraiSpace.UI.csproj" />
     <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Api\MiraiSpace.Infrastructure.Api.csproj" />
+    <ProjectReference Include="..\..\Presentation\MiraiSpace.Presentation.Abstractions\MiraiSpace.Presentation.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

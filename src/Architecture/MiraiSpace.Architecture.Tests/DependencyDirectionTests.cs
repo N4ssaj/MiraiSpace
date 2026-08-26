@@ -16,6 +16,18 @@ public sealed class DependencyDirectionTests
             name => Assert.Equal("MiraiSpace.Core", name));
 
     [Fact]
+    public void PresentationAbstractionsHaveNoOutgoingMiraiSpaceOrFrameworkDependency()
+    {
+        string[] references = References(Assembly.Load("MiraiSpace.Presentation.Abstractions"));
+
+        Assert.DoesNotContain(references, name => name.StartsWith("MiraiSpace.", StringComparison.Ordinal));
+        Assert.DoesNotContain(references, name => name.StartsWith("ReactiveUI", StringComparison.Ordinal));
+        Assert.DoesNotContain(references, name => name.StartsWith("System.Reactive", StringComparison.Ordinal));
+        Assert.DoesNotContain(references, name => name.StartsWith("Avalonia", StringComparison.Ordinal));
+        Assert.DoesNotContain(references, name => name.StartsWith("Eremex", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void PresentationDoesNotReferenceUiOrInfrastructure()
     {
         string[] references = References(typeof(ViewModelBase).Assembly);
