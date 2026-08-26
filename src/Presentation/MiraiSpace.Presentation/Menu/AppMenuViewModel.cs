@@ -1,48 +1,174 @@
 using System.Collections.ObjectModel;
-using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Binding;
+using System.ComponentModel;
+using System.Reactive.Disposables;
 using MiraiSpace.Extensibility.Abstractions.Menu;
+using MiraiSpace.Presentation.Menu.Demo;
 using MiraiSpace.Presentation.ViewModels;
 using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu;
 
-public sealed class AppMenuViewModel : ViewModelBase, IAppMenuViewModel
+public sealed class AppMenuViewModel : ComponentViewModelBase, IAppMenuViewModel
 {
-    private readonly SourceList<IAppMenuItem> _itemSource = new();
-    private readonly IAppMenuItemExecutor _executor;
-    private readonly ReadOnlyObservableCollection<IAppMenuItem> _items;
+    private readonly IAppMenuContribution[] _contributions;
+    private readonly IAppMenuAccessEvaluator _accessEvaluator;
+    private readonly IAppMenuContributionExecutor _executor;
+    private readonly AppNavigationState _navigation;
+    private readonly ObservableCollection<AppMenuItemModel> _items = [];
+    private readonly ReadOnlyObservableCollection<AppMenuItemModel> _readOnlyItems;
+    private AppMenuItemModel? _selectedItem;
 
     public AppMenuViewModel(
-        [Microsoft.Extensions.DependencyInjection.FromKeyedServices(AppMenuKeys.Root)]
-        IEnumerable<IAppMenuItem> items,
-        IAppMenuItemAccessChecker accessChecker,
-        IAppMenuItemExecutor executor)
+        IEnumerable<IAppMenuContribution> contributions,
+        IAppMenuAccessEvaluator accessEvaluator,
+        IAppMenuContributionExecutor executor,
+        AppNavigationState navigation)
+        : base("application-menu")
     {
+        _contributions = contributions.ToArray();
+        _accessEvaluator = accessEvaluator;
         _executor = executor;
-        IComparer<IAppMenuItem> comparer = SortExpressionComparer<IAppMenuItem>
-            .Ascending(item => item.Order);
-
-        Own(_itemSource
-            .Connect()
-            .Filter(
-                accessChecker.AccessChanged
-                    .Select(_ => new Func<IAppMenuItem, bool>(accessChecker.CheckAccess))
-                    .StartWith(accessChecker.CheckAccess))
-            .ObserveOn(RxSchedulers.MainThreadScheduler)
-            .Sort(comparer)
-            .Bind(out _items)
-            .Subscribe());
-        Own(_itemSource);
-
-        _itemSource.AddRange(items);
+        _navigation = navigation;
+        _readOnlyItems = new ReadOnlyObservableCollection<AppMenuItemModel>(_items);
+        Recompose();
     }
 
-    public IReadOnlyList<IAppMenuItem> Items => _items;
+    public IReadOnlyList<AppMenuItemModel> Items => _readOnlyItems;
 
-    public ValueTask ExecuteAsync(
-        IAppMenuItem item,
-        CancellationToken cancellationToken = default) =>
-        _executor.ExecuteAsync(item, cancellationToken);
+    public AppMenuItemModel? SelectedItem
+    {
+        get => _selectedItem;
+        set => this.RaiseAndSetIfChanged(ref _selectedItem, value);
+    }
+
+    public async ValueTask ExecuteAsync(
+        AppMenuItemModel item,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        await _executor.ExecuteAsync(item.Contribution, cancellationToken);
+        UpdateSelection();
+    }
+
+    protected override void OnComponentActivated(CompositeDisposable disposables)
+    {
+        disposables.Add(_accessEvaluator.AccessChanged
+            .Subscribe(_ => Recompose()));
+
+        foreach (IAppMenuContribution contribution in _contributions)
+        {
+            disposables.Add(contribution.Changed
+                .Subscribe(_ => Recompose()));
+        }
+
+        PropertyChangedEventHandler navigationChanged = (_, args) =>
+        {
+            if (args.PropertyName == nameof(AppNavigationState.Route))
+            {
+                UpdateSelection();
+            }
+        };
+        _navigation.PropertyChanged += navigationChanged;
+        disposables.Add(Disposable.Create(
+            () => _navigation.PropertyChanged -= navigationChanged));
+
+        Recompose();
+    }
+
+    private void Recompose()
+    {
+        AppMenuItemDescriptor[] descriptors = _contributions
+            .Select(contribution => contribution.Descriptor.Validate())
+            .ToArray();
+        Dictionary<string, IAppMenuContribution> byId = _contributions
+            .Zip(descriptors)
+            .ToDictionary(pair => pair.Second.Id, pair => pair.First, StringComparer.Ordinal);
+
+        foreach (AppMenuItemDescriptor descriptor in descriptors)
+        {
+            if (descriptor.ParentId is not null && !byId.ContainsKey(descriptor.ParentId))
+            {
+                throw new InvalidOperationException(
+                    $"Menu contribution '{descriptor.Id}' references missing parent '{descriptor.ParentId}'.");
+            }
+        }
+        ValidateHierarchy(descriptors);
+
+        var composed = new List<AppMenuItemModel>();
+        var path = new HashSet<string>(StringComparer.Ordinal);
+        AppendChildren(parentId: null, depth: 0, byId, descriptors, path, composed);
+
+        _items.Clear();
+        foreach (AppMenuItemModel item in composed)
+        {
+            _items.Add(item);
+        }
+
+        UpdateSelection();
+    }
+
+    private void AppendChildren(
+        string? parentId,
+        int depth,
+        IReadOnlyDictionary<string, IAppMenuContribution> byId,
+        IEnumerable<AppMenuItemDescriptor> descriptors,
+        ISet<string> path,
+        ICollection<AppMenuItemModel> target)
+    {
+        foreach (AppMenuItemDescriptor descriptor in descriptors
+                     .Where(item => item.ParentId == parentId)
+                     .OrderBy(item => item.Order)
+                     .ThenBy(item => item.Id, StringComparer.Ordinal))
+        {
+            if (!path.Add(descriptor.Id))
+            {
+                throw new InvalidOperationException($"Menu contribution cycle detected at '{descriptor.Id}'.");
+            }
+
+            IAppMenuContribution contribution = byId[descriptor.Id];
+            if (_accessEvaluator.CheckAccess(contribution))
+            {
+                target.Add(new AppMenuItemModel(contribution, depth));
+                AppendChildren(descriptor.Id, depth + 1, byId, descriptors, path, target);
+            }
+
+            path.Remove(descriptor.Id);
+        }
+    }
+
+    private static void ValidateHierarchy(IReadOnlyCollection<AppMenuItemDescriptor> descriptors)
+    {
+        Dictionary<string, string?> parents = descriptors.ToDictionary(
+            descriptor => descriptor.Id,
+            descriptor => descriptor.ParentId,
+            StringComparer.Ordinal);
+
+        foreach (string id in parents.Keys)
+        {
+            var path = new HashSet<string>(StringComparer.Ordinal);
+            string? current = id;
+            while (current is not null)
+            {
+                if (!path.Add(current))
+                {
+                    throw new InvalidOperationException(
+                        $"Menu contribution cycle detected at '{current}'.");
+                }
+
+                current = parents[current];
+            }
+        }
+    }
+
+    private void UpdateSelection()
+    {
+        foreach (AppMenuItemModel item in _items)
+        {
+            item.IsSelected = item.Id == _navigation.Route
+                || _navigation.Route.StartsWith($"{item.Id}.", StringComparison.Ordinal);
+        }
+
+        _selectedItem = _items.FirstOrDefault(item => item.Id == _navigation.Route);
+        this.RaisePropertyChanged(nameof(SelectedItem));
+    }
 }

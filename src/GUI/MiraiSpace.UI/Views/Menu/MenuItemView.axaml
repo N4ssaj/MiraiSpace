@@ -1,18 +1,18 @@
-<rxui:ReactiveUserControl xmlns="https://github.com/avaloniaui"
-                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                          xmlns:rxui="using:ReactiveUI.Avalonia"
-                          xmlns:menu="using:MiraiSpace.Presentation.Menu.Demo"
-                          x:Class="MiraiSpace.UI.Views.Menu.MenuItemView"
-                          x:TypeArguments="menu:MenuItemViewModel"
-                          x:DataType="menu:MenuItemViewModel"
-                          HorizontalContentAlignment="Stretch">
-    <Grid ColumnDefinitions="4,40,*,Auto">
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:menu="using:MiraiSpace.Presentation.Menu"
+             x:Class="MiraiSpace.UI.Views.Menu.MenuItemView"
+             x:DataType="menu:AppMenuItemModel"
+             HorizontalContentAlignment="Stretch">
+    <Grid ColumnDefinitions="Auto,4,40,*,Auto">
+        <Border Width="{Binding Indent}" />
         <Border Width="3"
+                Grid.Column="1"
                 Height="24"
                 CornerRadius="2"
                 Background="{Binding Accent}"
                 IsVisible="{Binding IsSelected}" />
-        <Border Grid.Column="1"
+        <Border Grid.Column="2"
                 Width="34"
                 Height="34"
                 CornerRadius="10"
@@ -25,10 +25,10 @@
                        VerticalAlignment="Center" />
         </Border>
 
-        <StackPanel Grid.Column="2"
+        <StackPanel Grid.Column="3"
                     Margin="10,0,0,0"
                     VerticalAlignment="Center">
-            <TextBlock Text="{Binding DisplayTitle}"
+            <TextBlock Text="{Binding Title}"
                        FontWeight="SemiBold"
                        Foreground="#343640" />
             <TextBlock Text="{Binding Caption}"
@@ -36,7 +36,7 @@
                        Foreground="#9295A1" />
         </StackPanel>
 
-        <Border Grid.Column="3"
+        <Border Grid.Column="4"
                 IsVisible="{Binding HasBadge}"
                 Background="{Binding Accent}"
                 CornerRadius="10"
@@ -48,4 +48,4 @@
                        Foreground="White" />
         </Border>
     </Grid>
-</rxui:ReactiveUserControl>
+</UserControl>

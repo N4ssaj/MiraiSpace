@@ -2,9 +2,9 @@ using System.Reactive;
 
 namespace MiraiSpace.Extensibility.Abstractions.Menu;
 
-public interface IAppMenuItemAccessPolicy
+public interface IAppMenuAccessEvaluator
 {
-    bool CheckAccess(IAppMenuItem item);
+    bool CheckAccess(IAppMenuContribution contribution);
 
     IObservable<Unit> AccessChanged { get; }
 }

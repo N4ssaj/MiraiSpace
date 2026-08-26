@@ -1,12 +1,10 @@
-using MiraiSpace.Extensibility.Abstractions.Menu;
-
 namespace MiraiSpace.Presentation.Menu;
 
 public interface IAppMenuViewModel
 {
-    IReadOnlyList<IAppMenuItem> Items { get; }
+    IReadOnlyList<AppMenuItemModel> Items { get; }
 
-    ValueTask ExecuteAsync(
-        IAppMenuItem item,
-        CancellationToken cancellationToken = default);
+    AppMenuItemModel? SelectedItem { get; set; }
+
+    ValueTask ExecuteAsync(AppMenuItemModel item, CancellationToken cancellationToken = default);
 }

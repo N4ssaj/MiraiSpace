@@ -1,60 +1,31 @@
 # Presentation architecture
 
-## Status
+## Type roles
 
-This document records the direction validated by the menu experiment. It narrows the presentation parts of the foundation without attempting to define the final navigation system.
+Presentation uses four deliberately different base types:
 
-## Dependency map
-
-```text
-Avalonia View
-    -> Presentation ViewModel
-        -> Application use case / presentation extension point
-            -> Core
-
-Host composition root
-    -> UI + Presentation + Application + Infrastructure adapters
-```
-
-Views bind to ViewModels and translate framework events into commands. ViewModels own UI state and reactive subscriptions, but do not resolve services, construct windows, or depend on infrastructure adapters. Application ports describe durable operations. Domain and transport models do not inherit from ViewModel types.
-
-## ViewModel lifetime
-
-`ViewModelBase` is the single current base class. It owns disposables created by a ViewModel through `Own`. Disposal is idempotent because the underlying `CompositeDisposable` is idempotent. This keeps subscription and command cleanup local to the object that creates them.
-
-A separate base class for a page or a reusable visual component is deliberately not introduced yet. Such empty marker classes would be shallow modules: deleting them would not move any behavior to callers. Introduce one only after a shared invariant exists, for example:
-
-- a page activation/deactivation protocol with cancellation;
-- a stable route identity and navigation result;
-- a component-level validation or resource lifetime that differs from a page.
-
-At that point the behavior belongs behind a small interface and can justify `PageViewModelBase` or `ActivatableViewModelBase`. Domain models, application DTOs, and persisted state must remain plain types and must never derive from `ViewModelBase`.
-
-## State ownership
-
-| State | Owner | Consumers |
+| Type | Responsibility | ReactiveUI lifecycle |
 | --- | --- | --- |
-| Available root menu items | `AppMenuViewModel` | Main shell ViewModel/View |
-| Role availability | `CurrentUserContext` in the demo; a future session contract in the application | Access policies |
-| Current demo route and heading | `AppNavigationState` | Menu contributions and shell |
-| Menu contribution presentation | Concrete `MenuItemViewModel` | `MenuItemView` |
+| `ModelBase` | Observable presentation state that is not owned by a View | No |
+| `ViewModelBase` | State and work whose lifetime follows a View | `IActivatableViewModel` and `ViewModelActivator` |
+| `ComponentViewModelBase` | An independently rendered ViewModel with a stable component identity | Inherited activation |
+| `PageViewModelBase` | Route-addressable shell content with a stable route and title | Inherited activation |
 
-There is one writable owner for each state. Other modules observe it or invoke its interface. Messages may announce changes, but they are not used as state storage.
+Domain entities, application DTOs, persisted records, and transport models inherit from none of these types. `ModelBase` is specifically a presentation model.
 
-## Menu experiment
+`ViewModelBase` does not implement a second disposal framework. It registers an activation block with ReactiveUI. Derived ViewModels override the activation method for their role and add subscriptions or bindings to the supplied `CompositeDisposable`. ReactiveUI disposes that scope when the corresponding View deactivates and creates a new scope on the next activation. `PageViewModelBase` also creates and cancels a token for page-scoped asynchronous work on every activation.
 
-The menu remains an extension point made of contributions. Registration is static for an application run; access and selection are reactive. The owner filters and orders root contributions, while a container owns its child projection. Execution rechecks access so a stale visible item cannot bypass a changed policy.
+Constructors only establish immutable identity, commands, and cheap initial state. I/O, timers, realtime subscriptions, and page-scoped cancellation begin during activation.
 
-The current demo intentionally keeps route content in `AppNavigationState`. It is not the final navigation seam. The next navigation experiment should replace it with a small interface such as `NavigateAsync(route, cancellationToken)` returning an explicit outcome, and should own page activation, cancellation, and local error recovery. Menu contributions should then request navigation rather than mutate page state.
+## Ownership
 
-## Composition and lifetime
+- A View activates its own ViewModel through ReactiveUI.
+- A shell ViewModel activates child ViewModels that it owns but that do not have an independent ReactiveUI View.
+- A `ModelBase` is owned by the module that projects it. It does not pretend to have visibility lifecycle.
+- DI owns singleton disposal and Generic Host owns application shutdown. View activation is shorter-lived and does not replace host shutdown.
 
-Singleton presentation objects are disposed by the DI container in reverse dependency order. Views do not dispose ViewModels resolved from the container. A transient navigation scope may replace singleton page lifetimes later, but only when multi-window or back-stack behavior demonstrates the requirement.
+## Menu presentation
 
-## Next decisions
+The application menu demonstrates these roles. `AppMenuViewModel` is an activatable component. `AppMenuItemModel` is a non-activatable projection created by the menu composer. Contributions are not ViewModels and do not depend on ReactiveUI, Avalonia, or Eremex.
 
-1. Define route values and navigation outcomes independently of Avalonia.
-2. Prototype page activation, cancellation, and back-stack ownership.
-3. Decide whether child menu composition needs one generalized contribution registry or should stay owner-specific.
-4. Move demo identity and role state behind application-facing session contracts.
-5. Add architecture tests that enforce project dependency direction.
+The Avalonia adapter renders that projection with Eremex `ListViewControl`. Eremex therefore remains replaceable UI implementation detail rather than becoming part of the extension point.

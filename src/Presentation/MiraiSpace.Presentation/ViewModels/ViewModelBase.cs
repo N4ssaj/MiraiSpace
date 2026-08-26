@@ -4,31 +4,21 @@ using ReactiveUI;
 namespace MiraiSpace.Presentation.ViewModels;
 
 /// <summary>
-/// Owns the reactive lifetime of a presentation model.
+/// Reactive state whose subscriptions follow the activation of its View.
 /// </summary>
-public abstract class ViewModelBase : ReactiveObject, IDisposable
+public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel
 {
-    private readonly CompositeDisposable _lifetime = new();
-
-    protected T Own<T>(T disposable)
-        where T : IDisposable
+    protected ViewModelBase()
     {
-        ArgumentNullException.ThrowIfNull(disposable);
-        _lifetime.Add(disposable);
-        return disposable;
+        this.WhenActivated(OnActivated);
     }
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _lifetime.Dispose();
-        }
-    }
+    public ViewModelActivator Activator { get; } = new();
 
-    public void Dispose()
+    /// <summary>
+    /// Registers work that must exist only while the corresponding View is active.
+    /// </summary>
+    protected virtual void OnActivated(CompositeDisposable disposables)
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

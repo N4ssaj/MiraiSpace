@@ -1,7 +1,7 @@
-using MiraiSpace.Extensibility.Abstractions.Menu;
+using System.Reactive;
+using System.Reactive.Disposables;
 using MiraiSpace.Presentation.Menu;
 using MiraiSpace.Presentation.Menu.Demo;
-using System.Reactive;
 using ReactiveUI;
 
 namespace MiraiSpace.Presentation.ViewModels;
@@ -14,24 +14,29 @@ public sealed class MainViewModel : ViewModelBase
     {
         Menu = menu;
         Navigation = navigation;
-        ExecuteMenuItemCommand = ReactiveCommand.CreateFromTask<IAppMenuItem>(
+        ExecuteMenuItemCommand = ReactiveCommand.CreateFromTask<AppMenuItemModel>(
             async item => await Menu.ExecuteAsync(item));
-        Own(ExecuteMenuItemCommand);
-        Own(ExecuteMenuItemCommand.ThrownExceptions
-            .Subscribe(exception => LastExecutionError = exception.Message));
     }
 
     public IAppMenuViewModel Menu { get; }
-
-    public IReadOnlyList<IAppMenuItem> Items => Menu.Items;
-
+    public IReadOnlyList<AppMenuItemModel> Items => Menu.Items;
     public AppNavigationState Navigation { get; }
-
-    public ReactiveCommand<IAppMenuItem, Unit> ExecuteMenuItemCommand { get; }
+    public ReactiveCommand<AppMenuItemModel, Unit> ExecuteMenuItemCommand { get; }
 
     public string? LastExecutionError
     {
         get => _lastExecutionError;
         private set => this.RaiseAndSetIfChanged(ref _lastExecutionError, value);
+    }
+
+    protected override void OnActivated(CompositeDisposable disposables)
+    {
+        disposables.Add(ExecuteMenuItemCommand.ThrownExceptions
+            .Subscribe(exception => LastExecutionError = exception.Message));
+
+        if (Menu is IActivatableViewModel activatableMenu)
+        {
+            disposables.Add(activatableMenu.Activator.Activate());
+        }
     }
 }

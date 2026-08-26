@@ -5,20 +5,13 @@ using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu.Demo;
 
-public sealed class CurrentUserContext : ViewModelBase
+public sealed class CurrentUserContext : ModelBase, IDisposable
 {
     private readonly HashSet<Guid> _roles = [];
-    private readonly Subject<Unit> _rolesChanged;
-
-    public CurrentUserContext()
-    {
-        _rolesChanged = Own(new Subject<Unit>());
-    }
+    private readonly Subject<Unit> _rolesChanged = new();
 
     public bool IsAdministrator => _roles.Contains(RoleIds.Administrator);
-
     public IObservable<Unit> RolesChanged => _rolesChanged;
-
     public bool HasRole(Guid roleId) => _roles.Contains(roleId);
 
     public void ToggleAdministrator()
@@ -32,4 +25,5 @@ public sealed class CurrentUserContext : ViewModelBase
         _rolesChanged.OnNext(Unit.Default);
     }
 
+    public void Dispose() => _rolesChanged.Dispose();
 }

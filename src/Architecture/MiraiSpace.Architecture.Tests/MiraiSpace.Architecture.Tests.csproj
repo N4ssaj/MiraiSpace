@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(DotNetVersion)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\MiraiSpace.Core\MiraiSpace.Core.csproj" />
+    <ProjectReference Include="..\..\Application\MiraiSpace.Application\MiraiSpace.Application.csproj" />
+    <ProjectReference Include="..\..\Presentation\MiraiSpace.Presentation\MiraiSpace.Presentation.csproj" />
+    <ProjectReference Include="..\..\GUI\MiraiSpace.UI\MiraiSpace.UI.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\MiraiSpace.Infrastructure.Api\MiraiSpace.Infrastructure.Api.csproj" />
+  </ItemGroup>
+
+</Project>
