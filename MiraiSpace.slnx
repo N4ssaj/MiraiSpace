@@ -6,6 +6,9 @@
   <Folder Name="/src/Application/">
     <Project Path="src/Application/MiraiSpace.Application/MiraiSpace.Application.csproj" />
   </Folder>
+  <Folder Name="/src/Architecture/">
+    <Project Path="src/Architecture/MiraiSpace.Architecture.Tests/MiraiSpace.Architecture.Tests.csproj" />
+  </Folder>
   <Folder Name="/src/Core/">
     <Project Path="src/Core/MiraiSpace.Core/MiraiSpace.Core.csproj" />
   </Folder>

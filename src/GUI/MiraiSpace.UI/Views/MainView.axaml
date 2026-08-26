@@ -1,13 +1,18 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+<rxui:ReactiveUserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:MiraiSpace.Presentation.ViewModels"
              xmlns:menu="using:MiraiSpace.Presentation.Menu.Demo"
+             xmlns:menuModels="using:MiraiSpace.Presentation.Menu"
+             xmlns:menuViews="using:MiraiSpace.UI.Views.Menu"
+             xmlns:mxlv="https://schemas.eremexcontrols.net/avalonia/listview"
+             xmlns:rxui="using:ReactiveUI.Avalonia"
              mc:Ignorable="d"
              d:DesignWidth="1280"
              d:DesignHeight="820"
              x:Class="MiraiSpace.UI.Views.MainView"
+             x:TypeArguments="vm:MainViewModel"
              x:DataType="vm:MainViewModel">
     <UserControl.Styles>
         <Style Selector="Button.menu-item">
@@ -44,16 +49,24 @@
                 <TextBlock Grid.Row="1" Margin="22,4,0,8" Text="NAVIGATION" FontSize="9" FontWeight="Bold"
                            Foreground="#A5A7B2" LetterSpacing="1.4" />
 
-                <TreeView Grid.Row="2" Margin="8,0,8,8" ItemsSource="{Binding Items}"
-                          Background="Transparent" BorderThickness="0">
-                    <TreeView.ItemTemplate>
-                        <TreeDataTemplate x:DataType="menu:MenuItemViewModel" ItemsSource="{Binding Children}">
-                            <Button Classes="menu-item" Classes.active="{Binding IsSelected}" Click="OnMenuItemClick">
-                                <ContentControl Content="{Binding}" />
+                <mxlv:ListViewControl Grid.Row="2"
+                                      Margin="8,0,8,8"
+                                      ItemsSource="{Binding Items}"
+                                      FocusedItem="{Binding Menu.SelectedItem, Mode=TwoWay}"
+                                      SelectionMode="Single"
+                                      ItemLayoutMode="Stack"
+                                      ItemHeight="54"
+                                      StretchItemVertically="True"
+                                      ItemClick="OnMenuItemClick">
+                    <mxlv:ListViewControl.ItemTemplate>
+                        <DataTemplate x:DataType="menuModels:AppMenuItemModel">
+                            <Button Classes="menu-item" Classes.active="{Binding IsSelected}"
+                                    IsHitTestVisible="False">
+                                <menuViews:MenuItemView />
                             </Button>
-                        </TreeDataTemplate>
-                    </TreeView.ItemTemplate>
-                </TreeView>
+                        </DataTemplate>
+                    </mxlv:ListViewControl.ItemTemplate>
+                </mxlv:ListViewControl>
 
                 <Border Grid.Row="3" Margin="12" Padding="12" CornerRadius="14" Background="#F5F3FC">
                     <Grid ColumnDefinitions="34,*,Auto">
@@ -143,4 +156,4 @@
             </ScrollViewer>
         </Grid>
     </Grid>
-</UserControl>
+</rxui:ReactiveUserControl>

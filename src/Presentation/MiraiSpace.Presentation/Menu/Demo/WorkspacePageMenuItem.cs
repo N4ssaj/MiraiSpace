@@ -1,28 +1,11 @@
+using MiraiSpace.Extensibility.Abstractions.Menu;
+
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class WorkspacePageMenuItem(AppNavigationState navigation)
-    : MenuItemViewModel(navigation, "workspace.pages", 100)
+    : DemoMenuContribution(navigation, new(
+        "workspace.pages", "workspace", 100, "Pages", "12 active", "▤", "#34A58B"))
 {
-    public string Title => "Pages";
-
-    public string Hint => "12 active";
-
-    public override string DisplayTitle => Title;
-
-    public override string Caption => Hint;
-
-    public override string Glyph => "▤";
-
-    public override string Accent => "#34A58B";
-
-    public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
-    {
-        Navigation.Navigate(
-            RouteKey,
-            "WORKSPACE",
-            "Pages",
-            "Create, organize, and share knowledge with your team.",
-            "#34A58B");
-        return ValueTask.CompletedTask;
-    }
+    public override ValueTask ExecuteAsync(CancellationToken cancellationToken = default) =>
+        NavigateAsync("WORKSPACE", "Pages", "Create, organize, and share knowledge with your team.");
 }

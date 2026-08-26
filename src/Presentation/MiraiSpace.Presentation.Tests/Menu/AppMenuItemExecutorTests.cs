@@ -5,41 +5,40 @@ using MiraiSpace.Presentation.Menu;
 
 namespace MiraiSpace.Presentation.Tests.Menu;
 
-public sealed class AppMenuItemExecutorTests
+public sealed class AppMenuContributionExecutorTests
 {
     [Fact]
-    public async Task AccessibleItemIsExecuted()
+    public async Task AccessibleContributionIsExecuted()
     {
-        var item = new RecordingMenuItem();
-        var executor = new AppMenuItemExecutor(new StubAccessChecker(allowed: true));
+        var contribution = new RecordingContribution();
+        var executor = new AppMenuContributionExecutor(new StubAccessChecker(allowed: true));
 
-        await executor.ExecuteAsync(item);
+        await executor.ExecuteAsync(contribution);
 
-        Assert.Equal(1, item.ExecutionCount);
+        Assert.Equal(1, contribution.ExecutionCount);
     }
 
     [Fact]
-    public async Task InaccessibleItemIsNotExecuted()
+    public async Task InaccessibleContributionIsNotExecuted()
     {
-        var item = new RecordingMenuItem();
-        var executor = new AppMenuItemExecutor(new StubAccessChecker(allowed: false));
+        var contribution = new RecordingContribution();
+        var executor = new AppMenuContributionExecutor(new StubAccessChecker(allowed: false));
 
-        await executor.ExecuteAsync(item);
+        await executor.ExecuteAsync(contribution);
 
-        Assert.Equal(0, item.ExecutionCount);
+        Assert.Equal(0, contribution.ExecutionCount);
     }
 
-    private sealed class StubAccessChecker(bool allowed) : IAppMenuItemAccessChecker
+    private sealed class StubAccessChecker(bool allowed) : IAppMenuAccessEvaluator
     {
         public IObservable<Unit> AccessChanged => Observable.Never<Unit>();
-
-        public bool CheckAccess(IAppMenuItem item) => allowed;
+        public bool CheckAccess(IAppMenuContribution contribution) => allowed;
     }
 
-    private sealed class RecordingMenuItem : IAppMenuItem
+    private sealed class RecordingContribution : IAppMenuContribution
     {
-        public int Order => 100;
-
+        public AppMenuItemDescriptor Descriptor { get; } = new("test", null, 0, "Test");
+        public IObservable<Unit> Changed => Observable.Never<Unit>();
         public int ExecutionCount { get; private set; }
 
         public ValueTask ExecuteAsync(CancellationToken cancellationToken = default)
