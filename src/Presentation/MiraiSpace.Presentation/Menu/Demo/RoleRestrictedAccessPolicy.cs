@@ -5,10 +5,10 @@ using MiraiSpace.Extensibility.Abstractions.Menu;
 namespace MiraiSpace.Presentation.Menu.Demo;
 
 public sealed class RoleRestrictedAccessPolicy(CurrentUserContext currentUser)
-    : IAppMenuItemAccessPolicy
+    : IAppMenuAccessPolicy
 {
-    public bool CheckAccess(IAppMenuItem item) =>
-        item is not IRoleRestricted restricted
+    public bool CheckAccess(IAppMenuContribution contribution) =>
+        contribution is not IRoleRestricted restricted
         || restricted.RequiredRoleIds.All(currentUser.HasRole);
 
     public IObservable<Unit> AccessChanged => currentUser.RolesChanged;
