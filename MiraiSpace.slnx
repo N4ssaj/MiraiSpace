@@ -19,7 +19,6 @@
     <Project Path="src/GUI/MiraiSpace.UI/MiraiSpace.UI.csproj" />
   </Folder>
   <Folder Name="/src/Hosts/">
-    <Project Path="src/Hosts/MiraiSpace.Browser/MiraiSpace.Browser.csproj" />
     <Project Path="src/Hosts/MiraiSpace.Desktop/MiraiSpace.Desktop.csproj" />
   </Folder>
   <Folder Name="/src/Infrastructure/">
@@ -29,7 +28,6 @@
   </Folder>
   <Folder Name="/src/Platform/">
     <Project Path="src/Platform/MiraiSpace.Platform.Avalonia/MiraiSpace.Platform.Avalonia.csproj" />
-    <Project Path="src/Platform/MiraiSpace.Platform.Browser/MiraiSpace.Platform.Browser.csproj" />
   </Folder>
   <Folder Name="/src/Platform/Desktop/">
     <Project Path="src/Platform/Desktop/MiraiSpace.Platform.Desktop/MiraiSpace.Platform.Desktop.csproj" />

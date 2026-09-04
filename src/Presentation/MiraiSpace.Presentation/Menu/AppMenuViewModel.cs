@@ -1,53 +1,76 @@
 using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
+using Microsoft.Extensions.DependencyInjection;
 using MiraiSpace.Extensibility.Abstractions.Menu;
+using MiraiSpace.Presentation.Foundation;
 using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu;
 
-public sealed class AppMenuViewModel : IAppMenuViewModel, IDisposable
+public sealed class AppMenuViewModel : ReactiveComponent
 {
-    private readonly SourceList<IAppMenuItem> _itemSource = new();
-    private readonly IDisposable _itemsSubscription;
-    private readonly IAppMenuItemExecutor _executor;
     private readonly ReadOnlyObservableCollection<IAppMenuItem> _items;
+    private readonly IObservable<IChangeSet<IAppMenuItem>> _itemsPipeline;
+    private readonly SourceList<IAppMenuItem> _itemSource = new();
+    private readonly IReadOnlyList<IAppMenuAccessPolicy> _policies;
+
+    public ReadOnlyObservableCollection<IAppMenuItem> Items => _items;
 
     public AppMenuViewModel(
-        [Microsoft.Extensions.DependencyInjection.FromKeyedServices(AppMenuKeys.Root)]
+        [FromKeyedServices(AppMenuKeys.Root)]
         IEnumerable<IAppMenuItem> items,
-        IAppMenuItemAccessChecker accessChecker,
-        IAppMenuItemExecutor executor)
+        IEnumerable<IAppMenuAccessPolicy> policies)
     {
-        _executor = executor;
-        IComparer<IAppMenuItem> comparer = SortExpressionComparer<IAppMenuItem>
-            .Ascending(item => item.Order);
-
-        _itemsSubscription = _itemSource
+        _policies = [.. policies];
+        var itemsPipeline = _itemSource
             .Connect()
             .Filter(
-                accessChecker.AccessChanged
-                    .Select(_ => new Func<IAppMenuItem, bool>(accessChecker.CheckAccess))
-                    .StartWith(accessChecker.CheckAccess))
-            .ObserveOn(RxSchedulers.MainThreadScheduler)
-            .Sort(comparer)
-            .Bind(out _items)
-            .Subscribe();
+                ObserveAccessInvalidations(),
+                (_, item) => CanAccess(item),
+                ListFilterPolicy.ClearAndReplace);
 
+        _itemsPipeline = ResetBeforeRebinding(itemsPipeline)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .Bind(
+                out _items,
+                new BindingOptions(
+                    BindingOptions.DefaultResetThreshold,
+                    UseReplaceForUpdates: true));
         _itemSource.AddRange(items);
     }
 
-    public IReadOnlyList<IAppMenuItem> Items => _items;
-
-    public ValueTask ExecuteAsync(
-        IAppMenuItem item,
-        CancellationToken cancellationToken = default) =>
-        _executor.ExecuteAsync(item, cancellationToken);
-
-    public void Dispose()
+    protected override void OnActivated(CompositeDisposable disposables)
     {
-        _itemsSubscription.Dispose();
-        _itemSource.Dispose();
+        _itemsPipeline
+            .Subscribe()
+            .DisposeWith(disposables);
     }
+
+    private IObservable<Unit> ObserveAccessInvalidations() =>
+        _policies
+            .Select(policy => policy.Invalidated)
+            .Merge()
+            .StartWith(Unit.Default);
+
+    private bool CanAccess(IAppMenuItem item) =>
+        _policies.All(policy => policy.CanAccess(item));
+
+    private IObservable<IChangeSet<IAppMenuItem>> ResetBeforeRebinding(
+        IObservable<IChangeSet<IAppMenuItem>> source) =>
+        Observable.Defer(() =>
+        {
+            if (_items.Count == 0)
+            {
+                return source;
+            }
+
+            var reset = new ChangeSet<IAppMenuItem>(
+                [new Change<IAppMenuItem>(ListChangeReason.Clear, _items.ToArray())]);
+            return Observable.Return(reset).Concat(source);
+        });
 }

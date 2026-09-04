@@ -1,5 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
              xmlns:theme="clr-namespace:Eremex.AvaloniaUI.Themes.DeltaDesign;assembly=Eremex.Avalonia.Themes.DeltaDesign"
              x:Class="MiraiSpace.UI.App"
              RequestedThemeVariant="Light">
@@ -8,5 +9,40 @@
     <Application.Styles>
         <StyleInclude Source="avares://MiraiSpace.UI.Themes/Styles.axaml" />
         <theme:DeltaDesignTheme />
+        <Style Selector="Button.menu-item">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="MinHeight" Value="54" />
+            <Setter Property="Margin" Value="0,2" />
+            <Setter Property="Padding" Value="7" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="#F4F6FA" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Button.menu-item[(behaviors|AppMenuDisplay.IsCompact)=True]">
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="7" />
+        </Style>
+        <Style Selector="Button.menu-item:pointerover">
+            <Setter Property="Background" Value="#242A36" />
+        </Style>
+        <Style Selector="Button.menu-item:pressed">
+            <Setter Property="Background" Value="#2D3442" />
+        </Style>
     </Application.Styles>
 </Application>

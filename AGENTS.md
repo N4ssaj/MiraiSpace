@@ -1,0 +1,30 @@
+# MiraiSpace coding preferences
+
+- Do not use primary constructors. Prefer an explicit constructor and ordinary fields/properties.
+- Put dependency-injection registration extensions in a `DependencyInjection` namespace/folder, not `Composition`.
+- Keep framework-specific implementation types out of extensibility contracts. Menu contracts use `ICommand` and read-only collection interfaces, not `ReactiveCommand` or concrete observable collections.
+- Compose menu items with keyed DI. Use the stable string key `Root` for top-level items and a stable container-owned string key for each container. Never use concrete `Type` objects as menu keys.
+- Keep `IAppMenuItem` minimal. Optional presentation data belongs to the concrete item/view model and its view.
+- Register views as exact `IViewFor<TViewModel> -> TView` services. Plug-ins register their own view mappings. The application `ViewLocator` resolves only the exact runtime view-model type; it does not walk base classes, assign `DataContext`, or create fallbacks.
+- Compact menu behavior is a UI concern. Prefer declarative Avalonia properties/styles and a `Flyout` for container children; do not repeat imperative display-mode code in every view.
+- Prefer ReactiveUI.SourceGenerators for reactive properties and commands. Preserve each menu item's freedom to choose sync/async execution and its own `CanExecute`.
+- `AddPresentation()` is the public entry point for all Presentation registrations. It may delegate internally, but hosts should not assemble individual Presentation features.
+- Prefer `var` for local variables when the assigned expression makes the type clear.
+- Bind DynamicData pipelines directly to a private `readonly ReadOnlyObservableCollection<T>` field with `Bind(out _items)` and expose it through a getter. Do not make the collection property reactive/settable, and do not retain a mutable UI collection merely as a binding target. Enable `UseReplaceForUpdates` when the target controls support replace notifications.
+- Use `SortAndBind` only when the pipeline actually sorts. Put its scheduler in `SortAndBindOptions`; for an unsorted `Bind` pipeline, keep the UI scheduler at the binding boundary with `ObserveOn`.
+- Keep every application-menu DI key in the shared `AppMenuKeys` class and use those constants in registrations and `[FromKeyedServices]` attributes.
+- Do not register Presentation view models or menu items as singletons. Use an application scope when several view models must share session state.
+- Use `ReactiveUserControl<TViewModel>` (and `ReactiveWindow<TViewModel>` for windows) when ReactiveUI view activation is required. Do not introduce a custom non-generic view base solely to reproduce that lifecycle.
+- Use the ReactiveUI.SourceGenerators `[IViewFor<TViewModel>]` attribute only when it removes real registration or binding code. Do not create empty per-view-model subclasses merely to specialize one reusable menu-item view; register a reusable closed generic `IViewFor<TViewModel>` instead.
+- Store Avalonia attached properties and behaviors outside `Views` (for example, under `Behaviors`).
+- Register the application `ViewLocator` in UI DI and resolve that registration when adding it to `Application.DataTemplates`; do not construct it manually in the host.
+- Keep only extension contracts in the abstractions project. Policy base classes and other implementation helpers belong to Presentation.
+- Do not add an access-policy state unless it is supported end to end. A filtering-only access policy returns `bool`; `Disabled` requires real UI and command behavior, not an unused enum value.
+- Treat sample UI as production-facing UI: maintain a coherent visual system and verify both expanded and compact menu modes, including container flyouts.
+- Keep `Window` code-behind free of DI scopes, service resolution, and lifetime management. Create the application scope in the application composition root and expose window content through a dedicated window view model.
+- Treat an `IAppMenuItemContainer` as a menu group, not a navigation item. It owns and filters its child items, may add dynamic children, and presents them inline or in a compact-mode flyout.
+- Keep `IAppMenuItem.ExecuteCommand` typed as framework-neutral `ICommand`. A source-generated `ReactiveCommand` property needs an explicit interface bridge because C# interface implementation requires an exact property type; do not remove that bridge merely because the property names match.
+- Prefer source-generated partial properties over annotated backing fields, and place public properties before constructors.
+- Target the desktop host for now; do not reintroduce browser host/platform projects unless explicitly requested.
+- For DynamicData refiltering driven by invalidation signals, prefer the state overload `Filter(IObservable<TState>, Func<TState, TItem, bool>, ...)`; do not project every signal into a new `Func<TItem, bool>`.
+- When a requested review change conflicts with the language type system or the framework lifecycle, explain the constraint and keep the correct code instead of applying the request mechanically.

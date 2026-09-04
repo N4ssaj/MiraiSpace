@@ -1,69 +1,95 @@
 using System.Reactive;
 using System.Reactive.Subjects;
+using System.Windows.Input;
 using MiraiSpace.Extensibility.Abstractions.Menu;
+using MiraiSpace.Presentation.Features.Workspace.Menu;
 using MiraiSpace.Presentation.Menu;
+using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Tests.Menu;
 
 public sealed class AppMenuViewModelTests
 {
     [Fact]
-    public void ItemsAreSortedByOrder()
+    public void ActivationPreservesRegistrationOrder()
     {
-        using var menu = CreateMenu(
-            new TestMenuItem("last", 20),
-            new TestMenuItem("first", 10));
+        var first = new TestMenuItem();
+        var second = new TestMenuItem();
+        var menu = new AppMenuViewModel([first, second], []);
 
-        Assert.Equal(["first", "last"], menu.Items.Cast<TestMenuItem>().Select(item => item.Name));
+        using var activation = menu.Activator.Activate();
+
+        Assert.Collection(
+            menu.Items,
+            item => Assert.Same(first, item),
+            item => Assert.Same(second, item));
     }
 
     [Fact]
-    public void AccessChangeRefiltersItems()
+    public void PolicyInvalidationRefiltersItems()
     {
-        var policy = new ToggleAccessPolicy(allowed: false);
-        using var menu = new AppMenuViewModel(
-            [new TestMenuItem("restricted", 10)],
-            new AppMenuItemAccessChecker([policy]),
-            new AppMenuItemExecutor(new AppMenuItemAccessChecker([policy])));
+        using var policy = new ToggleAccessPolicy(false);
+        var item = new TestMenuItem();
+        var menu = new AppMenuViewModel([item], [policy]);
+        using var activation = menu.Activator.Activate();
 
         Assert.Empty(menu.Items);
 
-        policy.SetAllowed(true);
+        policy.SetAccess(true);
 
-        Assert.Equal("restricted", Assert.IsType<TestMenuItem>(Assert.Single(menu.Items)).Name);
+        Assert.Same(item, Assert.Single(menu.Items));
     }
 
-    private static AppMenuViewModel CreateMenu(params IAppMenuItem[] items)
+    [Fact]
+    public void ReactivationDoesNotDuplicateItems()
     {
-        var checker = new AppMenuItemAccessChecker([]);
-        return new AppMenuViewModel(items, checker, new AppMenuItemExecutor(checker));
+        var item = new TestMenuItem();
+        var menu = new AppMenuViewModel([item], []);
+
+        menu.Activator.Activate().Dispose();
+        using var activation = menu.Activator.Activate();
+
+        Assert.Same(item, Assert.Single(menu.Items));
     }
 
-    private sealed class ToggleAccessPolicy(bool allowed) : IAppMenuItemAccessPolicy, IDisposable
+    [Fact]
+    public void ContainerReactivationDoesNotDuplicateItems()
     {
-        private readonly Subject<Unit> _accessChanged = new();
-        private bool _allowed = allowed;
+        var item = new TestMenuItem();
+        var container = new WorkspaceMenuItemContainer([item], []);
 
-        public IObservable<Unit> AccessChanged => _accessChanged;
+        container.Activator.Activate().Dispose();
+        using var activation = container.Activator.Activate();
 
-        public bool CheckAccess(IAppMenuItem item) => _allowed;
+        Assert.Same(item, Assert.Single(container.Items));
+    }
 
-        public void SetAllowed(bool allowed)
+    private sealed class ToggleAccessPolicy : IAppMenuAccessPolicy, IDisposable
+    {
+        private readonly Subject<Unit> _invalidated = new();
+        private bool _canAccess;
+
+        public IObservable<Unit> Invalidated => _invalidated;
+
+        public ToggleAccessPolicy(bool canAccess)
         {
-            _allowed = allowed;
-            _accessChanged.OnNext(Unit.Default);
+            _canAccess = canAccess;
         }
 
-        public void Dispose() => _accessChanged.Dispose();
+        public bool CanAccess(IAppMenuItem item) => _canAccess;
+
+        public void SetAccess(bool canAccess)
+        {
+            _canAccess = canAccess;
+            _invalidated.OnNext(Unit.Default);
+        }
+
+        public void Dispose() => _invalidated.Dispose();
     }
 
-    private sealed class TestMenuItem(string name, int order) : IAppMenuItem
+    private sealed class TestMenuItem : IAppMenuItem
     {
-        public string Name { get; } = name;
-
-        public int Order { get; } = order;
-
-        public ValueTask ExecuteAsync(CancellationToken cancellationToken = default) =>
-            ValueTask.CompletedTask;
+        public ICommand ExecuteCommand { get; } =
+            ReactiveCommand.Create(() => { });
     }
 }

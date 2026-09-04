@@ -1,0 +1,166 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             xmlns:menu="using:MiraiSpace.Presentation.Menu"
+             mc:Ignorable="d"
+             d:DesignWidth="272"
+             d:DesignHeight="820"
+             x:Class="MiraiSpace.UI.Views.Menu.AppMenuView"
+             x:DataType="menu:AppMenuViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="Border.menu-shell">
+            <Setter Property="Width" Value="272" />
+        </Style>
+        <Style Selector="Border.menu-shell[(behaviors|AppMenuDisplay.IsCompact)=True]">
+            <Setter Property="Width" Value="72" />
+        </Style>
+        <Style Selector="Control.menu-details[(behaviors|AppMenuDisplay.IsCompact)=True]">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="ToggleButton.sidebar-toggle">
+            <Setter Property="MinHeight" Value="46" />
+            <Setter Property="Padding" Value="7" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="#202632" />
+            <Setter Property="BorderBrush" Value="#303746" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Foreground" Value="#AEB6C7" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="ToggleButton.sidebar-toggle[(behaviors|AppMenuDisplay.IsCompact)=True]">
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="ToggleButton.sidebar-toggle:pointerover">
+            <Setter Property="Background" Value="#29303E" />
+        </Style>
+        <Style Selector="ToggleButton.sidebar-toggle:checked">
+            <Setter Property="Background" Value="#202632" />
+        </Style>
+        <Style Selector="TextBlock.expand-icon">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="TextBlock.collapse-icon[(behaviors|AppMenuDisplay.IsCompact)=True]">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="TextBlock.expand-icon[(behaviors|AppMenuDisplay.IsCompact)=True]">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Classes="menu-shell"
+            behaviors:AppMenuDisplay.IsCompact="{Binding IsChecked, ElementName=CompactToggle, TargetNullValue=False}"
+            Background="#171B24"
+            BorderBrush="#2A303D"
+            BorderThickness="0,0,1,0">
+        <Grid RowDefinitions="76,Auto,*,Auto">
+            <Grid Margin="14,16,12,12"
+                  ColumnDefinitions="44,*">
+                <Border Width="40"
+                        Height="40"
+                        CornerRadius="12"
+                        Background="#7668F5">
+                    <TextBlock Text="M"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Border>
+
+                <StackPanel Classes="menu-details"
+                            Grid.Column="1"
+                            Margin="10,3,0,0">
+                    <TextBlock Text="MIRAI SPACE"
+                               FontSize="12"
+                               FontWeight="Bold"
+                               Foreground="#F7F8FB"
+                               LetterSpacing="0.8" />
+                    <TextBlock Text="Product workspace"
+                               Margin="0,2,0,0"
+                               FontSize="9"
+                               Foreground="#7E8799" />
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Classes="menu-details"
+                       Grid.Row="1"
+                       Margin="20,8,0,9"
+                       Text="NAVIGATION"
+                       FontSize="9"
+                       FontWeight="Bold"
+                       Foreground="#667085"
+                       LetterSpacing="1.4" />
+
+            <ScrollViewer Grid.Row="2"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Items}"
+                              Margin="8,0,8,12" />
+            </ScrollViewer>
+
+            <Border Grid.Row="3"
+                    Margin="8,6,8,12"
+                    Padding="0,10,0,0"
+                    BorderBrush="#2A303D"
+                    BorderThickness="0,1,0,0">
+                <ToggleButton x:Name="CompactToggle"
+                              Classes="sidebar-toggle"
+                              IsChecked="False"
+                              ToolTip.Tip="Collapse or expand navigation">
+                    <Grid ColumnDefinitions="38,*">
+                        <Border Width="32"
+                                Height="32"
+                                Background="#2A3140"
+                                CornerRadius="9">
+                            <Grid>
+                                <TextBlock Classes="collapse-icon"
+                                           Text="⇤"
+                                           FontSize="14"
+                                           Foreground="#C9CFDB"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Classes="expand-icon"
+                                           Text="⇥"
+                                           FontSize="14"
+                                           Foreground="#C9CFDB"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                        <StackPanel Classes="menu-details"
+                                    Grid.Column="1"
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="Collapse sidebar"
+                                       FontSize="10"
+                                       FontWeight="SemiBold"
+                                       Foreground="#D9DDE5" />
+                            <TextBlock Text="Keep icons visible"
+                                       Margin="0,1,0,0"
+                                       FontSize="8"
+                                       Foreground="#717B8F" />
+                        </StackPanel>
+                    </Grid>
+                </ToggleButton>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

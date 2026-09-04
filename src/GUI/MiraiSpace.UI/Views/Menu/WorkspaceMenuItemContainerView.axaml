@@ -1,0 +1,120 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             xmlns:menu="using:MiraiSpace.Presentation.Features.Workspace.Menu"
+             mc:Ignorable="d"
+             d:DesignWidth="252"
+             HorizontalAlignment="Stretch"
+             x:Class="MiraiSpace.UI.Views.Menu.WorkspaceMenuItemContainerView"
+             x:DataType="menu:WorkspaceMenuItemContainer">
+
+    <UserControl.Styles>
+        <Style Selector="Button.container-compact">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="StackPanel.container-expanded[(behaviors|AppMenuDisplay.IsCompact)=True]">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Button.container-compact[(behaviors|AppMenuDisplay.IsCompact)=True]">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid>
+        <StackPanel Classes="container-expanded">
+            <Button Classes="menu-item"
+                    Command="{Binding ExecuteCommand}"
+                    ToolTip.Tip="{Binding Title}">
+                <Grid ColumnDefinitions="40,*,28">
+                    <Border Width="36"
+                            Height="36"
+                            CornerRadius="11"
+                            Background="{Binding Accent}">
+                        <TextBlock Text="{Binding Glyph}"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Grid.Column="1"
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Title}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Foreground="#F4F6FA" />
+                        <TextBlock Text="{Binding Caption}"
+                                   Margin="0,2,0,0"
+                                   FontSize="9"
+                                   Foreground="#7F899E" />
+                    </StackPanel>
+
+                    <Border Grid.Column="2"
+                            Width="24"
+                            Height="24"
+                            Background="#262C38"
+                            CornerRadius="8"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="⌄"
+                                   FontSize="12"
+                                   Foreground="#A7AFC0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Border>
+                </Grid>
+            </Button>
+
+            <Border IsVisible="{Binding IsExpanded}"
+                    Margin="20,2,0,7"
+                    Padding="7,4,0,4"
+                    BorderBrush="#303746"
+                    BorderThickness="1,0,0,0">
+                <ItemsControl ItemsSource="{Binding Items}" />
+            </Border>
+        </StackPanel>
+
+        <Button Classes="menu-item container-compact"
+                ToolTip.Tip="{Binding Title}">
+            <Border Width="36"
+                    Height="36"
+                    CornerRadius="11"
+                    Background="{Binding Accent}">
+                <TextBlock Text="{Binding Glyph}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+            </Border>
+
+            <Button.Flyout>
+                <Flyout Placement="RightEdgeAlignedTop">
+                    <Border MinWidth="264"
+                            Padding="10"
+                            Background="#1B202A"
+                            BorderBrush="#343B49"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            behaviors:AppMenuDisplay.IsCompact="False">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Title}"
+                                       Margin="10,7,10,2"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="#F3F5F9" />
+                            <TextBlock Text="Workspace destinations"
+                                       Margin="10,0,10,10"
+                                       FontSize="9"
+                                       Foreground="#7F899E" />
+                            <ItemsControl ItemsSource="{Binding Items}" />
+                        </StackPanel>
+                    </Border>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+    </Grid>
+</UserControl>

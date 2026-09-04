@@ -12,7 +12,6 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
-    <PackageReference Include="Eremex.Avalonia.Controls" />
     <PackageReference Include="Eremex.Avalonia.Themes.DeltaDesign" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="ReactiveUI.Avalonia" />

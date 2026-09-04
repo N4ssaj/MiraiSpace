@@ -1,20 +1,37 @@
-﻿using System;
 using Avalonia;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MiraiSpace.Presentation.DependencyInjection;
 using MiraiSpace.UI;
+using MiraiSpace.UI.DependencyInjection;
+using ReactiveMarbles.Extensions.Hosting.Avalonia;
 using ReactiveUI.Avalonia;
 
 namespace MiraiSpace.Desktop;
 
-sealed class Program
+internal sealed class Program
 {
     [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+    public static void Main(string[] args)
+    {
+        var builder = Host.CreateApplicationBuilder(args);
+        builder.Services
+            .AddPresentation()
+            .AddMiraiSpaceUi();
 
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .WithInterFont()
-            .UseReactiveUI(_ => { })
-            .LogToTrace();
+        builder.ConfigureAvalonia(avalonia =>
+        {
+            avalonia.UseApplication<App>();
+            avalonia.ConfigureAppBuilder(appBuilder =>
+                appBuilder
+                    .UsePlatformDetect()
+                    .WithInterFont()
+                    .UseReactiveUI(_ => { }));
+        });
+        builder.Services.AddSingleton<IAvaloniaService, DesktopApplicationService>();
+        builder.UseAvaloniaLifetime();
+
+        using var host = builder.Build();
+        host.Run();
+    }
 }
