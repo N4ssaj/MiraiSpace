@@ -1,0 +1,72 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             xmlns:menu="using:MiraiSpace.Presentation.Features.Workspace.Menu"
+             mc:Ignorable="d"
+             d:DesignWidth="252"
+             d:DesignHeight="56"
+             HorizontalAlignment="Stretch"
+             x:Class="MiraiSpace.UI.Views.Menu.InboxMenuItemView"
+             x:DataType="menu:InboxMenuItem">
+
+    <UserControl.Styles>
+        <Style Selector="Control.menu-details[(behaviors|AppMenuDisplay.IsCompact)=True]">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </UserControl.Styles>
+
+    <Button Classes="menu-item"
+            Command="{Binding ExecuteCommand}"
+            ToolTip.Tip="{Binding Title}">
+        <Grid ColumnDefinitions="40,*">
+            <Grid Width="40"
+                  Height="40">
+                <Border Width="36"
+                        Height="36"
+                        CornerRadius="11"
+                        Background="{Binding Accent}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom">
+                    <TextBlock Text="{Binding Glyph}"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Border>
+                <Border MinWidth="16"
+                        Height="16"
+                        Padding="3,0"
+                        Background="#F6F7FB"
+                        BorderBrush="#171B24"
+                        BorderThickness="2"
+                        CornerRadius="8"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top">
+                    <TextBlock Text="{Binding UnreadCount}"
+                               FontSize="7"
+                               FontWeight="Bold"
+                               Foreground="#D64E5D"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Border>
+            </Grid>
+
+            <StackPanel Classes="menu-details"
+                        Grid.Column="1"
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center">
+                <TextBlock Text="{Binding Title}"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="#F4F6FA" />
+                <TextBlock Text="{Binding UnreadCount, StringFormat='{}{0} unread conversations'}"
+                           Margin="0,2,0,0"
+                           FontSize="9"
+                           Foreground="#7F899E" />
+            </StackPanel>
+        </Grid>
+    </Button>
+</UserControl>

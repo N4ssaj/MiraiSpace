@@ -32,6 +32,4 @@ This is a living collection of candidate experiments, not a release plan or a co
 ## Platform experiments
 
 - Desktop behavior on Windows, Linux, and macOS
-- Browser host and compile-time module composition
-- Android and other mobile Avalonia targets
 - Host-specific plugin and platform capabilities

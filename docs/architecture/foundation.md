@@ -2,9 +2,9 @@
 
 ## Purpose
 
-MiraiSpace is a client-focused reference application for testing architectural ideas for complex modular applications. Document-oriented enterprise workflows may serve as demonstrations, but MiraiSpace is not a product tied to a single domain or audience.
+MiraiSpace is a desktop reference application for testing architectural ideas for complex modular applications. Document-oriented enterprise workflows may serve as demonstrations, but MiraiSpace is not a product tied to a single domain or audience.
 
-The application is desktop-first. Browser, mobile, and other Avalonia targets are explored where practical, but they must not prevent a strong desktop implementation. Platform-specific capabilities and plugin-loading mechanisms may differ by host.
+The current product surface is desktop-only. Browser and mobile hosts are outside the active architecture until they are requested explicitly. Platform-specific capabilities and plugin-loading mechanisms may still differ between desktop operating systems.
 
 ## Application lifecycle
 
@@ -49,7 +49,7 @@ Realtime reconnect handling belongs to the owner of each state. A restored conne
 
 - **Core** contains domain concepts and does not depend on Application, Presentation, Infrastructure, Avalonia, ReactiveUI, DI, or the plugin runtime.
 - **Application** depends on Core and declares the ports required by use cases. It does not depend on Avalonia or concrete infrastructure.
-- **Presentation** depends on application and presentation contracts. It may use ReactiveUI and DynamicData but not concrete infrastructure or Avalonia controls.
+- **Presentation** depends on Application and extension contracts. It may use ReactiveUI and DynamicData but not concrete infrastructure or Avalonia controls.
 - **Avalonia UI** depends on Presentation and contains Views, controls, themes, and Avalonia adapters.
 - **Infrastructure** implements Application ports and does not depend on UI.
 - **Platform adapters** implement capability contracts for a particular host or operating system.

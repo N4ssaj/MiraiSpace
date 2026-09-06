@@ -8,11 +8,11 @@
     <PackageReference Include="DynamicData" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="ReactiveUI" />
+    <PackageReference Include="ReactiveUI.SourceGenerators" />
   </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\Application\MiraiSpace.Application\MiraiSpace.Application.csproj" />
     <ProjectReference Include="..\..\Extensibility\MiraiSpace.Extensibility.Abstractions\MiraiSpace.Extensibility.Abstractions.csproj" />
-    <ProjectReference Include="..\MiraiSpace.Presentation.Abstractions\MiraiSpace.Presentation.Abstractions.csproj" />
   </ItemGroup>
 </Project>

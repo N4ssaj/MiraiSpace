@@ -8,7 +8,7 @@ This is an evidence-driven execution order for issue #10, not a frozen feature r
 - [x] Explicit built-in module composition through `IServiceCollection`.
 - [x] Generic Host starts inside Avalonia initialization and stops on desktop exit.
 - [x] Architecture tests enforce the first dependency-direction rules.
-- [ ] Extract host composition so Desktop and Browser can select modules and platform adapters independently.
+- [ ] Extract desktop host composition so operating-system adapters can be selected independently.
 - [ ] Add lifecycle tests with a recording hosted service.
 
 ## 2. Plugin startup lifecycle — next
@@ -27,8 +27,8 @@ This is an evidence-driven execution order for issue #10, not a frozen feature r
 
 ## 4. Navigation and page activation
 
-- [x] Establish ReactiveUI activation/deactivation and repeatable initialization contracts.
-- [x] Separate BCL-only Presentation contracts from ReactiveUI implementation.
+- [x] Establish ReactiveUI activation/deactivation without imposing initialization on the shared base.
+- [x] Keep extension contracts separate from Presentation implementation helpers.
 - [ ] Define route values, navigation outcomes, not-found state, and activation-error state.
 - [ ] Create navigation-owned page scopes and explicit async close semantics.
 - [ ] Demonstrate a contributed page and a localized plugin failure.
