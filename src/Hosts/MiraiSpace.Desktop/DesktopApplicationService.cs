@@ -1,10 +1,8 @@
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Microsoft.Extensions.DependencyInjection;
-using MiraiSpace.Presentation.ViewModels;
+using MiraiSpace.UI.Views;
 using ReactiveMarbles.Extensions.Hosting.Avalonia;
-using ReactiveUI;
 using ViewLocator = MiraiSpace.UI.Infrastructure.ViewLocator;
 
 namespace MiraiSpace.Desktop;
@@ -33,9 +31,7 @@ internal sealed class DesktopApplicationService : IAvaloniaService, IDisposable
                 "MiraiSpace.Desktop requires a classic desktop application lifetime.");
         }
 
-        desktop.MainWindow = services.GetRequiredService<IViewFor<MainWindowViewModel>>() as Window
-            ?? throw new InvalidOperationException(
-                $"The view registered for {nameof(MainWindowViewModel)} must derive from {nameof(Window)}.");
+        desktop.MainWindow = services.GetRequiredService<MainWindow>();
         desktop.MainWindow.Show();
     }
 

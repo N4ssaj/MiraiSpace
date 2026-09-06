@@ -1,14 +1,9 @@
 using MiraiSpace.Presentation.Menu.Standard;
-using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 
 namespace MiraiSpace.UI.Views.Menu;
 
-public sealed class StandardAppMenuItemView<TItem> : StandardAppMenuItemView, IViewFor<TItem>
+[IViewFor(nameof(TItem))]
+public sealed partial class StandardAppMenuItemView<TItem> : StandardAppMenuItemView
     where TItem : StandardAppMenuItem
-{
-    TItem? IViewFor<TItem>.ViewModel
-    {
-        get => ViewModel as TItem;
-        set => ViewModel = value;
-    }
-}
+;

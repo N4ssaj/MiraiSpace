@@ -19,10 +19,7 @@ public static class UiServiceCollectionExtensions
             ArgumentNullException.ThrowIfNull(services);
 
             services.AddScoped<ViewLocator>();
-            services.AddScoped<IViewFor<MainWindowViewModel>>(provider => new MainWindow
-            {
-                ViewModel = provider.GetRequiredService<MainWindowViewModel>()
-            });
+            services.AddScoped<MainWindow>();
             services.AddTransient<IViewFor<MainViewModel>, MainView>();
             services.AddTransient<IViewFor<AppMenuViewModel>, AppMenuView>();
             services.AddTransient<IViewFor<WorkspacePageViewModel>, WorkspacePageView>();

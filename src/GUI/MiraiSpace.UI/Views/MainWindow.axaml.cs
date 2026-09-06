@@ -9,4 +9,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         InitializeComponent();
     }
+
+    public MainWindow(MainWindowViewModel viewModel)
+        : this()
+    {
+        ViewModel = viewModel;
+    }
 }
