@@ -19,7 +19,7 @@ public static class UiServiceCollectionExtensions
             ArgumentNullException.ThrowIfNull(services);
 
             services.AddScoped<ViewLocator>();
-            services.AddScoped(provider => new MainWindow
+            services.AddScoped<IViewFor<MainWindowViewModel>>(provider => new MainWindow
             {
                 ViewModel = provider.GetRequiredService<MainWindowViewModel>()
             });

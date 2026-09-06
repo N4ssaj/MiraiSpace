@@ -1,13 +1,14 @@
 using MiraiSpace.Presentation.Menu.Standard;
-using ReactiveUI.Avalonia;
+using ReactiveUI;
 
 namespace MiraiSpace.UI.Views.Menu;
 
-public sealed class StandardAppMenuItemView<TItem> : ReactiveUserControl<TItem>
+public sealed class StandardAppMenuItemView<TItem> : StandardAppMenuItemView, IViewFor<TItem>
     where TItem : StandardAppMenuItem
 {
-    public StandardAppMenuItemView()
+    TItem? IViewFor<TItem>.ViewModel
     {
-        Content = new StandardAppMenuItemContent();
+        get => ViewModel as TItem;
+        set => ViewModel = value;
     }
 }
