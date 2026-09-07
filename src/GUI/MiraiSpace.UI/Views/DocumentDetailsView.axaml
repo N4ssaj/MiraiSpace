@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MiraiSpace.Presentation.Features.Documents"
+             x:Class="MiraiSpace.UI.Views.DocumentDetailsView" x:DataType="vm:DocumentDetailsComponent">
+    <Border Background="#EDEFF4" CornerRadius="18" Padding="22" VerticalAlignment="Top">
+        <StackPanel Spacing="18">
+            <TextBlock Text="AT A GLANCE" Foreground="#7D8695" FontSize="10" FontWeight="Bold" LetterSpacing="1.5" />
+            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontSize="17" FontWeight="SemiBold" Foreground="#343C4C" />
+            <StackPanel Spacing="5">
+                <TextBlock Text="Words" Foreground="#7D8695" FontSize="12" />
+                <TextBlock Text="{Binding WordCount}" FontSize="24" Foreground="#343C4C" />
+            </StackPanel>
+            <StackPanel Spacing="5">
+                <TextBlock Text="Last saved" Foreground="#7D8695" FontSize="12" />
+                <TextBlock Text="{Binding Updated}" Foreground="#343C4C" FontSize="13" />
+            </StackPanel>
+            <StackPanel Spacing="5">
+                <TextBlock Text="Workspace / branch" Foreground="#7D8695" FontSize="12" />
+                <TextBlock Text="{Binding Workspace}" TextWrapping="Wrap" Foreground="#343C4C" />
+                <TextBlock Text="{Binding Position}" TextWrapping="Wrap" Foreground="#343C4C" />
+                <TextBlock Text="{Binding Tags}" TextWrapping="Wrap" Foreground="#7165E8" />
+            </StackPanel>
+            <StackPanel Spacing="5">
+                <TextBlock Text="Reference" Foreground="#7D8695" FontSize="12" />
+                <TextBlock Text="{Binding ShortId}" FontFamily="monospace" Foreground="#343C4C" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

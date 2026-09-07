@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MiraiSpace.Presentation.Features.Documents"
+             xmlns:dialog="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             x:Class="MiraiSpace.UI.Views.RenameDocumentView" x:DataType="vm:RenameDocumentDialog">
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}" />
+    </UserControl.KeyBindings>
+    <Border Background="White" CornerRadius="18" Padding="26" MaxWidth="390" Margin="12">
+        <StackPanel Spacing="18" KeyboardNavigation.TabNavigation="Cycle">
+            <StackPanel Spacing="7">
+                <TextBlock Text="A new name" FontSize="23" FontWeight="SemiBold" Foreground="#252A36" />
+                <TextBlock Text="Give this document a name you'll recognise." TextWrapping="Wrap" Foreground="#737B8C" />
+            </StackPanel>
+            <ContentControl Content="{Binding Form}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                <Button Content="Cancel" Command="{Binding CancelCommand}" />
+                <Button Content="Save name" Command="{Binding SaveCommand}" Background="#7165E8" Foreground="White" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

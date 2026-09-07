@@ -2,7 +2,11 @@ using System.Windows.Input;
 using MiraiSpace.Extensibility.Abstractions.Authorization;
 using MiraiSpace.Extensibility.Abstractions.Menu;
 using MiraiSpace.Presentation.Features.Workspace.Authorization;
-using MiraiSpace.Presentation.Features.Workspace.Navigation;
+using MiraiSpace.Presentation.Navigation;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
+using ReactiveUI;
 using MiraiSpace.Presentation.Menu.Standard;
 using ReactiveUI.SourceGenerators;
 
@@ -11,7 +15,7 @@ namespace MiraiSpace.Presentation.Features.Workspace.Menu;
 public sealed partial class AdministrationMenuItem
     : StandardAppMenuItem, IAppMenuItem, IRoleRestricted
 {
-    private readonly WorkspaceNavigationState _navigation;
+    private readonly INavigationService _navigation;
 
     public override string Title => "Administration";
 
@@ -26,18 +30,19 @@ public sealed partial class AdministrationMenuItem
 
     ICommand IAppMenuItem.ExecuteCommand => ExecuteCommand;
 
-    public AdministrationMenuItem(WorkspaceNavigationState navigation)
+    public AdministrationMenuItem(INavigationService navigation)
     {
         _navigation = navigation;
     }
 
-    [ReactiveCommand]
-    private void Execute()
+    protected override void OnActivated(CompositeDisposable disposables)
     {
-        _navigation.Navigate(
-            "ADMINISTRATION",
-            "Access management",
-            "Manage roles, permissions, and workspace policies.",
-            Accent);
+        _navigation.WhenAnyValue(x => x.Address)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .Subscribe(entry => IsSelected = entry?.Path == "/administration")
+            .DisposeWith(disposables);
     }
+
+    [ReactiveCommand]
+    private Task Execute(CancellationToken token) => _navigation.NavigateAsync("/administration", token);
 }

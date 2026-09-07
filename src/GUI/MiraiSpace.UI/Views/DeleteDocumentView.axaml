@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MiraiSpace.Presentation.Features.Documents"
+             xmlns:dialog="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             x:Class="MiraiSpace.UI.Views.DeleteDocumentView" x:DataType="vm:DeleteDocumentDialog">
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}" />
+    </UserControl.KeyBindings>
+    <Border Background="White" CornerRadius="18" Padding="28" MaxWidth="430" Margin="16">
+        <StackPanel Spacing="18" KeyboardNavigation.TabNavigation="Cycle">
+            <TextBlock Text="Delete this document?" FontSize="23" FontWeight="SemiBold" Foreground="#252A36" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold" Foreground="#BE4255" TextWrapping="Wrap" />
+            <TextBlock Text="It will be removed from this workspace's document list." Foreground="#737B8C" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                <Button Content="Keep document" Command="{Binding CancelCommand}" />
+                <Button Content="Delete" Command="{Binding ConfirmCommand}" Background="#BE4255" Foreground="White" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

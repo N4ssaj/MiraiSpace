@@ -1,6 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             xmlns:dialog="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:attached="using:MiraiSpace.UI.AttachedProperties"
              xmlns:theme="clr-namespace:Eremex.AvaloniaUI.Themes.DeltaDesign;assembly=Eremex.Avalonia.Themes.DeltaDesign"
              x:Class="MiraiSpace.UI.App"
              RequestedThemeVariant="Light">
@@ -9,6 +10,7 @@
     <Application.Styles>
         <StyleInclude Source="avares://MiraiSpace.UI.Themes/Styles.axaml" />
         <theme:DeltaDesignTheme />
+        <dialog:DialogHostStyles />
         <Style Selector="Button.menu-item">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -34,12 +36,21 @@
                 </ControlTemplate>
             </Setter>
         </Style>
-        <Style Selector="Button.menu-item[(behaviors|AppMenuDisplay.IsCompact)=True]">
+        <Style Selector="Button.menu-item[(attached|AppMenuDisplay.IsCompact)=True]">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Padding" Value="7" />
         </Style>
         <Style Selector="Button.menu-item:pointerover">
             <Setter Property="Background" Value="#242A36" />
+        </Style>
+        <Style Selector="Button.menu-item.selected">
+            <Setter Property="Background" Value="#383052" />
+            <Setter Property="BorderBrush" Value="#9B8AFB" />
+            <Setter Property="BorderThickness" Value="2,0,0,0" />
+        </Style>
+        <Style Selector="Button.menu-item:focus-visible">
+            <Setter Property="BorderBrush" Value="#B9ACFF" />
+            <Setter Property="BorderThickness" Value="1" />
         </Style>
         <Style Selector="Button.menu-item:pressed">
             <Setter Property="Background" Value="#2D3442" />

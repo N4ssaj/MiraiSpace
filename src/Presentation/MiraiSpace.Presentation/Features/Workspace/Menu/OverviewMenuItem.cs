@@ -1,6 +1,10 @@
 using System.Windows.Input;
 using MiraiSpace.Extensibility.Abstractions.Menu;
-using MiraiSpace.Presentation.Features.Workspace.Navigation;
+using MiraiSpace.Presentation.Navigation;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
+using ReactiveUI;
 using MiraiSpace.Presentation.Menu.Standard;
 using ReactiveUI.SourceGenerators;
 
@@ -8,7 +12,7 @@ namespace MiraiSpace.Presentation.Features.Workspace.Menu;
 
 public sealed partial class OverviewMenuItem : StandardAppMenuItem, IAppMenuItem
 {
-    private readonly WorkspaceNavigationState _navigation;
+    private readonly INavigationService _navigation;
 
     public override string Title => "Overview";
 
@@ -18,18 +22,19 @@ public sealed partial class OverviewMenuItem : StandardAppMenuItem, IAppMenuItem
 
     ICommand IAppMenuItem.ExecuteCommand => ExecuteCommand;
 
-    public OverviewMenuItem(WorkspaceNavigationState navigation)
+    public OverviewMenuItem(INavigationService navigation)
     {
         _navigation = navigation;
     }
 
-    [ReactiveCommand]
-    private void Execute()
+    protected override void OnActivated(CompositeDisposable disposables)
     {
-        _navigation.Navigate(
-            "OVERVIEW",
-            "Good morning, Alex",
-            "Here is what is happening across your workspace today.",
-            Accent);
+        _navigation.WhenAnyValue(x => x.Address)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .Subscribe(entry => IsSelected = entry?.Path == "/")
+            .DisposeWith(disposables);
     }
+
+    [ReactiveCommand]
+    private Task Execute(CancellationToken token) => _navigation.NavigateAsync("/", token);
 }

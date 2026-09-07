@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:vm="using:MiraiSpace.Presentation.Panels"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             x:Class="MiraiSpace.UI.Views.NavigationPanelView"
+             x:DataType="vm:NavigationPanelViewModel">
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Alt+Left" Command="{Binding BackCommand}" />
+    </UserControl.KeyBindings>
+    <Grid RowDefinitions="Auto,Auto,*" Background="#F3F5F9">
+        <Border Background="#FCFCFD" BorderBrush="#E4E7ED" BorderThickness="0,0,0,1" Padding="18,12">
+            <Grid ColumnDefinitions="Auto,Auto,*">
+                <Button Content="Back" Command="{Binding BackCommand}" Margin="0,0,8,0" />
+                <Button Grid.Column="1" Content="Home" Command="{Binding HomeCommand}" Margin="0,0,14,0" />
+                <TextBox Grid.Column="2" Text="{Binding Address}" PlaceholderText="Page address">
+                    <TextBox.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding OpenCommand}" />
+                    </TextBox.KeyBindings>
+                </TextBox>
+            </Grid>
+        </Border>
+        <ProgressBar Grid.Row="1" IsVisible="{Binding Navigation.IsNavigating}" IsIndeterminate="True" Height="3" />
+        <NavigationPage Grid.Row="2">
+            <i:Interaction.Behaviors>
+                <behaviors:NavigationHostBehavior Host="{Binding Host}" />
+            </i:Interaction.Behaviors>
+        </NavigationPage>
+    </Grid>
+</UserControl>

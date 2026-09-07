@@ -1,0 +1,8 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MiraiSpace.Presentation.Features.Documents"
+             xmlns:dialog="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             x:Class="MiraiSpace.UI.Views.DocumentNameView" x:DataType="vm:DocumentNameComponent">
+    <TextBox Text="{Binding Name}" MaxLength="{Binding MaximumLength}" PlaceholderText="Document name"
+             Padding="12,10" MinWidth="250" />
+</UserControl>

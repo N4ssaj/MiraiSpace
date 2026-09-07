@@ -1,8 +1,7 @@
 # Repository instructions
 
 - Do not run or launch application projects. If validation is necessary, build the project without launching it.
-- Do not run test projects unless the user explicitly asks you to do so.
-- Do not create, add, or modify tests unless the user explicitly asks you to do so.
+- The user requested removal of the test projects during API redesign. Do not add, regenerate, or run tests until explicitly requested.
 
 # MiraiSpace coding preferences
 
@@ -34,3 +33,55 @@
 - Target the desktop host for now; do not reintroduce browser host/platform projects unless explicitly requested.
 - For DynamicData refiltering driven by invalidation signals, prefer the state overload `Filter(IObservable<TState>, Func<TState, TItem, bool>, ...)`; do not project every signal into a new `Func<TItem, bool>`.
 - When a requested review change conflicts with the language type system or the framework lifecycle, explain the constraint and keep the correct code instead of applying the request mechanically.
+
+# Agreed presentation direction (2026-09-06)
+
+- Read `docs/architecture/api-agreements.md` before changing navigation, dialogs, menu contracts, presentation lifecycles, or their packages. It distinguishes user decisions from proposals. Final architecture implementation is paused for API discussion. The user explicitly authorized the binding generator installation, a small navigation command palette, and restoration of Generic Host startup; these narrow steps do not approve the remaining architecture.
+- Keep Views free of application logic: no navigation decisions, dialog orchestration, business rules, service resolution, or DI lifetime ownership. Rare code-behind is limited to necessary UI adaptation. Prefer bindings and behaviors from wieslawsoltes/Xaml.Behaviors; an event adapter forwards a typed input to a ViewModel command, which owns the application action.
+- Configure ReactiveUI's common command exception handler in application bootstrap. Do not repeat `try/catch` or subscribe to every command's `ThrownExceptions` merely to log or swallow cancellation. Use a local exception subscription only for deliberate feature-specific recovery; explicitly forward/report failures that still need the common policy. This policy does not cover arbitrary exceptions outside ReactiveCommand.
+- Use standard Microsoft logging integration and inject `ILogger<T>`. Serilog is the agreed default provider direction. Do not register fallback `NullLogger<T>` services in Presentation or Views.
+- Preserve the existing Generic Host / `CP.Extensions.Hosting.Avalonia` integration when implementing the next agreed step; discuss any hosting redesign before making it.
+- `ReactiveModel` primarily provides INPC with minimal logic; `ReactiveComponent` represents a reusable part of a page; `ReactivePage` is the top-level page. Do not make lightweight models participate in a page lifecycle.
+- Name the initialization interface `IInitializable`, not `IAsyncInitializable`. Do not add repeated initialization for now; explicit feature refresh methods may be added when needed. Exact signatures, parameter binding, and ownership still need agreement.
+- Use MessagePipe for application messages. Do not introduce a competing custom message bus. Choose broker lifetimes explicitly when session/page ownership is agreed.
+- Discuss dialogs after navigation is agreed. Dialogs do not have navigation URLs. Embedded presentation in page and component regions is now selected. Dialog ViewModels come from DI; Title is not mandatory. Exact service and region-token signatures are still proposals.
+- Defer Autofac until a concrete scope/lifetime requirement needs it. Additional packages and menu API changes still require design agreement. Permission to add packages does not make a proposed package an accepted dependency.
+- Avoid unnecessary fully qualified names in ordinary source code; use imports unless a real ambiguity requires qualification.
+- Each menu container owns filtering and composition of its children. Similar filtering pipelines in separate containers are not, by themselves, a reason to extract a shared filtering service or relocate that responsibility. Menu/navigation integration remains under discussion; do not impose route-derived structure or selection on every item.
+
+# Navigation discussion updates (2026-09-07)
+
+- One navigation instance owns one current page. Each future logical floating document panel/window owns its own DI scope and navigation. Do not put Eremex controls in navigation contracts.
+- The menu should show the active page while each container retains its own child composition and filtering.
+- Page state/persistence belongs to a separate extended-settings discussion.
+- The first example plugin should add an ordinary page. Low-cost explicit View/service replacement is acceptable in principle; its policy is still to be agreed.
+- A small navigation command palette is authorized for experimentation now. AI integration, final navigation/dialog APIs, and broad dependency installation are not authorized by the library examples.
+
+# Accepted refinements from the latest discussion (2026-09-07)
+
+- Base page navigation on Avalonia NavigationPage/ContentPage. The user explicitly selected stack navigation with Back and no browser Forward for the first implementation.
+- Do not expose CanGoBack or CanGoForward in the application navigation contract merely for button presentation. The Avalonia control may retain its own UI state.
+- Region-based dialogs are required: support the whole page and a specific component instance. Identical components in different panels must have independent regions.
+- Accept a dialog ViewModel created with DI; do not require callers to construct dependency-bearing dialog models with new. Do not require Title or create a separate Window for ordinary dialogs.
+- Navigation and dialog APIs are still being refined; their proposed signatures are not accepted merely because they appear in a document. New demo cases must exercise required typed page parameters and actual DI-backed data loading.
+- Target net10.0/C# 14 and prefer System.Threading.Lock for dedicated synchronous locks. Preserve appropriate asynchronous primitives where awaiting is required.
+
+# First implementation authorization (2026-09-07)
+
+- The user explicitly ended the documentation-only phase and requested the first working implementation of ViewModel-oriented native navigation, child-component initialization, DI-created embedded dialogs, and meaningful demo examples. Proceed with that implementation; earlier pause wording is superseded.
+- Preserve all agreed architecture and coding preferences. Do not create more design documents instead of implementing. Existing restrictions on tests and application launch remain in force unless explicitly changed by the user.
+
+# Review corrections (2026-09-07)
+
+- These corrections supersede experimental implementation and older proposals: presentation navigation, dialogs and initialization belong to Presentation, not Application.
+- Do not use ActivatorUtilities. Register models explicitly and resolve from the owning DI scope; no constructor argument injection via reflection.
+- ReactiveComponent does not implement any initialization interface. Compose initialization separately. A parameterized model exposes only its parameterized initialization method.
+- Do not make menu containers inspect/cast items to ReactiveComponent or initialize them. Preserve their filtering responsibility.
+- Dialog models request closure through their own result/event contract; do not inject IDialogService merely to close themselves. No empty dialog marker interfaces and no object owner.
+- Use the hosting package's plugin infrastructure and supply a real separately built sample plugin with a page, menu item and command.
+- Implement scoped Eremex floating navigation panels and a shared structured command engine suitable for a future AI caller. A palette parser alone is not that engine.
+- Route registration contains descriptors only: no model construction, initialization, disposal or presentation titles.
+- Do not routinely dispose ReactiveCommands. Use ReactiveUI activation for UI subscriptions and explicit owned lifetime only for work that must survive deactivation.
+- Put actual attached properties in AttachedProperties; put Behavior-derived UI adapters in Behaviors. Views remain declarative.
+- Use one consistent DependencyInjection folder/namespace and Add... registration convention.
+- Fix analyzer warnings in changed code rather than suppressing them globally.

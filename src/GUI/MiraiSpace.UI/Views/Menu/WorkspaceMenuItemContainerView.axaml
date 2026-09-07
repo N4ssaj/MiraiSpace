@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             xmlns:attached="using:MiraiSpace.UI.AttachedProperties"
              xmlns:menu="using:MiraiSpace.Presentation.Features.Workspace.Menu"
              mc:Ignorable="d"
              d:DesignWidth="252"
@@ -14,10 +14,10 @@
         <Style Selector="Button.container-compact">
             <Setter Property="IsVisible" Value="False" />
         </Style>
-        <Style Selector="StackPanel.container-expanded[(behaviors|AppMenuDisplay.IsCompact)=True]">
+        <Style Selector="StackPanel.container-expanded[(attached|AppMenuDisplay.IsCompact)=True]">
             <Setter Property="IsVisible" Value="False" />
         </Style>
-        <Style Selector="Button.container-compact[(behaviors|AppMenuDisplay.IsCompact)=True]">
+        <Style Selector="Button.container-compact[(attached|AppMenuDisplay.IsCompact)=True]">
             <Setter Property="IsVisible" Value="True" />
         </Style>
     </UserControl.Styles>
@@ -99,7 +99,7 @@
                             BorderBrush="#343B49"
                             BorderThickness="1"
                             CornerRadius="14"
-                            behaviors:AppMenuDisplay.IsCompact="False">
+                            attached:AppMenuDisplay.IsCompact="False">
                         <StackPanel>
                             <TextBlock Text="{Binding Title}"
                                        Margin="10,7,10,2"

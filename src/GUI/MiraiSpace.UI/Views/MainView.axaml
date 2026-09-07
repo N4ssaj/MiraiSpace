@@ -1,75 +1,50 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:dock="https://schemas.eremexcontrols.net/avalonia/docking"
              xmlns:vm="using:MiraiSpace.Presentation.ViewModels"
-             mc:Ignorable="d"
-             d:DesignWidth="1280"
-             d:DesignHeight="820"
-             x:Class="MiraiSpace.UI.Views.MainView"
-             x:DataType="vm:MainViewModel">
-
-    <Grid ColumnDefinitions="Auto,*"
-          Background="#F3F5F9">
+             xmlns:panels="using:MiraiSpace.Presentation.Panels"
+             xmlns:views="using:MiraiSpace.UI.Views"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             x:Class="MiraiSpace.UI.Views.MainView" x:DataType="vm:MainViewModel">
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Ctrl+OemTilde" Command="{Binding Console.ToggleCommand}" />
+    </UserControl.KeyBindings>
+    <Grid ColumnDefinitions="Auto,*" Background="#F3F5F9">
         <ContentControl Content="{Binding Menu}" />
-
-        <Grid Grid.Column="1"
-              RowDefinitions="64,*">
-            <Border Background="#FCFCFD"
-                    BorderBrush="#E4E7ED"
-                    BorderThickness="0,0,0,1">
-                <Grid Margin="28,0"
-                      ColumnDefinitions="*,Auto"
-                      VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal"
-                                Spacing="8"
-                                VerticalAlignment="Center">
-                        <TextBlock Text="MiraiSpace"
-                                   FontSize="12"
-                                   FontWeight="SemiBold"
-                                   Foreground="#252A36" />
-                        <TextBlock Text="/"
-                                   FontSize="11"
-                                   Foreground="#B0B5C0" />
-                        <TextBlock Text="Product workspace"
-                                   FontSize="11"
-                                   Foreground="#747B8B" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1"
-                                Orientation="Horizontal"
-                                Spacing="10"
-                                VerticalAlignment="Center">
-                        <Button Width="36"
-                                Height="36"
-                                Padding="0"
-                                Background="#F0F1F5"
-                                BorderThickness="0"
-                                CornerRadius="11"
-                                ToolTip.Tip="Notifications">
-                            <TextBlock Text="•"
-                                       FontSize="18"
-                                       Foreground="#6E63E8"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" />
-                        </Button>
-                        <Border Width="36"
-                                Height="36"
-                                Background="#252A36"
-                                CornerRadius="11">
-                            <TextBlock Text="AS"
-                                       FontSize="9"
-                                       FontWeight="Bold"
-                                       Foreground="White"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" />
-                        </Border>
-                    </StackPanel>
+        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*,Auto">
+            <Border Padding="20,10" Background="#FCFCFD" BorderBrush="#E4E7ED" BorderThickness="0,0,0,1">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="MiraiSpace" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Content="Command console" Command="{Binding Console.ToggleCommand}" />
                 </Grid>
             </Border>
-
-            <ContentControl Grid.Row="1"
-                            Content="{Binding Navigation.CurrentPage}" />
+            <TextBlock Grid.Row="1" Text="{Binding Errors.Message}" Foreground="#BE4255"
+                       TextWrapping="Wrap" Margin="20,4" />
+            <dock:DockManager Grid.Row="2" ItemsSource="{Binding Panels.Panels}" BorderThickness="0">
+                <i:Interaction.Behaviors>
+                    <behaviors:FloatingPanelsBehavior />
+                </i:Interaction.Behaviors>
+                <dock:DockManager.ItemTemplate>
+                    <DataTemplate DataType="panels:NavigationPanelViewModel">
+                        <dock:DocumentPane Header="{Binding Title}" CloseCommand="{Binding CloseCommand}"
+                                           AllowAutoHide="False" AllowFloat="True" />
+                    </DataTemplate>
+                </dock:DockManager.ItemTemplate>
+                <dock:DockManager.ItemContentTemplate>
+                    <DataTemplate DataType="panels:NavigationPanelViewModel">
+                        <views:NavigationPanelView ViewModel="{Binding}" />
+                    </DataTemplate>
+                </dock:DockManager.ItemContentTemplate>
+                <dock:DockGroup>
+                    <dock:DocumentGroup>
+                        <dock:DocumentPane Header="Workspace" AllowClose="False" AllowFloat="False" AllowAutoHide="False">
+                            <views:NavigationPanelView ViewModel="{Binding MainPanel}" />
+                        </dock:DocumentPane>
+                    </dock:DocumentGroup>
+                </dock:DockGroup>
+            </dock:DockManager>
+            <ContentControl Grid.Row="3" Content="{Binding Console}" IsVisible="{Binding Console.IsOpen}" />
         </Grid>
     </Grid>
 </UserControl>

@@ -11,7 +11,10 @@
   
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="CP.Extensions.Hosting.Avalonia" />
+    <PackageReference Include="CP.Extensions.Hosting.Plugins" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
@@ -24,4 +27,17 @@
     <ProjectReference Include="..\..\Extensibility\MiraiSpace.Extensibility.Abstractions\MiraiSpace.Extensibility.Abstractions.csproj" />
     <ProjectReference Include="..\..\GUI\MiraiSpace.UI\MiraiSpace.UI.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Plugins/MiraiSpace.Sample.Plugin/MiraiSpace.Sample.Plugin.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <Target Name="CopySamplePlugin" AfterTargets="Build">
+    <MSBuild Projects="../../Plugins/MiraiSpace.Sample.Plugin/MiraiSpace.Sample.Plugin.csproj"
+             Targets="GetTargetPath" Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="SamplePluginOutput" />
+    </MSBuild>
+    <Copy SourceFiles="@(SamplePluginOutput)" DestinationFolder="$(TargetDir)plugins" />
+  </Target>
+  <Target Name="PublishSamplePlugin" AfterTargets="Publish">
+    <Copy SourceFiles="@(SamplePluginOutput)" DestinationFolder="$(PublishDir)plugins" />
+  </Target>
 </Project>

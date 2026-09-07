@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MiraiSpace.Presentation.Features.Documents"
+             xmlns:dialog="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:views="using:MiraiSpace.UI.Views"
+             xmlns:panels="using:MiraiSpace.Presentation.Panels"
+             x:Class="MiraiSpace.UI.Views.DocumentEditorView" x:DataType="vm:DocumentEditorComponent">
+    <dialog:DialogHost CloseOnClickAway="True">
+        <i:Interaction.Behaviors>
+            <behaviors:DialogRegionBehavior Owner="{Binding}"
+                Service="{Binding $parent[views:NavigationPanelView].((panels:NavigationPanelViewModel)DataContext).Dialogs}" />
+        </i:Interaction.Behaviors>
+        <Border Background="White" CornerRadius="18" BorderBrush="#E3E6EC" BorderThickness="1" Padding="26" MinHeight="400">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+                    <TextBlock Text="{Binding Name}" FontSize="24" FontWeight="SemiBold" Foreground="#252A36" TextWrapping="Wrap" />
+                    <Button Grid.Column="1" IsEnabled="{Binding !IsReadOnly}" Content="Rename" Command="{Binding RenameCommand}" Margin="12,0,0,0" VerticalAlignment="Top" />
+                </Grid>
+                <TextBox Grid.Row="1" Text="{Binding Body}" IsReadOnly="{Binding IsReadOnly}" AcceptsReturn="True" TextWrapping="Wrap"
+                         Background="Transparent" BorderThickness="0" FontSize="16" Padding="0"
+                         VerticalContentAlignment="Top" PlaceholderText="Begin with a thought…" />
+                <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,20,0,0">
+                    <TextBlock Text="{Binding Status}" FontSize="12" Foreground="#7D8695" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" IsEnabled="{Binding !IsReadOnly}" Content="Save changes" Command="{Binding SaveCommand}"
+                            Background="#7165E8" Foreground="White" CornerRadius="10" Padding="16,10" />
+                </Grid>
+            </Grid>
+        </Border>
+    </dialog:DialogHost>
+</UserControl>

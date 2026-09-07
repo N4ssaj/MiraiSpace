@@ -11,11 +11,16 @@
   
   <ItemGroup>
     <PackageReference Include="Avalonia" />
+    <PackageReference Include="Xaml.Behaviors.Interactivity" />
+    <PackageReference Include="Eremex.Avalonia.Controls" />
+    <PackageReference Include="DialogHost.Avalonia" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
     <PackageReference Include="Eremex.Avalonia.Themes.DeltaDesign" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="ReactiveUI.Avalonia" />
     <PackageReference Include="ReactiveUI.SourceGenerators" />
+    <PackageReference Include="ReactiveUI.Binding" />
+    <PackageReference Include="ReactiveUI.Binding.SourceGenerators" PrivateAssets="all" />
   </ItemGroup>
   
   <ItemGroup>

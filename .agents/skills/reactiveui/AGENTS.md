@@ -384,7 +384,7 @@ public class FileViewModel : ReactiveObject
 
 3. **Pass a `canExecute` observable to `ReactiveCommand.Create`** so that the command automatically disables bound buttons when the condition is false, and automatically disables during execution to prevent double-submission.
 
-4. **Subscribe to `command.ThrownExceptions` for every `ReactiveCommand`** because unobserved exceptions in commands are routed to `RxApp.DefaultExceptionHandler` which terminates the application by default.
+4. **Configure the common ReactiveUI command exception handler at bootstrap.** In MiraiSpace, do not add repetitive catches or subscribe to every command's `ThrownExceptions` for logging. Local subscriptions are reserved for deliberate feature-specific recovery; explicitly forward/report failures that still need the common policy. Verify the bootstrap API against the installed version. See [the project rule](rules/reactiveui-subscribe-to-command-thrownexceptions-for-every.md).
 
 5. **Use `IActivatableViewModel` with `this.WhenActivated(disposables => { ... })` for subscriptions that should only run while the view is visible** to prevent background timers, network polls, and event handlers from running when the view is navigated away.
 

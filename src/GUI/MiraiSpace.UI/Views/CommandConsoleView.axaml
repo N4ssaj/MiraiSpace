@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MiraiSpace.Presentation.Features.CommandConsole"
+             x:Class="MiraiSpace.UI.Views.CommandConsoleView" x:DataType="vm:CommandConsoleViewModel">
+    <Border Background="#202632" BorderBrush="#454B5B" BorderThickness="0,1,0,0" Padding="20,14">
+        <Grid RowDefinitions="Auto,160,Auto">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <TextBlock Text="Application commands" Foreground="#F1F3F8" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <Button Grid.Column="1" Content="Cancel command" Command="{Binding CancelCommand}" Margin="0,0,8,0" />
+                <Button Grid.Column="2" Content="Hide console" Command="{Binding ToggleCommand}" />
+            </Grid>
+            <TextBox Grid.Row="1" Text="{Binding Output, Mode=OneWay}" IsReadOnly="True" AcceptsReturn="True"
+                     FontFamily="Consolas, monospace" FontSize="12" Background="Transparent"
+                     Foreground="#CBD5E7" BorderThickness="0" Margin="0,10" TextWrapping="Wrap" />
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
+                <TextBox Text="{Binding Input}" PlaceholderText="navigate /documents" FontFamily="Consolas, monospace">
+                    <TextBox.KeyBindings><KeyBinding Gesture="Enter" Command="{Binding ExecuteCommand}" /></TextBox.KeyBindings>
+                </TextBox>
+                <Button Grid.Column="1" Content="Execute" Command="{Binding ExecuteCommand}" Margin="10,0,0,0" />
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

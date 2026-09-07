@@ -6,6 +6,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\Core\MiraiSpace.Core\MiraiSpace.Core.csproj" />
+    <ProjectReference Include="..\..\Application\MiraiSpace.Application\MiraiSpace.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

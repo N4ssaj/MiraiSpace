@@ -6,9 +6,15 @@
   
   <ItemGroup>
     <PackageReference Include="DynamicData" />
+    <PackageReference Include="MessagePipe" />
+    <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="HanumanInstitute.MvvmDialogs" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="ReactiveUI" />
     <PackageReference Include="ReactiveUI.SourceGenerators" />
+    <PackageReference Include="ReactiveUI.Binding" />
+    <PackageReference Include="ReactiveUI.Binding.SourceGenerators" PrivateAssets="all" />
   </ItemGroup>
   
   <ItemGroup>

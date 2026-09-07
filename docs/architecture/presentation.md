@@ -2,17 +2,27 @@
 
 ## Base types
 
-`ReactiveModel` is observable presentation state without a View lifecycle. Domain entities, application DTOs, persisted records, and transport values do not inherit from presentation bases.
+`ReactiveModel` primarily provides INPC and minimal presentation-model logic, without a View lifecycle. Domain entities, application DTOs, persisted records, and transport values do not inherit from presentation bases.
 
-`ReactiveComponent` implements ReactiveUI activation and exposes protected `OnActivated` and `OnDeactivated` hooks. Resources added to the activation `CompositeDisposable` are released by ReactiveUI; deactivation is a synchronous notification and does not replace an explicit asynchronous close or navigation protocol.
+`ReactiveComponent` represents a composable part of a page. The current implementation supports ReactiveUI activation through protected `OnActivated` and `OnDeactivated` hooks. Resources added to the activation `CompositeDisposable` are released by ReactiveUI; deactivation is a synchronous notification and does not replace an explicit asynchronous close or navigation protocol.
 
-`ReactivePage` is an intentionally empty semantic specialization of `ReactiveComponent`. It does not add identifiers, routes, titles, initialization, or implicit cancellation. Behavior is added only when a page-specific invariant is demonstrated.
+`ReactivePage` represents the top-level page composed from components. It is currently an empty semantic specialization of `ReactiveComponent`; the navigation and initialization lifecycle is being discussed. Its current implementation must not be treated as a decision against a future initialization contract.
 
 Validation is opt-in. A concrete ViewModel uses ReactiveUI.Validation when it needs validation; the shared base and abstractions do not force validation dependencies on read-only or non-form ViewModels.
 
 ## Initialization
 
-Initialization is not imposed by a shared base contract. A feature that needs parameters, repeatable loading, cancellation, or async close behavior defines those semantics at its own boundary instead of coupling unrelated ViewModels to one lifecycle protocol.
+The agreed interface name is `IInitializable`, without `Async` in the interface name. The method name and return type, a possible `IInitializable<TParameters>`, and the rules for cancellation, repeatability, page reuse, and disposal remain proposals. Do not impose initialization on every `ReactiveModel` or equate initialization with each View activation.
+
+See [API agreements](api-agreements.md) for the current discussion boundary and accepted decisions. Navigation is discussed first, dialogs afterwards; implementation is paused until the next step is agreed.
+
+## View responsibilities
+
+Views render and adapt UI. Application actions belong to ViewModel commands and services. Prefer bindings and behaviors from wieslawsoltes/Xaml.Behaviors for control events; a necessary Eremex row-click adapter passes the row to a command, which decides whether to navigate or open a dialog. Moving application logic from code-behind into a behavior does not satisfy this boundary.
+
+## Errors and logging
+
+Configure ReactiveUI's common command exception handler in the application composition root. Local `ThrownExceptions` subscriptions are reserved for intentional feature-specific recovery; do not add repetitive command catches or silently consume failures. Configure standard Microsoft logging with Serilog at the host boundary and inject `ILogger<T>` where needed. Presentation does not supply `NullLogger<T>` fallbacks.
 
 ## View resolution
 

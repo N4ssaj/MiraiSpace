@@ -1,7 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
@@ -12,10 +10,10 @@ using ReactiveUI;
 
 namespace MiraiSpace.Presentation.Menu;
 
-public sealed class AppMenuViewModel : ReactiveComponent
+public sealed class AppMenuViewModel : ReactiveComponent, IDisposable
 {
     private readonly ReadOnlyObservableCollection<IAppMenuItem> _items;
-    private readonly IObservable<IChangeSet<IAppMenuItem>> _itemsPipeline;
+    private readonly IDisposable _binding;
     private readonly SourceList<IAppMenuItem> _itemSource = new();
     private readonly IReadOnlyList<IAppMenuAccessPolicy> _policies;
 
@@ -27,28 +25,26 @@ public sealed class AppMenuViewModel : ReactiveComponent
         IEnumerable<IAppMenuAccessPolicy> policies)
     {
         _policies = [.. policies];
-        var itemsPipeline = _itemSource
+        _binding = _itemSource
             .Connect()
             .Filter(
                 ObserveAccessInvalidations(),
                 (_, item) => CanAccess(item),
-                ListFilterPolicy.ClearAndReplace);
-
-        _itemsPipeline = ResetBeforeRebinding(itemsPipeline)
+                ListFilterPolicy.ClearAndReplace)
             .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Bind(
                 out _items,
                 new BindingOptions(
                     BindingOptions.DefaultResetThreshold,
-                    UseReplaceForUpdates: true));
+                    UseReplaceForUpdates: true))
+            .Subscribe();
         _itemSource.AddRange(items);
     }
 
-    protected override void OnActivated(CompositeDisposable disposables)
+    public void Dispose()
     {
-        _itemsPipeline
-            .Subscribe()
-            .DisposeWith(disposables);
+        _binding.Dispose();
+        _itemSource.Dispose();
     }
 
     private IObservable<Unit> ObserveAccessInvalidations() =>
@@ -60,17 +56,4 @@ public sealed class AppMenuViewModel : ReactiveComponent
     private bool CanAccess(IAppMenuItem item) =>
         _policies.All(policy => policy.CanAccess(item));
 
-    private IObservable<IChangeSet<IAppMenuItem>> ResetBeforeRebinding(
-        IObservable<IChangeSet<IAppMenuItem>> source) =>
-        Observable.Defer(() =>
-        {
-            if (_items.Count == 0)
-            {
-                return source;
-            }
-
-            var reset = new ChangeSet<IAppMenuItem>(
-                [new Change<IAppMenuItem>(ListChangeReason.Clear, _items.ToArray())]);
-            return Observable.Return(reset).Concat(source);
-        });
 }

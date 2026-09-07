@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MiraiSpace.Sample.Plugin"
+             x:Class="MiraiSpace.Sample.Plugin.SamplePageView" x:DataType="vm:SamplePage">
+    <ScrollViewer>
+        <StackPanel Margin="36" Spacing="22" MaxWidth="850" HorizontalAlignment="Stretch">
+            <TextBlock Text="PLAYGROUND" Foreground="#B77B2F" FontWeight="Bold" LetterSpacing="2" FontSize="11" />
+            <TextBlock Text="A little room for experiments" FontSize="32" FontWeight="SemiBold" Foreground="#252A36" TextWrapping="Wrap" />
+            <TextBlock Text="A page, a menu entry and text commands, delivered together as a plugin."
+                       Foreground="#717B8D" FontSize="16" TextWrapping="Wrap" />
+            <Border Background="White" CornerRadius="18" Padding="28" BorderBrush="#E3E6EC" BorderThickness="1">
+                <StackPanel Spacing="18">
+                    <TextBlock Text="Try it from the command console" FontSize="19" FontWeight="SemiBold" />
+                    <TextBlock Text="sample open&#10;sample echo &quot;Hello from a plugin&quot;&#10;panel open /sample"
+                               FontFamily="Consolas, monospace" FontSize="14" />
+                    <Button Content="Explore documents" Command="{Binding OpenDocumentsCommand}" HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

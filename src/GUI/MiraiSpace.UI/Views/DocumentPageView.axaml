@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MiraiSpace.Presentation.Features.Documents"
+             xmlns:dialog="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:behaviors="using:MiraiSpace.UI.Behaviors"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:views="using:MiraiSpace.UI.Views"
+             xmlns:panels="using:MiraiSpace.Presentation.Panels"
+             x:Class="MiraiSpace.UI.Views.DocumentPageView" x:DataType="vm:DocumentPageViewModel">
+    <dialog:DialogHost CloseOnClickAway="True">
+        <i:Interaction.Behaviors>
+            <behaviors:DialogRegionBehavior Owner="{Binding}"
+                Service="{Binding $parent[views:NavigationPanelView].((panels:NavigationPanelViewModel)DataContext).Dialogs}" />
+        </i:Interaction.Behaviors>
+        <Grid>
+            <Grid RowDefinitions="Auto,*" Margin="32" IsVisible="{Binding HasDocument}">
+                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,24">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="DOCUMENT" Foreground="#34A58B" FontWeight="Bold" FontSize="11" LetterSpacing="2" />
+                        <TextBlock Text="A space to think" FontSize="27" FontWeight="SemiBold" Foreground="#252A36" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Delete document" Command="{Binding DeleteCommand}"
+                            Foreground="#BE4255" VerticalAlignment="Center" Padding="14,10" />
+                </Grid>
+                <Grid Grid.Row="1" ColumnDefinitions="*,240">
+                    <ContentControl Content="{Binding Editor}" Margin="0,0,20,0" />
+                    <ContentControl Grid.Column="1" Content="{Binding Details}" />
+                </Grid>
+            </Grid>
+            <StackPanel IsVisible="{Binding !HasDocument}" Margin="48" Spacing="16" VerticalAlignment="Top">
+                <TextBlock Text="This document isn't here" FontSize="28" FontWeight="SemiBold" Foreground="#252A36" />
+                <TextBlock Text="It may have been removed, or this address belongs to another workspace."
+                           TextWrapping="Wrap" Foreground="#737B8C" />
+                <Button Content="Browse documents" Command="{Binding OpenDocumentsCommand}" HorizontalAlignment="Left" />
+            </StackPanel>
+        </Grid>
+    </dialog:DialogHost>
+</UserControl>
